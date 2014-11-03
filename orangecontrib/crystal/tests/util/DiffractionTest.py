@@ -115,8 +115,8 @@ class DiffractionTest(unittest.TestCase):
         print("Close plot window to continue")
         res.plot()
 
-    def atestXRTDriver(self):
-        import XRTDriver
+    def testXRTDriver(self):
+        import orangecontrib.crystal.util.XRTDriver as XRTDriver
         from pylab import plot, show, legend, ylabel, xlabel, title, savefig, figure
 
         energy = 8100.0

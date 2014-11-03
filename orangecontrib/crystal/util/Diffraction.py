@@ -147,9 +147,13 @@ class Diffraction():
 
             photon_in = Photon(energy, photon_direction)
             res = perfect_crystal.calculateDiffraction(photon_in)
+
+            difference = ReflectivityAndPhase(res["S"].complexAmplitude() / res["P"].complexAmplitude())
+
             result.add(deviation,
                        res["S"],
-                       res["P"])
+                       res["P"],
+                       difference)
 
         self.log("Calculation end")
 

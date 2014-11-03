@@ -160,8 +160,8 @@ class PerfectCrystalDiffraction():
 
         zac_x1 = (-1.0 * zac_z + ctemp) / effective_psi_h_bar
         zac_x2 = (-1.0 * zac_z - ctemp) / effective_psi_h_bar
-        zac_delta1 = 0.5 * self.Psi0() - zac_z + ctemp
-        zac_delta2 = 0.5 * self.Psi0() - zac_z - ctemp
+        zac_delta1 = 0.5 * (self.Psi0() - zac_z + ctemp)
+        zac_delta2 = 0.5 * (self.Psi0() - zac_z - ctemp)
         zac_phi1 = 2 * np.pi / gamma_0 / photon_in.wavelength() * zac_delta1
         zac_phi2 = 2 * np.pi / gamma_0 / photon_in.wavelength() * zac_delta2
        

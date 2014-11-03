@@ -13,6 +13,9 @@ class DiffractionResult():
         self._s_phase = []
         self._p_reflectivity = []
         self._p_phase = []
+        self._difference_reflectivity = []
+        self._difference_phase = []
+
 
     def diffractionSetup(self):
         return self._diffraction_setup
@@ -24,7 +27,7 @@ class DiffractionResult():
         return self._deviation
 
     def angle(self):
-        return [self.braggAngle() + dev in  self.deviation()]
+        return [self.braggAngle() + dev for dev in  self.deviation()]
 
     def sReflectivity(self):
         return self._s_reflectivity
@@ -38,12 +41,20 @@ class DiffractionResult():
     def pPhase(self):
         return self._p_phase
 
-    def add(self, deviation, s_reflectivity_and_phase, p_reflectivity_and_phase):
+    def differenceReflectivity(self):
+        return self._difference_reflectivity
+
+    def differencePhase(self):
+        return self._difference_phase
+
+    def add(self, deviation, s_reflectivity_and_phase, p_reflectivity_and_phase, diff_reflectivity_and_phase):
         self._deviation.append(deviation)
         self._s_reflectivity.append(s_reflectivity_and_phase.reflectivity())
         self._s_phase.append(s_reflectivity_and_phase.phase())
         self._p_reflectivity.append(p_reflectivity_and_phase.reflectivity())
         self._p_phase.append(p_reflectivity_and_phase.phase())
+        self._difference_reflectivity.append(diff_reflectivity_and_phase.reflectivity())
+        self._difference_phase.append(diff_reflectivity_and_phase.phase())
 
     def plot(self):
         x = [i * 1e+6 for i in self.deviation()]
@@ -110,6 +121,24 @@ class DiffractionResult():
         p_phase.setX(angles)
         p_phase.setY(self.pPhase())  
         addPlotInfo(info_dict, p_phase)
-        
+
+        intensity_difference = PlotData2D("Intensity difference",
+                                      "Angle deviation in urad",
+                                      "Phase in rad")
+        intensity_difference.setX(angles)
+        intensity_difference.setY(self.differenceReflectivity())
+        addPlotInfo(info_dict, intensity_difference)
+
+
+        phase_difference = PlotData2D("Phase difference",
+                                      "Angle deviation in urad",
+                                      "Phase in rad")
+        phase_difference.setX(angles)
+        phase_difference.setY(self.differencePhase())
+        addPlotInfo(info_dict, phase_difference)
+
+
         return [s_reflectivity, s_phase,
-                p_reflectivity, p_phase]      
+                p_reflectivity, p_phase,
+                intensity_difference, phase_difference
+               ]

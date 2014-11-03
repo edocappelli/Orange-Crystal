@@ -89,7 +89,7 @@ def calculateDiffraction(hkl='111', E0=10000.0, beamPath=0.1, alpha= -5.0, factD
     cur_S = {}
     cur_P = {}
     result = {}
-    for geo, geo_str in geo_types.iteritems():
+    for geo, geo_str in geo_types.items():
         current_result = XRTResult()
         t = beamPath * math.cos(thetaCenter)
         siCrystal = rm.CrystalDiamond(hklInd, dSpacing, t=t,

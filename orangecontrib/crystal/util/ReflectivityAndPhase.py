@@ -14,6 +14,9 @@ class ReflectivityAndPhase():
     def rescale(self, scalar):
         self.__complex_reflexivity = self.__complex_reflexivity * scalar
 
+    def complexAmplitude(self):
+        return self.__complex_reflexivity
+
     def phase(self):
         PP = self.__complex_reflexivity.real
         QQ = self.__complex_reflexivity.imag
