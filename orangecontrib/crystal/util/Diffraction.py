@@ -29,18 +29,15 @@ class Diffraction():
         return psi
 
     def getBraggNormal(self, d_spacing):
-        normal_bragg = Vector(0, 0, 1)
-        normal_bragg = normal_bragg.getNormalizedVector().scalarMultiplication(2.0 * np.pi / d_spacing)
-            
+        normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / d_spacing)
+
         return normal_bragg
 
-    def getSurfaceNormal(self, asymmetry_angle, geometry_type):
+    def getSurfaceNormal(self, asymmetry_angle):
         normal_surface = Vector(sin(asymmetry_angle / 180.0 * np.pi),
                                 0,
                                 cos(asymmetry_angle / 180.0 * np.pi)) 
-        #if geometry_type is LaueDiffraction or geometry_type is LaueTransmission:
-        #    normal_surface = Vector(1, 0, 0)
-            
+
         return normal_surface
     
     def log(self, str):
@@ -94,22 +91,28 @@ class Diffraction():
 
         self.log( "f0: (%f , %f)" % (F_0.real, F_0.imag))
         self.log( "fH: (%f , %f)" % (F_H.real, F_H.imag))
+        self.log( "fHbar: (%f , %f)" % (F_H_bar.real, F_H_bar.imag))
 
         d_spacing = xraylib.Crystal_dSpacing(crystal,
                                              miller_h,
                                              miller_k,
                                              miller_l) * angstrom
+        self.log( "d_spacing: %f " % d_spacing)
 
         normal_bragg = self.getBraggNormal(d_spacing)
-        normal_surface = self.getSurfaceNormal(diffraction_setup.asymmetryAngle(), 
-                                               diffraction_setup.geometryType())
+        normal_surface = self.getSurfaceNormal(diffraction_setup.asymmetryAngle())
 
         photon_direction = normal_bragg.getVectorWithAngle(np.pi / 2.0 - angle_bragg)
         photon_in = Photon(energy, photon_direction)
 
-        psi_0 = self.calculatePsiFromStructureFactor(crystal, photon_in, F_0)
-        psi_H = self.calculatePsiFromStructureFactor(crystal, photon_in, F_H)
+        psi_0     = self.calculatePsiFromStructureFactor(crystal, photon_in, F_0)
+        psi_H     = self.calculatePsiFromStructureFactor(crystal, photon_in, F_H)
         psi_H_bar = self.calculatePsiFromStructureFactor(crystal, photon_in, F_H_bar)
+
+        self.log( "psi0: (%.14f , %.14f)" % (psi_0.real, psi_0.imag))
+        self.log( "psiH: (%.14f , %.14f)" % (psi_H.real, psi_H.imag))
+        self.log( "psiHbar: (%.14f , %.14f)" % (psi_H_bar.real, psi_H_bar.imag))
+
 
         perfect_crystal = PerfectCrystalDiffraction(diffraction_setup.geometryType(),
                                                     normal_bragg,

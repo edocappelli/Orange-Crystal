@@ -19,7 +19,7 @@ class Vector():
     def __eq__(self, candidate):
         return np.linalg.norm(np.array(self.components())
                               -
-                              np.array(candidate.components())) < 1.e-10
+                              np.array(candidate.components())) < 1.e-7
 
     def __ne__(self, candidate):
         return not  self == candidate

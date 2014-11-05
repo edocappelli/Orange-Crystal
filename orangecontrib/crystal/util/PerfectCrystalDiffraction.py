@@ -59,8 +59,8 @@ class PerfectCrystalDiffraction():
     def log(self, str):
         print(str)
 
-    def calculateGamma(self, photon, normal_surface):
-        gamma = photon.unitDirectionVector().scalarProduct(normal_surface.getNormalizedVector())
+    def calculateGamma(self, photon):
+        gamma = photon.unitDirectionVector().scalarProduct(self.normalSurface().getNormalizedVector())
         # Our crystal normal is pointing outside me medium. Zachariasen normal is
         # pointing into the crystal medium (pag 112). Therefore, we must change the
         # sign.
@@ -170,8 +170,8 @@ class PerfectCrystalDiffraction():
 
         #C
         if (self.isDebug):
-            self.log( "<DEBUG>: __zac_c1", zac_c1)
-            self.log( "<DEBUG>: __zac_c2", zac_c2)
+            self.log( "<DEBUG>: __zac_c1"+str( zac_c1))
+            self.log( "<DEBUG>: __zac_c2"+str( zac_c2))
         mp_zac_c1 = mpmath.exp(self.tompc(zac_c1))
         mp_zac_c2 = mpmath.exp(self.tompc(zac_c2))
 
@@ -189,20 +189,20 @@ class PerfectCrystalDiffraction():
             reflectivity = (mp_zac_x2 * mp_zac_c1 - mp_zac_x1 * mp_zac_c2) / (mp_zac_x2 - mp_zac_x1)
 
         if (self.isDebug):
-            self.log( "<DEBUG>: ctemp: ", ctemp)
-            self.log( "<DEBUG>: zac_z", mp_zac_z)
-            self.log( "<DEBUG>: zac_q", mp_zac_q)
-            self.log( "<DEBUG>: zac delta 1", mp_zac_delta1)
-            self.log( "<DEBUG>: zac delta 2", mp_zac_delta2)
-            self.log( "<DEBUG>: gamma_0", gamma_0)
-            self.log( "<DEBUG>: wavelength", photon_in.wavelength())
-            self.log( "<DEBUG>: zac phi 1", mp_zac_phi1)
-            self.log( "<DEBUG>: zac phi 2", mp_zac_phi2)
+            self.log( "<DEBUG>: ctemp: "+str(ctemp))
+            self.log( "<DEBUG>: zac_z"+str( zac_z))
+            self.log( "<DEBUG>: zac_q"+str( zac_q))
+            self.log( "<DEBUG>: zac delta 1"+str( zac_delta1))
+            self.log( "<DEBUG>: zac delta 2"+str( zac_delta2))
+            self.log( "<DEBUG>: gamma_0"+str( gamma_0))
+            self.log( "<DEBUG>: wavelength"+str( photon_in.wavelength()))
+            self.log( "<DEBUG>: zac phi 1"+str( zac_phi1))
+            self.log( "<DEBUG>: zac phi 2"+str(zac_phi2))
 
-            self.log( "<DEBUG>: zac_c1: ", mp_zac_c1)
-            self.log( "<DEBUG>: zac_c2: ", mp_zac_c2)
-            self.log( "<DEBUG>: zac_x1: ", mp_zac_x1)
-            self.log( "<DEBUG>: zac_x2: ", mp_zac_x2)
+            self.log( "<DEBUG>: zac_c1: "+str( mp_zac_c1))
+            self.log( "<DEBUG>: zac_c2: "+str( mp_zac_c2))
+            self.log( "<DEBUG>: zac_x1: "+str( mp_zac_x1))
+            self.log( "<DEBUG>: zac_x2: "+str( mp_zac_x2))
 
         return ReflectivityAndPhase(complex(reflectivity))
 
@@ -241,8 +241,11 @@ class PerfectCrystalDiffraction():
 
         photon_out = self.calculatePhotonOut(photon_in)
 
-        gamma_0 = self.calculateGamma(photon_in, self.normalSurface())
-        gamma_h = self.calculateGamma(photon_out, self.normalSurface())
+        #photon_in.unitDirectionVector().printComponents()
+        #photon_out.unitDirectionVector().printComponents()
+
+        gamma_0 = self.calculateGamma(photon_in)
+        gamma_h = self.calculateGamma(photon_out)
 
         #if (self.isDebug):
         #    self.printDebugPsis()
@@ -256,13 +259,13 @@ class PerfectCrystalDiffraction():
 
         zac_b = self.calculateZacB(photon_in, photon_out)
 
-        if (self.isDebug):
-            self.printDebugCryB(zac_b, zac_alpha)
+        #if (self.isDebug):
+        #    self.printDebugCryB(zac_b, zac_alpha)
 
         zac_z = self.calculateZacZ(zac_b, zac_alpha)
 
-        if (self.isDebug):
-            self.printDebugZacY(zac_b, zac_alpha)
+        #if (self.isDebug):
+        #    self.printDebugZacY(zac_b, zac_alpha)
 
         result["S"] = self.calculatePolarizationS(photon_in, zac_b, zac_z, gamma_0)
         result["P"] = self.calculatePolarizationP(photon_in, zac_b, zac_z, gamma_0)
@@ -279,8 +282,8 @@ class PerfectCrystalDiffraction():
             result["P"].rescale(1.0 / np.sqrt(abs(zac_b)))
 
         if (self.isDebug):
-            self.log( '<DEBUG>: rcs: ', result["S"].reflectivity() , result["S"].phase())
-            self.log( '<DEBUG>: rcp: ', result["P"].reflectivity(), result["P"].phase())
+            self.log( '<DEBUG>: rcs: '+str( result["S"].reflectivity())+str(result["S"].phase()))
+            self.log( '<DEBUG>: rcp: '+str( result["P"].reflectivity())+str(result["P"].phase()))
 
         return result
 

@@ -29,3 +29,9 @@ class Photon():
 
     def unitDirectionVector(self):
         return self._unit_direction_vector
+
+    def __eq__(self, candidate):
+        return self.wavenumber() == candidate.wavenumber() and self.unitDirectionVector() == candidate.unitDirectionVector()
+
+    def __ne__(self, candidate):
+        return not (self==candidate)

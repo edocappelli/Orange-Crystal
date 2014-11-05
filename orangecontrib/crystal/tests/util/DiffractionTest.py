@@ -7,10 +7,10 @@ from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission, allGeometryTypes
 
 #debug
-#from PlotViewer2D import PlotViewer2D
-#from PyQt4 import *
-#from PyQt4.Qt import *
-#import sys
+from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
+from PyQt4 import *
+from PyQt4.Qt import *
+import sys
 #
 
 class DiffractionTest(unittest.TestCase):
@@ -115,7 +115,7 @@ class DiffractionTest(unittest.TestCase):
         print("Close plot window to continue")
         res.plot()
 
-    def testXRTDriver(self):
+    def atestXRTDriver(self):
         import orangecontrib.crystal.util.XRTDriver as XRTDriver
         from pylab import plot, show, legend, ylabel, xlabel, title, savefig, figure
 
@@ -198,19 +198,20 @@ class DiffractionTest(unittest.TestCase):
                 savefig(filename)
                 figure()
                 
-    def atestBugsByLaurence(self):
+    def testBugsByLaurence(self):
         geometries = [ BraggTransmission, LaueTransmission]
         thicknessses = [128 * um, 5*um]
         crystal_names = ["Diamond","Si"]
-        asymmetries = [0,10,30,50,70,90]
+        asymmetries = [0,10,30,50]
         
         plots = []
         for thickness in thicknessses:
             for crystal_name in crystal_names:
                 for asymmetry in asymmetries:
+                    effitive_asymmetry = asymmetry
                     for geo in geometries:
-                        if geo is BraggTransmission and asymmetry > 70:
-                            continue
+                        if geo is LaueDiffraction or geo is LaueTransmission:
+                            effitive_asymmetry = 90.0-asymmetry
                         
                         diffraction_setup = DiffractionSetup(geo,
                                                      crystal_name,
@@ -218,11 +219,11 @@ class DiffractionTest(unittest.TestCase):
                                                      miller_h=1,
                                                      miller_k=1,
                                                      miller_l=1,
-                                                     asymmetry_angle=asymmetry,
+                                                     asymmetry_angle=effitive_asymmetry,
                                                      energy=3124 * eV,
-                                                     angle_deviation_min= -3500e-6,
-                                                     angle_deviation_max=3500e-6,
-                                                     angle_deviation_points=800)
+                                                     angle_deviation_min= -120e-6,
+                                                     angle_deviation_max=120e-6,
+                                                     angle_deviation_points=300)
                         
                         diffraction = Diffraction()
                         try:
