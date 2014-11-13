@@ -17,7 +17,9 @@ from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffra
 class Diffraction():
     
     def __init__(self):
+        self.setOnCalculationStart(None)
         self.setOnProgress(None)
+        self.setOnCalculationEnd(None)
 
     def calculatePsiFromStructureFactor(self, crystal, photon_in , F):
         codata = scipy.constants.codata.physical_constants
@@ -39,15 +41,51 @@ class Diffraction():
                                 cos(asymmetry_angle / 180.0 * np.pi)) 
 
         return normal_surface
-    
+
+    def getIncomingPhotonDirection(self, angle_bragg, deviation):
+        angle = np.pi / 2.0 - (angle_bragg + deviation)
+
+        photon_direction = Vector(-sin(angle),
+                                  0,
+                                  -cos(angle))
+
+        return photon_direction
+
     def log(self, str):
         print(str)
-        
+
+    def setOnCalculationStart(self, on_calculation_start):
+        self._on_calculation_start = on_calculation_start
+
+    def _onCalculationStart(self):
+        if self._on_progress is None:
+            self.log("Calculating start")
+        else:
+            self._on_calculation_start()
+
     def setOnProgress(self, on_progress):
         self._on_progress = on_progress
         
-    def _onProgres(self):
-        return self._on_progress
+    def _onProgres(self, index, angle_deviation_points):
+        if self._on_progress is None:
+            self.log( "Currently calculating point %i of %i" % (index, angle_deviation_points))
+        else:
+            self._on_progress(index, angle_deviation_points)
+
+    def setOnCalculationEnd(self, on_calculation_end):
+        self._on_calculation_end = on_calculation_end
+
+    def _onCalculationEnd(self):
+        if self._on_progress is None:
+            self.log("Calculating end")
+        else:
+            self._on_calculation_end()
+
+    def _testSetup(self, diffraction_setup, bragg_angle):
+        if diffraction_setup.asymmetryAngle() >= bragg_angle * 180 / np.pi:
+            self.log("Impossible geometry...")
+        #    exit(-1)
+
 
     def calculateDiffraction(self, diffraction_setup):
 
@@ -66,9 +104,7 @@ class Diffraction():
 
         self.log("Bragg angle: %f degrees \n" % (angle_bragg * 180 / np.pi))
 
-        #if diffraction_setup.asymmetryAngle() >= angle_bragg * 180 / np.pi:
-        #    self.log("Impossible geometry...")
-        #    exit(-1)
+        self._testSetup(diffraction_setup, angle_bragg)
 
         #
         # Get the structure factors (at a given energy)
@@ -102,7 +138,7 @@ class Diffraction():
         normal_bragg = self.getBraggNormal(d_spacing)
         normal_surface = self.getSurfaceNormal(diffraction_setup.asymmetryAngle())
 
-        photon_direction = normal_bragg.getVectorWithAngle(np.pi / 2.0 - angle_bragg)
+        photon_direction = self.getIncomingPhotonDirection(angle_bragg,0.0)
         photon_in = Photon(energy, photon_direction)
 
         psi_0     = self.calculatePsiFromStructureFactor(crystal, photon_in, F_0)
@@ -112,7 +148,6 @@ class Diffraction():
         self.log( "psi0: (%.14f , %.14f)" % (psi_0.real, psi_0.imag))
         self.log( "psiH: (%.14f , %.14f)" % (psi_H.real, psi_H.imag))
         self.log( "psiHbar: (%.14f , %.14f)" % (psi_H_bar.real, psi_H_bar.imag))
-
 
         perfect_crystal = PerfectCrystalDiffraction(diffraction_setup.geometryType(),
                                                     normal_bragg,
@@ -124,29 +159,19 @@ class Diffraction():
                                                     diffraction_setup.thickness(),
                                                     d_spacing)
 
-
         result = DiffractionResult(diffraction_setup, angle_bragg)
         ten_percent = diffraction_setup.angleDeviationPoints() / 10
         
-        self.log("Calculation start")
+        self._onCalculationStart()
         
         for index, deviation in enumerate(diffraction_setup.angleDeviationGrid()):
             if((index + 1) % ten_percent) == 0 \
               or \
               index == diffraction_setup.angleDeviationPoints():
-                if self._onProgres() is None:
-                    self.log( "Currently calculating point %i of %i" % (index + 1, diffraction_setup.angleDeviationPoints()))
-                else:
-                    on_progress = self._onProgres()
-                    on_progress(index+1, diffraction_setup.angleDeviationPoints())
+                self._onProgres(index+1, diffraction_setup.angleDeviationPoints())
 
-            angle = np.pi / 2.0 - (angle_bragg + deviation)
-
-            photon_direction = normal_bragg.getVectorWithAngle(angle)
-            # Ensure incoming direction
-            if(photon_direction.scalarProduct(normal_bragg).magnitude > 0):
-                photon_direction = photon_direction.scalarMultiplication(-1.0)
-                #photon_direction.printComponents()
+            photon_direction = self.getIncomingPhotonDirection(angle_bragg,
+                                                               deviation)
 
             photon_in = Photon(energy, photon_direction)
             res = perfect_crystal.calculateDiffraction(photon_in)
@@ -158,7 +183,6 @@ class Diffraction():
                        res["P"],
                        difference)
 
-        self.log("Calculation end")
-
+        self._onCalculationEnd()
 
         return result
