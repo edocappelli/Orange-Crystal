@@ -84,7 +84,14 @@ class DiffractionResult():
         ax2.legend()
 
         show()
-        
+
+    def print(self):
+        print("s_intensity_fraction="+str(self.sReflectivity()).replace("array(","").replace(") * dimensionless",""))
+        print("s_phase="+str(self.sPhase()))
+
+        print("p_intensity_fraction="+str(self.pReflectivity()).replace("array(","").replace(") * dimensionless",""))
+        print("p_phase="+str(self.pPhase()))
+
     def asPlotData2D(self):
         angles = [i * 1e+6 for i in self.deviation()]
         info_dict = self.diffractionSetup().asInfoDictionary()

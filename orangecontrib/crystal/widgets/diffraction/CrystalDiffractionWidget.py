@@ -23,7 +23,9 @@ class CrystalDiffractionWidget(widget.OWWidget):
     name = "Crystal diffraction"
     description = "Calculates crystal diffraction"
     icon = "icons/crystal.svg"
-    
+
+    want_control_area = False
+    want_main_area = False
     outputs = [("Crystal diffraction", DiffractionResult)]
       
     value_cbb_geometry_type = settings.Setting(0)
@@ -60,9 +62,9 @@ class CrystalDiffractionWidget(widget.OWWidget):
                                               self,
                                               "value_cbb_geometry_type",
                                               box=None,
-                                              label = "Geometry type",
-                                              items = geometries,
-                                              control2attributeDict = self.geometries_mapping)
+                                              label="Geometry type",
+                                              items=geometries,
+                                              control2attributeDict=self.geometries_mapping)
         
         crystal_names = ["Si",
                          "Diamond"]
@@ -74,7 +76,7 @@ class CrystalDiffractionWidget(widget.OWWidget):
                                              box=None,
                                              label = "Crystal Name",
                                              items = crystal_names,
-                                             control2attributeDict = self.crystal_names_mapping)
+                                             control2attributeDict=self.crystal_names_mapping)
         
         
         self.le_thickness = gui.lineEdit(self,

@@ -11,13 +11,31 @@ from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
 from PyQt4 import *
 from PyQt4.Qt import *
 import sys
-#
+
 
 class DiffractionTest(unittest.TestCase):
+
+    def assertAlmostEqualLists(self, list1, list2):
+        self.assertAlmostEqual(np.linalg.norm(np.array(list1)-np.array(list2)),0)
+
+
+    def assertDiffractionResult(self,s_intensity_fraction, s_phase,p_intensity_fraction, p_phase, diffraction_results):
+        self.assertAlmostEqualLists(diffraction_results.sReflectivity(),
+                                    s_intensity_fraction)
+
+        self.assertAlmostEqualLists(diffraction_results.sPhase(),
+                                    s_phase)
+
+        self.assertAlmostEqualLists(diffraction_results.pReflectivity(),
+                                    p_intensity_fraction)
+
+        self.assertAlmostEqualLists(diffraction_results.pPhase(),
+                                    p_phase)
+
     def testConstructor(self):
         diffraction = Diffraction()
 
-    def atestCalculateDiffraction(self):
+    def testCalculateDiffraction(self):
 
         res = {}
         for geometry_type in allGeometryTypes():
@@ -29,16 +47,13 @@ class DiffractionTest(unittest.TestCase):
                                                  miller_l=1,
                                                  asymmetry_angle=0,
                                                  energy=8.174 * keV,
-                                                 angle_deviation_min= -150.0e-6,
-                                                 angle_deviation_max=150e-6,
-                                                 angle_deviation_points=100)
+                                                 angle_deviation_min= -20.0e-6,
+                                                 angle_deviation_max=20e-6,
+                                                 angle_deviation_points=5)
             diffraction = Diffraction()
             res[geometry_type] = diffraction.calculateDiffraction(diffraction_setup)
 
-        print("Close plot window to continue")
-        res[BraggDiffraction].plot()
-
-    def atestCalculateBraggDiffraction(self):
+    def testCalculateBraggDiffraction(self):
         diffraction_setup = DiffractionSetup(BraggDiffraction,
                                              "Si",
                                              thickness=0.0100 * cm,
@@ -47,18 +62,27 @@ class DiffractionTest(unittest.TestCase):
                                              miller_l=1,
                                              asymmetry_angle=3,
                                              energy=10 * keV,
-                                             angle_deviation_min= -100.0e-6,
-                                             angle_deviation_max=100e-6,
-                                             angle_deviation_points=150)
+                                             angle_deviation_min= -20.0e-6,
+                                             angle_deviation_max=20e-6,
+                                             angle_deviation_points=5)
 
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        print("Close plot window to continue")
-        res.plot()   
+        s_intensity_fraction=[0.01745773309816316, 0.03230557157531512, 0.07938090430258403, 0.9205237023176163, 0.9417346136452986]
+        s_phase=[-0.7450035855031368, -0.8040977317553032, -0.7430560369448687, -1.0330253342700109, -2.353084085185629]
+        p_intensity_fraction=[0.014207589907369166, 0.02524475838018493, 0.06585710242749995, 0.5225611069541105, 0.9369534929997342]
+        p_phase=[-0.7941481534852283, -0.7597894833095722, -0.7493652702052911, -0.8164924894919168, -2.3528205469404995]
+
+        self.assertDiffractionResult(s_intensity_fraction,
+                                     s_phase,
+                                     p_intensity_fraction,
+                                     p_phase,
+                                     res)
 
 
-    def atestCalculateBraggTransmission(self):
+
+    def testCalculateBraggTransmission(self):
         diffraction_setup = DiffractionSetup(BraggTransmission,
                                              "Si",
                                              thickness=7 * um,
@@ -67,53 +91,82 @@ class DiffractionTest(unittest.TestCase):
                                              miller_l=1,
                                              asymmetry_angle= -5,
                                              energy=10.174 * keV,
-                                             angle_deviation_min= -100.0e-6,
-                                             angle_deviation_max=100e-6,
-                                             angle_deviation_points=300)
+                                             angle_deviation_min= -20.0e-6,
+                                             angle_deviation_max=20e-6,
+                                             angle_deviation_points=5)
 
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        print("Close plot window to continue")
-        res.plot()
+        s_intensity_fraction=[0.6227216744425335, 0.6438556927051833, 0.6414246949533766, 0.5964585113516425, 0.4527754471683625]
+        s_phase=[2.286899392260667, 2.116030444391057, 1.8763927597551866, 1.445392409430685, -0.013387259911397002]
+        p_intensity_fraction=[0.6288315928812124, 0.643693865934977, 0.6259472922778269, 0.5555072803116741, 0.4662075380059585]
+        p_phase=[2.424542198713492, 2.2878910989802055, 2.0940387515328434, 1.7467984811760962, 0.8980799769748959]
+
+
+        self.assertDiffractionResult(s_intensity_fraction,
+                                     s_phase,
+                                     p_intensity_fraction,
+                                     p_phase,
+                                     res)
 
 
 
-    def atestCalculateLaueDiffraction(self):
+    def testCalculateLaueDiffraction(self):
         diffraction_setup = DiffractionSetup(LaueDiffraction,
                                              "Si",
                                              thickness=100 * um,
                                              miller_h=1,
                                              miller_k=1,
                                              miller_l=1,
-                                             asymmetry_angle=0,
+                                             asymmetry_angle=90,
                                              energy=8 * keV,
-                                             angle_deviation_min= -0.0e-6,
-                                             angle_deviation_max=15.3e-6,
-                                             angle_deviation_points=100)
+                                             angle_deviation_min= -20.0e-6,
+                                             angle_deviation_max=20.0e-6,
+                                             angle_deviation_points=5)
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        print("Close plot window to continue")
-        res.plot()
+        s_intensity_fraction=[0.09550464832549886, 0.1588102709294371, 0.28442376568534244, 0.15814726060570578, 0.09512692063559264]
+        s_phase=[2.791850278765956, -0.8122621895778968, -1.6171710281301908, -1.999035269355459, 0.4153143950080879]
+        p_intensity_fraction=[0.0067475416083409515, 0.0927940262113349, 0.1260566388221161, 0.09377613212752883, 0.006829644595304965]
+        p_phase=[-1.8538144756209993, 1.69069964224202, 0.9254637256934777, 0.5050050628718205, 2.080546944343358]
 
-    def atestCalculateLaueTransmission(self):
+
+        self.assertDiffractionResult(s_intensity_fraction,
+                                     s_phase,
+                                     p_intensity_fraction,
+                                     p_phase,
+                                     res)
+
+
+    def testCalculateLaueTransmission(self):
         diffraction_setup = DiffractionSetup(LaueTransmission,
                                              "Si",
                                              thickness=100 * um,
                                              miller_h=1,
                                              miller_k=1,
                                              miller_l=1,
-                                             asymmetry_angle=0,
+                                             asymmetry_angle=90,
                                              energy=10 * keV,
-                                             angle_deviation_min= -15.3e-6,
-                                             angle_deviation_max=15.3e-6,
-                                             angle_deviation_points=200)
+                                             angle_deviation_min= -20.0e-6,
+                                             angle_deviation_max=20.0e-6,
+                                             angle_deviation_points=5)
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        print("Close plot window to continue")
-        res.plot()
+        s_intensity_fraction=[0.5005185059940847, 0.3725301844431062, 0.19270321929772727, 0.12894880304002923, 0.25644113466374563]
+        s_phase=[2.2288442916782203, -0.23871849735853018, -0.21168003623088033, 0.26050613235172415, -1.8914833995886369]
+        p_intensity_fraction=[0.4497098976306458, 0.5758691578045317, 0.48106441586554155, 0.3463440929523105, 0.23745864693751512]
+        p_phase=[2.8626116399258565, 0.5331459647248921, 0.1749238966086084, -0.3100000878971298, -2.5858967703879725]
+
+
+        self.assertDiffractionResult(s_intensity_fraction,
+                                     s_phase,
+                                     p_intensity_fraction,
+                                     p_phase,
+                                     res)
+
 
     def atestXRTDriver(self):
         import orangecontrib.crystal.util.XRTDriver as XRTDriver
@@ -198,7 +251,7 @@ class DiffractionTest(unittest.TestCase):
                 savefig(filename)
                 figure()
                 
-    def testBugsByLaurence(self):
+    def atestBugsByLaurence(self):
         geometries = [ BraggTransmission, LaueTransmission]
         thicknessses = [128 * um, 5*um]
         crystal_names = ["Diamond","Si"]
