@@ -3,7 +3,6 @@ Calculates a crystal diffraction.
 Except for energy all units are in SI. Energy is in eV.
 """
 
-
 import xraylib
 import numpy as np
 import scipy.constants.codata

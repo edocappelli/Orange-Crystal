@@ -1,7 +1,6 @@
 from collections import OrderedDict
 import copy
 import numpy
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
 
 class DiffractionSetup(object):
 
@@ -20,7 +19,7 @@ class DiffractionSetup(object):
         self._miller_k = miller_k
         self._miller_l = miller_l
         self._asymmetry_angle = asymmetry_angle
-        self._enegry = energy
+        self._energy = energy
         self._angle_deviation_min = angle_deviation_min
         self._angle_deviation_max = angle_deviation_max
         self._angle_deviation_points = angle_deviation_points
@@ -47,7 +46,7 @@ class DiffractionSetup(object):
         return self._asymmetry_angle
 
     def energy(self):
-        return self._enegry
+        return self._energy
 
     def angleDeviationMin(self):
         return self._angle_deviation_min
