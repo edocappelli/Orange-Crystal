@@ -1,7 +1,6 @@
 
 import xraylib
-import numpy as np
-from quantities import *
+from numpy import pi, cos, sqrt, arcsin, real
 import mpmath
 from mpmath import mpc
 
@@ -80,14 +79,12 @@ class PerfectCrystalDiffraction():
         k_out_perpendicular_surface = k_in_perpendicular_surface.getNormalizedVector().scalarMultiplication(norm_k_out_perpendicular)
 
         v_out_1 = (k_out_parallel_surface.addVector(k_out_perpendicular_surface)).getNormalizedVector()
-        v_out_1.enforceUnit(m ** -1)
         v_out_2 = (k_out_parallel_surface.subtractVector(k_out_perpendicular_surface)).getNormalizedVector()
-        v_out_2.enforceUnit(m ** -1)
 
         v_out_Ewald = self.normalBragg().addVector(photon_in.wavevector())
 
-        tmp1 = 1.0 - abs(v_out_Ewald.scalarProduct(v_out_1).magnitude)
-        tmp2 = 1.0 - abs(v_out_Ewald.scalarProduct(v_out_2).magnitude)
+        tmp1 = 1.0 - abs(v_out_Ewald.scalarProduct(v_out_1))
+        tmp2 = 1.0 - abs(v_out_Ewald.scalarProduct(v_out_2))
 
         #if (self.isDebug):
         #    self.log( "<DEBUG>: tmp1, tmp2", tmp1, tmp2
@@ -105,8 +102,8 @@ class PerfectCrystalDiffraction():
             self.log( "<DEBUG>: surface normal", self.normalSurface().components())
             self.log( "<DEBUG>: v_out_1 direction", v_out_1.components())
             self.log( "<DEBUG>: v_out_2 direction", v_out_2.components())
-            self.log( "<DEBUG>: Angle bragg normal photon_in", photon_in.unitDirectionVector().angle(self.normalBragg()), np.pi * 0.5 - photon_in.unitDirectionVector().angle(self.normalBragg()))
-            self.log( "<DEBUG>: Angle bragg normal photon_out", photon_out.unitDirectionVector().angle(self.normalBragg()), np.pi * 0.5 - photon_out.unitDirectionVector().angle(self.normalBragg()))
+            self.log( "<DEBUG>: Angle bragg normal photon_in", photon_in.unitDirectionVector().angle(self.normalBragg()), pi * 0.5 - photon_in.unitDirectionVector().angle(self.normalBragg()))
+            self.log( "<DEBUG>: Angle bragg normal photon_out", photon_out.unitDirectionVector().angle(self.normalBragg()), pi * 0.5 - photon_out.unitDirectionVector().angle(self.normalBragg()))
             self.log( "<DEBUG>: photon_in direction", photon_in.unitDirectionVector().components())
             self.log( "<DEBUG>: photon_out direction", photon_out.unitDirectionVector().components())
 
@@ -114,12 +111,8 @@ class PerfectCrystalDiffraction():
     def calculateZacAlpha(self, photon_in):
         k_in_parallel = photon_in.wavevector() #.parallelTo(self.normalBragg())
 
-#tmp._components[0] = 0 * angstrom ** -1  #tmp._components[0].rescale(angstrom ** -1)
-#        tmp._components[1] = 0 * angstrom ** -1#tmp._components[1].rescale(angstrom ** -1)
-#        tmp._components[2] = tmp._components[2].rescale(angstrom ** -1)
         tmp = k_in_parallel.scalarProduct(self.normalBragg())
-        wavenumber = photon_in.wavenumber().rescale(angstrom ** -1)
-#        wavenumber = k_in_parallel.norm().rescale(angstrom ** -1)
+        wavenumber = photon_in.wavenumber()
 
         #if(self.isDebug):
         #    self.log( "<DEBUG>: zac_alpha tmp", tmp
@@ -137,9 +130,9 @@ class PerfectCrystalDiffraction():
         #C numerator
         numerator = self.normalSurface().scalarProduct(photon_in.wavevector())
         #C denominator
-        denomerator = self.normalSurface().scalarProduct(photon_out.wavevector())
+        denominator = self.normalSurface().scalarProduct(photon_out.wavevector())
         #C ratio
-        zac_b = numerator / denomerator
+        zac_b = numerator / denominator
 
         return zac_b
 
@@ -162,11 +155,11 @@ class PerfectCrystalDiffraction():
         zac_x2 = (-1.0 * zac_z - ctemp) / effective_psi_h_bar
         zac_delta1 = 0.5 * (self.Psi0() - zac_z + ctemp)
         zac_delta2 = 0.5 * (self.Psi0() - zac_z - ctemp)
-        zac_phi1 = 2 * np.pi / gamma_0 / photon_in.wavelength() * zac_delta1
-        zac_phi2 = 2 * np.pi / gamma_0 / photon_in.wavelength() * zac_delta2
+        zac_phi1 = 2 * pi / gamma_0 / photon_in.wavelength() * zac_delta1
+        zac_phi2 = 2 * pi / gamma_0 / photon_in.wavelength() * zac_delta2
        
-        zac_c1 = -1j * self.thickness().rescale(m) * zac_phi1
-        zac_c2 = -1j * self.thickness().rescale(m) * zac_phi2
+        zac_c1 = -1j * self.thickness() * zac_phi1
+        zac_c2 = -1j * self.thickness() * zac_phi2
 
         #C
         if (self.isDebug):
@@ -278,8 +271,8 @@ class PerfectCrystalDiffraction():
         if (self.geometryType() is BraggDiffraction \
             or \
             self.geometryType() is LaueDiffraction):
-            result["S"].rescale(1.0 / np.sqrt(abs(zac_b)))
-            result["P"].rescale(1.0 / np.sqrt(abs(zac_b)))
+            result["S"].rescale(1.0 / sqrt(abs(zac_b)))
+            result["P"].rescale(1.0 / sqrt(abs(zac_b)))
 
         if (self.isDebug):
             self.log( '<DEBUG>: rcs: '+str( result["S"].reflectivity())+str(result["S"].phase()))
@@ -300,8 +293,8 @@ class PerfectCrystalDiffraction():
         #        2*R_LAM0* sin_brg/oe1%crystalData%D_SPACING)
         #write (i_debug,*) '<DEBUG>: !!!!! zac_alpha_old: ',zac_alpha
         self.log( '<DEBUG>: ')
-        self.log( '<DEBUG>: theta:  ', np.arcsin(sin_brg) / np.pi * 180)
-        self.log( '<DEBUG>: bh: ', self.normalBragg().components()[-1].rescale(cm ** -1))
+        self.log( '<DEBUG>: theta:  ', arcsin(sin_brg) / pi * 180)
+        self.log( '<DEBUG>: bh: ', self.normalBragg().components()[-1])
 
 
     def printDebugPsis(self):
@@ -335,6 +328,6 @@ class PerfectCrystalDiffraction():
         # y of Zachariasen (not needed)
         # this is y of Zachariasen, eq. 3.141
         #TODO: check the formula, replace  sqrt(psi_h*psi_hbar) by cdabs(psi_h) ??
-        tmp = np.real((1.0e0 - cry_b) * self.Psi0() + cry_b * zac_alpha) / (2.0e0 * np.sqrt(abs(cry_b)) \
-                                                                      *     1.0e0 * np.sqrt(self.PsiH() * self.PsiHBar()))
+        tmp = real((1.0e0 - cry_b) * self.Psi0() + cry_b * zac_alpha) / (2.0e0 * sqrt(abs(cry_b)) \
+                                                                      *  1.0e0 * sqrt(self.PsiH() * self.PsiHBar()))
         self.log( '<DEBUG>: y of Zachariasen: ', tmp)

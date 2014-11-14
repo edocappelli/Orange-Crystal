@@ -1,5 +1,5 @@
 import unittest
-from quantities import *
+from numpy import pi
 
 from orangecontrib.crystal.util.PerfectCrystalDiffraction import PerfectCrystalDiffraction
 from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
@@ -13,13 +13,13 @@ def generatePerfectCrystalDiffraction():
     psi_0 = -0.00010047702301 -0.00001290853605j
     psi_H = -0.00004446850675 + 0.00003155997069j
     psi_H_bar = -0.00003155997069 -0.00004446850675j
-    d_spacing = 3.135416 * angstrom
+    d_spacing = 3.135416 * 1e-10
 
     geometry_type = LaueTransmission
-    normal_bragg = Vector(0,0,1).scalarMultiplication(2.0 * np.pi / d_spacing)
+    normal_bragg = Vector(0,0,1).scalarMultiplication(2.0 * pi / d_spacing)
     normal_surface = Vector(1.0,0.0,0.0)
 
-    thickness = 128 * um
+    thickness = 128 * 1e-6
 
     perfect_crystal_diffraction = PerfectCrystalDiffraction(geometry_type,
                                                             normal_bragg,
@@ -38,14 +38,14 @@ def generatePhotonIn():
                        -0.0,
                        -0.6328927031038719)
 
-    return Photon(3124*eV, direction)
+    return Photon(3124, direction)
 
 def generatePhotonOut():
     direction = Vector(-0.7742395017022543,
                        0.0,
                        0.6328927191901048)
 
-    return Photon(3124*eV, direction)
+    return Photon(3124, direction)
 
 
 class PerfectCrystalDiffractionTest(unittest.TestCase):
@@ -57,7 +57,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
         self.assertEqual(perfect_crystal_diffraction.geometryType(),
                          LaueTransmission)
         self.assertEqual(perfect_crystal_diffraction.normalBragg(),
-                         Vector(0,0,1).scalarMultiplication(2.0 * np.pi / (3.135416 * angstrom)))
+                         Vector(0,0,1).scalarMultiplication(2.0 * pi / (3.135416 * 1e-10)))
         self.assertEqual(perfect_crystal_diffraction.normalSurface(),
                          Vector(1,0,0))
 
@@ -72,14 +72,14 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
         self.assertAlmostEqual(perfect_crystal_diffraction.PsiHBar(),
                                -0.00003155997069 -0.00004446850675j)
         self.assertAlmostEqual(perfect_crystal_diffraction.dSpacing(),
-                               3.135416 * angstrom)
+                               3.135416 * 1e-10)
         self.assertAlmostEqual(perfect_crystal_diffraction.thickness(),
-                               128 * um)
+                               128 * 1e-6)
 
     def testNormalBragg(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
         self.assertEqual(perfect_crystal_diffraction.normalBragg(),
-                         Vector(0,0,1).scalarMultiplication(2.0 * np.pi / (3.135416 * angstrom)))
+                         Vector(0,0,1).scalarMultiplication(2.0 * pi / (3.135416 * 1e-10)))
 
     def testNormalSurface(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
@@ -109,12 +109,12 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
     def testThickness(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
         self.assertAlmostEqual(perfect_crystal_diffraction.thickness(),
-                               128 * um)
+                               128 * 1e-6)
 
     def testDSpacing(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
         self.assertAlmostEqual(perfect_crystal_diffraction.dSpacing(),
-                               3.135416 * angstrom)
+                               3.135416 * 1e-10)
 
     def testGeometryType(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
@@ -190,7 +190,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
         zac_alpha = perfect_crystal_diffraction.calculateZacAlpha(generatePhotonIn())
         zac_z=perfect_crystal_diffraction.calculateZacZ(zac_b, zac_alpha)
 
-        self.assertAlmostEqual(zac_z.real,9.07310664e-08, 14)
+        self.assertAlmostEqual(zac_z.real,7.32306661e-08, 14)
         self.assertAlmostEqual(zac_z.imag,1.09617725e-13, 18)
 
     def testCalculateReflectivity(self):
@@ -208,8 +208,8 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction._calculateReflectivity(photon_in, zac_q, zac_z, gamma_0, psi_h_bar)
 
-        self.assertAlmostEqual(reflectivity.reflectivity(),1.2638962217937542e-05,10)
-        self.assertAlmostEqual(reflectivity.phase(),-1.57678799)
+        self.assertAlmostEqual(reflectivity.reflectivity(),1.2631121049e-05,10)
+        self.assertAlmostEqual(reflectivity.phase(),-1.5996013)
 
     def testCalculatePolarizationS(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
@@ -222,8 +222,8 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction.calculatePolarizationS(photon_in, zac_b, zac_z, gamma_0)
 
-        self.assertAlmostEqual(reflectivity.reflectivity(),1.263896221e-05, 10)
-        self.assertAlmostEqual(reflectivity.phase(),-1.57678799)
+        self.assertAlmostEqual(reflectivity.reflectivity(),1.26311210e-05, 10)
+        self.assertAlmostEqual(reflectivity.phase(),-1.5996013489)
 
     def testCalculatePolarizationP(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
@@ -236,8 +236,8 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction.calculatePolarizationP(photon_in, zac_b, zac_z, gamma_0)
 
-        self.assertAlmostEqual(reflectivity.reflectivity(),6.144079578e-14,19)
-        self.assertAlmostEqual(reflectivity.phase(),-1.76339661)
+        self.assertAlmostEqual(reflectivity.reflectivity(),6.1247686e-14,19)
+        self.assertAlmostEqual(reflectivity.phase(),-1.78584468)
 
     def testCalculateDiffraction(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
@@ -245,9 +245,9 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction.calculateDiffraction(photon_in)
 
-        self.assertAlmostEqual(reflectivity["S"].reflectivity(),1.263895932e-05,10)
-        self.assertAlmostEqual(reflectivity["S"].phase(),-1.576785742)
-        self.assertAlmostEqual(reflectivity["P"].reflectivity(),6.144079578e-14,19)
-        self.assertAlmostEqual(reflectivity["P"].phase(),-1.763392341)
+        self.assertAlmostEqual(reflectivity["S"].reflectivity(),1.263111884e-05,10)
+        self.assertAlmostEqual(reflectivity["S"].phase(),-1.5995996312)
+        self.assertAlmostEqual(reflectivity["P"].reflectivity(),6.12476691e-14,19)
+        self.assertAlmostEqual(reflectivity["P"].phase(),-1.7858414233)
 
 

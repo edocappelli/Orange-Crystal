@@ -4,7 +4,7 @@ Except for energy all units are in SI. Energy is in eV.
 """
 
 import xraylib
-import numpy as np
+from numpy import sin,cos,pi
 import scipy.constants.codata
 
 from orangecontrib.crystal.util.Vector import Vector
@@ -26,24 +26,24 @@ class Diffraction():
         classical_electron_radius = codata["classical electron radius"][0]
 
         volume = crystal['volume'] * 10 ** -30
-        psi = (-classical_electron_radius * photon_in.wavelength() ** 2 / (np.pi * volume)) * structure_factor
+        psi = (-classical_electron_radius * photon_in.wavelength() ** 2 / (pi * volume)) * structure_factor
 
         return psi
 
     def getBraggNormal(self, d_spacing):
-        normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / d_spacing)
+        normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * pi / d_spacing)
 
         return normal_bragg
 
     def getSurfaceNormal(self, asymmetry_angle):
-        normal_surface = Vector(sin(asymmetry_angle / 180.0 * np.pi),
+        normal_surface = Vector(sin(asymmetry_angle / 180.0 * pi),
                                 0,
-                                cos(asymmetry_angle / 180.0 * np.pi)) 
+                                cos(asymmetry_angle / 180.0 * pi))
 
         return normal_surface
 
     def getIncomingPhotonDirection(self, angle_bragg, deviation):
-        angle = np.pi / 2.0 - (angle_bragg + deviation)
+        angle = pi / 2.0 - (angle_bragg + deviation)
 
         photon_direction = Vector(-sin(angle),
                                   0,
@@ -58,7 +58,7 @@ class Diffraction():
         self._on_calculation_start = on_calculation_start
 
     def _onCalculationStart(self):
-        if self._on_progress is None:
+        if self._on_calculation_start is None:
             self.log("Calculating start")
         else:
             self._on_calculation_start()
@@ -76,13 +76,13 @@ class Diffraction():
         self._on_calculation_end = on_calculation_end
 
     def _onCalculationEnd(self):
-        if self._on_progress is None:
+        if self._on_calculation_end is None:
             self.log("Calculating end")
         else:
             self._on_calculation_end()
 
     def _testSetup(self, diffraction_setup, bragg_angle):
-        if diffraction_setup.asymmetryAngle() >= bragg_angle * 180 / np.pi:
+        if diffraction_setup.asymmetryAngle() >= bragg_angle * 180 / pi:
             self.log("Impossible geometry...")
         #    exit(-1)
 
@@ -90,7 +90,7 @@ class Diffraction():
     def calculateDiffraction(self, diffraction_setup):
 
         energy = diffraction_setup.energy()
-        energy_in_kev = energy * 1000
+        energy_in_kev = energy / 1000.0
 
         miller_h = diffraction_setup.millerH()
         miller_k = diffraction_setup.millerK()
@@ -104,7 +104,7 @@ class Diffraction():
                                           miller_k,
                                           miller_l)
 
-        self.log("Bragg angle: %f degrees \n" % (angle_bragg * 180 / np.pi))
+        self.log("Bragg angle: %f degrees \n" % (angle_bragg * 180 / pi))
 
         self._testSetup(diffraction_setup, angle_bragg)
 
