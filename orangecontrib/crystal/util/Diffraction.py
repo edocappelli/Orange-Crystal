@@ -1,17 +1,18 @@
+"""
+Calculates a crystal diffraction.
+Except for energy all units are in SI. Energy is in eV.
+"""
+
+
 import xraylib
 import numpy as np
 import scipy.constants.codata
-
-from quantities import *
-import mpmath
-from mpmath import mpc
 
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
 from orangecontrib.crystal.util.PerfectCrystalDiffraction import PerfectCrystalDiffraction
 from orangecontrib.crystal.util.ReflectivityAndPhase import ReflectivityAndPhase
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
 
 
 class Diffraction():
@@ -21,12 +22,12 @@ class Diffraction():
         self.setOnProgress(None)
         self.setOnCalculationEnd(None)
 
-    def calculatePsiFromStructureFactor(self, crystal, photon_in , F):
-        codata = scipy.constants.codata.physical_constants
-        codata_r = (codata["classical electron radius"][0]) * meter
+    def calculatePsiFromStructureFactor(self, crystal, photon_in, structure_factor):
+        codata   = scipy.constants.codata.physical_constants
+        classical_electron_radius = codata["classical electron radius"][0]
 
-        volume = crystal['volume'] * 10 ** -30 * (meter ** 3)
-        psi = (-codata_r * photon_in.wavelength() ** 2 / (np.pi * volume)) * F
+        volume = crystal['volume'] * 10 ** -30
+        psi = (-classical_electron_radius * photon_in.wavelength() ** 2 / (np.pi * volume)) * structure_factor
 
         return psi
 
@@ -90,6 +91,8 @@ class Diffraction():
     def calculateDiffraction(self, diffraction_setup):
 
         energy = diffraction_setup.energy()
+        energy_in_kev = energy * 1000
+
         miller_h = diffraction_setup.millerH()
         miller_k = diffraction_setup.millerK()
         miller_l = diffraction_setup.millerL()
@@ -97,7 +100,7 @@ class Diffraction():
         crystal = xraylib.Crystal_GetCrystal(diffraction_setup.crystalName())
 
         angle_bragg = xraylib.Bragg_angle(crystal,
-                                          float(energy.rescale(keV).magnitude),
+                                          energy_in_kev,
                                           miller_h,
                                           miller_k,
                                           miller_l)
@@ -111,17 +114,17 @@ class Diffraction():
         #
         debyeWaller = 1.0
         F_0 = xraylib.Crystal_F_H_StructureFactor(crystal,
-                                                  float(energy.rescale(keV).magnitude),
+                                                  energy_in_kev,
                                                   0, 0, 0,
                                                   debyeWaller, 1.0)
 
         F_H = xraylib.Crystal_F_H_StructureFactor(crystal,
-                                                  float(energy.rescale(keV).magnitude),
+                                                  energy_in_kev,
                                                   miller_h, miller_k, miller_l,
                                                   debyeWaller, 1.0)
 
         F_H_bar = xraylib.Crystal_F_H_StructureFactor(crystal,
-                                                      float(energy.rescale(keV).magnitude),
+                                                      energy_in_kev,
                                                       - miller_h, -miller_k, -miller_l,
                                                       debyeWaller, 1.0)
 
@@ -132,7 +135,7 @@ class Diffraction():
         d_spacing = xraylib.Crystal_dSpacing(crystal,
                                              miller_h,
                                              miller_k,
-                                             miller_l) * angstrom
+                                             miller_l) * 1e-10
         self.log( "d_spacing: %f " % d_spacing)
 
         normal_bragg = self.getBraggNormal(d_spacing)
