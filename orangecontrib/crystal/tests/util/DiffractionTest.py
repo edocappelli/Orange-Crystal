@@ -167,9 +167,9 @@ class DiffractionTest(unittest.TestCase):
 
                 xrt_res = res[geo]
 
-                effitive_asymmetry = asymmetry 
+                effective_asymmetry = asymmetry
                 if geo is LaueDiffraction or geo is LaueTransmission:
-                    effitive_asymmetry = 90.0-asymmetry
+                    effective_asymmetry = 90.0-asymmetry
 
                 diffraction_setup = DiffractionSetup(geo,
                                                      "Si",
@@ -177,7 +177,7 @@ class DiffractionTest(unittest.TestCase):
                                                      miller_h=1,
                                                      miller_k=1,
                                                      miller_l=1,
-                                                     asymmetry_angle=effitive_asymmetry,
+                                                     asymmetry_angle=effective_asymmetry,
                                                      energy=energy,
                                                      angle_deviation_min= -100e-6,
                                                      angle_deviation_max=100e-6,
