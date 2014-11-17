@@ -1,13 +1,10 @@
-
-import xraylib
 from numpy import pi, cos, sqrt, arcsin, real
 import mpmath
-from mpmath import mpc
 
-from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.ReflectivityAndPhase import ReflectivityAndPhase
 from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+
 
 class PerfectCrystalDiffraction():
     isDebug = False
@@ -72,45 +69,12 @@ class PerfectCrystalDiffraction():
         k_out = self.normalBragg().addVector(k_in)
         return Photon(photon_in.energy(), k_out)
 
-        k_in_parallel_surface = k_in.parallelTo(self.normalSurface())
-        k_in_perpendicular_surface = k_in.perpendicularTo(self.normalSurface())
-        normal_bragg_parallel_surface = self.normalBragg().parallelTo(self.normalSurface())
-        normal_bragg_perpendicular_surface = self.normalBragg().perpendicularTo(self.normalSurface())
-
-        k_out_parallel_surface = k_in_parallel_surface.addVector(normal_bragg_parallel_surface)
-        norm_k_out_perpendicular = (photon_in.wavenumber() ** 2 - k_out_parallel_surface.norm() ** 2) ** 0.5
-#        k_out_perpendicular_surface = k_in_perpendicular_surface.addVector(normal_bragg_perpendicular_surface)
-        k_out_perpendicular_surface = k_in_perpendicular_surface.getNormalizedVector().scalarMultiplication(norm_k_out_perpendicular)
-
-        v_out_1 = (k_out_parallel_surface.addVector(k_out_perpendicular_surface)).getNormalizedVector()
-        v_out_2 = (k_out_parallel_surface.subtractVector(k_out_perpendicular_surface)).getNormalizedVector()
-
-        v_out_Ewald = self.normalBragg().addVector(photon_in.wavevector())
-
-        tmp1 = 1.0 - abs(v_out_Ewald.scalarProduct(v_out_1))
-        tmp2 = 1.0 - abs(v_out_Ewald.scalarProduct(v_out_2))
-
-        #if (self.isDebug):
-        #    self.log( "<DEBUG>: tmp1, tmp2", tmp1, tmp2
-
-        if tmp1 <= tmp2:
-            v_photon_out = v_out_1
-        else:
-            v_photon_out = v_out_2
-
-        v_photon_out = v_out_Ewald
-        photon_out = Photon(photon_in.energy(), v_photon_out)
-
-        return photon_out
         if(self.isDebug):
             self.log( "<DEBUG>: surface normal", self.normalSurface().components())
-            self.log( "<DEBUG>: v_out_1 direction", v_out_1.components())
-            self.log( "<DEBUG>: v_out_2 direction", v_out_2.components())
             self.log( "<DEBUG>: Angle bragg normal photon_in", photon_in.unitDirectionVector().angle(self.normalBragg()), pi * 0.5 - photon_in.unitDirectionVector().angle(self.normalBragg()))
             self.log( "<DEBUG>: Angle bragg normal photon_out", photon_out.unitDirectionVector().angle(self.normalBragg()), pi * 0.5 - photon_out.unitDirectionVector().angle(self.normalBragg()))
             self.log( "<DEBUG>: photon_in direction", photon_in.unitDirectionVector().components())
             self.log( "<DEBUG>: photon_out direction", photon_out.unitDirectionVector().components())
-
 
     def calculateZacAlpha(self, photon_in):
         k_in_parallel = photon_in.wavevector() #.parallelTo(self.normalBragg())
@@ -129,7 +93,6 @@ class PerfectCrystalDiffraction():
 
         return zac_alpha
 
-
     def calculateZacB(self, photon_in, photon_out):
         #C numerator
         numerator = self.normalSurface().scalarProduct(photon_in.wavevector())
@@ -140,10 +103,8 @@ class PerfectCrystalDiffraction():
 
         return zac_b
 
-
     def calculateZacQ(self, zac_b, effective_psi_h, effective_psi_h_bar):
         return zac_b * effective_psi_h * effective_psi_h_bar
-
 
     def calculateZacZ(self, zac_b, zac_alpha):
         return (1.0e0 - zac_b) * 0.5e0 * self.Psi0() + zac_b * 0.5e0 * zac_alpha
@@ -291,11 +252,9 @@ class PerfectCrystalDiffraction():
         self.log( "psiHbar: (%.14f , %.14f)" % (self.PsiHBar().real, self.PsiHBar().imag))
         self.log( "d_spacing: %f " % self.dSpacing())
 
-
     def printDebugHeader(self):
         self.log( '<><>')
         self.log( '<DEBUG>: ******** crystal_perfect called ********')
-
 
     def printDebugSinBrg(self, photon_in):
         sin_brg = photon_in.unitDirectionVector().angle(self.normalBragg()) # angle vin with BH 
@@ -307,22 +266,18 @@ class PerfectCrystalDiffraction():
         self.log( '<DEBUG>: theta:  ', arcsin(sin_brg) / pi * 180)
         self.log( '<DEBUG>: bh: ', self.normalBragg().components()[-1])
 
-
     def printDebugPsis(self):
         self.log( '<DEBUG>: PSI_H = ', self.PsiH())
         self.log( '<DEBUG>: PSI_HBAR = ', self.PsiHBar())
         self.log( '<DEBUG>: PSI_0 = ', self.Psi0())
 
-
     def printDebugCrystalData(self, photon_in):
         self.log( '<DEBUG>: !!!!! R_LAM0: ', photon_in.wavelength())
         self.log( '<DEBUG>: !!!!! D_SPACING: ', self.dSpacing())
 
-
     def printDebugCryBApproximation(self, gamma_0, gamma_h):
         cry_b = gamma_0 / gamma_h
         self.log( 'CRYSTAL_PERFECT: b(approx)= ', cry_b)
-
 
     def printDebugCryB(self, cry_b, zac_alpha):
         self.log( 'CRYSTAL_PERFECT: b(exact)= ', cry_b)
@@ -333,7 +288,6 @@ class PerfectCrystalDiffraction():
 #            self.log( '<DEBUG>: thetaB-theta=', asin(sin_brg0) - asin(sin_brg)
         #tmp = photon_in.unitDirectionVector().scalarProduct(self.normalBragg())
         #print '<DEBUG>: Vin.BH=', tmp
-
 
     def printDebugZacY(self, cry_b, zac_alpha):
         # y of Zachariasen (not needed)
