@@ -21,3 +21,10 @@ class ReflectivityAndPhase():
         PP = self.__complex_reflexivity.real
         QQ = self.__complex_reflexivity.imag
         return math.atan2(QQ,PP)
+
+    def __truediv__(self, divisor):
+        division = ReflectivityAndPhase(self.complexAmplitude()
+                                        /
+                                        divisor.complexAmplitude())
+
+        return division

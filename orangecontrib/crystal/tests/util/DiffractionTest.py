@@ -165,7 +165,8 @@ class DiffractionTest(unittest.TestCase):
         photon_in = Photon(8000, Vector(-1,0,-1))
         structure_factor = 113.581288  + 1.763808j
 
-        psi = diffraction._calculatePsiFromStructureFactor(crystal, photon_in, structure_factor)
+        unitcell_volume = crystal['volume'] * 10 ** -30
+        psi = diffraction._calculatePsiFromStructureFactor(unitcell_volume, photon_in, structure_factor)
         self.assertAlmostEqual(psi.real,-1.527826e-5)
         self.assertAlmostEqual(psi.imag,-2.372566e-7)
 

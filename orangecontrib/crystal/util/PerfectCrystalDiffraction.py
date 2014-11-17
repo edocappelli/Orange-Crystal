@@ -280,6 +280,13 @@ class PerfectCrystalDiffraction():
 
         return result
 
+    def _printMembers(self):
+        self.log("Bragg angle: %f degrees \n" % (self.angleBragg() * 180 / pi))
+        self.log( "psi0: (%.14f , %.14f)" % (self.Psi0().real, self.Psi0().imag))
+        self.log( "psiH: (%.14f , %.14f)" % (self.PsiH().real, self.PsiH().imag))
+        self.log( "psiHbar: (%.14f , %.14f)" % (self.PsiHBar().real, self.PsiHBar().imag))
+        self.log( "d_spacing: %f " % self.dSpacing())
+
 
     def printDebugHeader(self):
         self.log( '<><>')
