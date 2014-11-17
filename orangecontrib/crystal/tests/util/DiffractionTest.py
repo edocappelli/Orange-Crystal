@@ -1,8 +1,11 @@
 import unittest
 import numpy as np
+import xraylib
 
 from orangecontrib.crystal.util.Diffraction import Diffraction
 from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.util.Vector import Vector
+from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission, allGeometryTypes
 
 class DiffractionTest(unittest.TestCase):
@@ -26,18 +29,23 @@ class DiffractionTest(unittest.TestCase):
 
     def testConstructor(self):
         diffraction = Diffraction()
+        self.assertIsInstance(diffraction, Diffraction)
 
     def testCalculateDiffraction(self):
 
         res = {}
         for geometry_type in allGeometryTypes():
+            effective_asymmetry = 0.0
+            if geometry_type is LaueDiffraction or geometry_type is LaueTransmission:
+                effective_asymmetry = 90.0
+
             diffraction_setup = DiffractionSetup(geometry_type,
                                                  "Si",
                                                  thickness=128 * 1e-6,
                                                  miller_h=1,
                                                  miller_k=1,
                                                  miller_l=1,
-                                                 asymmetry_angle=0,
+                                                 asymmetry_angle=effective_asymmetry,
                                                  energy=8174 ,
                                                  angle_deviation_min= -20.0e-6,
                                                  angle_deviation_max=20e-6,
@@ -99,8 +107,6 @@ class DiffractionTest(unittest.TestCase):
                                      p_phase,
                                      res)
 
-
-
     def testCalculateLaueDiffraction(self):
         diffraction_setup = DiffractionSetup(LaueDiffraction,
                                              "Si",
@@ -152,6 +158,108 @@ class DiffractionTest(unittest.TestCase):
                                      p_intensity_fraction,
                                      p_phase,
                                      res)
+
+    def testCalculatePsiFromStructureFactor(self):
+        diffraction = Diffraction()
+        crystal = xraylib.Crystal_GetCrystal("Si")
+        photon_in = Photon(8000, Vector(-1,0,-1))
+        structure_factor = 113.581288  + 1.763808j
+
+        psi = diffraction._calculatePsiFromStructureFactor(crystal, photon_in, structure_factor)
+        self.assertAlmostEqual(psi.real,-1.527826e-5)
+        self.assertAlmostEqual(psi.imag,-2.372566e-7)
+
+    def testCalculateBraggNormal(self):
+        diffraction = Diffraction()
+
+        bragg_normal = diffraction._calculateBraggNormal(3.135416 * 1e-10)
+        self.assertEqual(bragg_normal,
+                         Vector(0.0,0.0,20039399260.51148))
+
+    def testCalculateSurfaceNormal(self):
+        diffraction = Diffraction()
+
+        surface_normal = diffraction._calculateSurfaceNormal(10.0)
+        self.assertEqual(surface_normal,
+                         Vector(0.173648177667,0.0,0.984807753012))
+
+    def testCalculateIncomingPhotonDirection(self):
+        diffraction = Diffraction()
+
+        photon_direction = diffraction._calculateIncomingPhotonDirection(0.6, 0.01)
+        self.assertEqual(photon_direction,
+                         Vector(-0.819648017845,0.0,-0.5728674601))
+
+    def testCheckSetup(self):
+        diffraction = Diffraction()
+
+        diffraction_setup = DiffractionSetup(BraggDiffraction,
+                                             "Si",
+                                             thickness=128 * 1e-6,
+                                             miller_h=1,
+                                             miller_k=1,
+                                             miller_l=1,
+                                             asymmetry_angle=0,
+                                             energy=8174 ,
+                                             angle_deviation_min= -20.0e-6,
+                                             angle_deviation_max=20e-6,
+                                             angle_deviation_points=5)
+
+        angle_bragg = 0.19902705045
+        F_0     = 113.581288 +  1.763808j
+        F_H     =  43.814631 - 42.050823J
+        F_H_bar =  42.050823 + 43.814631j
+
+        # Test possible setup.
+        diffraction._checkSetup(diffraction_setup,
+                                angle_bragg,
+                                F_0,
+                                F_H,
+                                F_H_bar)
+
+        # Test impossible Bragg reflection.
+        diffraction_setup._asymmetry_angle = 45
+
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,F_H,F_H_bar)
+
+        diffraction_setup._geometry_type = BraggTransmission
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,F_H,F_H_bar)
+
+        # Test impossible Laue reflection.
+        diffraction_setup._asymmetry_angle = 10
+
+        diffraction_setup._geometry_type = LaueDiffraction
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,F_H,F_H_bar)
+
+        diffraction_setup._geometry_type = LaueTransmission
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,F_H,F_H_bar)
+
+        # Test forbidden reflection
+        diffraction_setup._geometry_type = BraggDiffraction
+        diffraction_setup._asymmetry_angle = 0
+
+        # ... for F_0.
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,0.0,F_H,F_H_bar)
+
+        # ... for F_H.
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,0.0,F_H_bar)
+
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,float('nan')*1j,F_H_bar)
+
+        # ... for F_H_bar.
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,F_H,0.0)
+
+        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+                          angle_bragg,F_0,F_H,float('nan')*1j)
+
 
     @unittest.skip("Do not test against XRT")
     def testXRTDriver(self):
@@ -248,10 +356,10 @@ class DiffractionTest(unittest.TestCase):
         for thickness in thicknessses:
             for crystal_name in crystal_names:
                 for asymmetry in asymmetries:
-                    effitive_asymmetry = asymmetry
+                    effective_asymmetry = asymmetry
                     for geo in geometries:
                         if geo is LaueDiffraction or geo is LaueTransmission:
-                            effitive_asymmetry = 90.0-asymmetry
+                            effective_asymmetry = 90.0-asymmetry
                         
                         diffraction_setup = DiffractionSetup(geo,
                                                      crystal_name,
@@ -259,7 +367,7 @@ class DiffractionTest(unittest.TestCase):
                                                      miller_h=1,
                                                      miller_k=1,
                                                      miller_l=1,
-                                                     asymmetry_angle=effitive_asymmetry,
+                                                     asymmetry_angle=effective_asymmetry,
                                                      energy=3124,
                                                      angle_deviation_min= -120e-6,
                                                      angle_deviation_max=120e-6,
