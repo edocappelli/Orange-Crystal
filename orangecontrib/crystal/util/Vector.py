@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Vector():
     def __init__(self, x, y, z):
         self.setComponents(x, y, z)
@@ -11,26 +12,25 @@ class Vector():
                       components[2])
 
     def setComponents(self, x, y, z):
-        self._components = [x, y, z]
+        self._components = np.array([x, y, z])
 
     def components(self):
         return self._components
 
     def __eq__(self, candidate):
-        return np.linalg.norm(np.array(self.components())
+        return np.linalg.norm(self.components()
                               -
-                              np.array(candidate.components())) < 1.e-7
+                              candidate.components()) < 1.e-7
 
     def __ne__(self, candidate):
-        return not  self == candidate
+        return not (self == candidate)
 
     def addVector(self, summand):
-        components = [x + y for x, y in zip(self.components(), \
-                                            summand.components())]
+        components = self.components() + summand.components()
         return Vector.fromComponents(components)
 
     def scalarMultiplication(self, factor):
-        components = [x * factor for x in self.components()]
+        components = self.components() * factor
         return Vector.fromComponents(components)
 
     def subtractVector(self, subtrahend):
@@ -38,18 +38,11 @@ class Vector():
         return result
 
     def scalarProduct(self, factor):
-        scalar_product = self.components()[0] * factor.components()[0] + \
-                         self.components()[1] * factor.components()[1] + \
-                         self.components()[2] * factor.components()[2]
-
+        scalar_product = np.dot(self.components(), factor.components())
         return scalar_product
 
     def crossProduct(self, factor):
-        u = self.components()
-        v = factor.components()
-        components = [u[1] * v[2] - u[2] * v[1],
-                      u[2] * v[0] - u[0] * v[2],
-                      u[0] * v[1] - u[1] * v[0]]
+        components = np.cross(self.components(), factor.components())
         return Vector.fromComponents(components)
 
     def norm(self):
@@ -122,10 +115,6 @@ class Vector():
                                                   angle)
 
         return vector_with_angle
-
-    def enforceUnit(self, unit):
-        for i in range(3):
-            self._components[i] = self._components[i].magnitude * unit
 
     def printComponents(self):
         print("x", self.components()[0])

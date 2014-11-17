@@ -1,5 +1,5 @@
 import unittest
-import numpy as np
+from numpy import pi, arange, array
 
 from orangecontrib.crystal.util.Vector import Vector
 
@@ -7,30 +7,47 @@ class VectorTest(unittest.TestCase):
     def testConstructor(self):
         vector = Vector(1, 2, 3)
 
-        self.assertEqual(vector.components(),
-                         [1, 2, 3])
+        self.assertAlmostEqual(vector.components()[0],
+                               1)
+        self.assertAlmostEqual(vector.components()[1],
+                               2)
+        self.assertAlmostEqual(vector.components()[2],
+                               3)
 
     def testFromComponents(self):
-        vector = Vector.fromComponents([1, 2, 3])
+        vector = Vector.fromComponents(array([11, -2, 23]))
 
-        self.assertEqual(vector.components(),
-                         [1, 2, 3])
+        self.assertAlmostEqual(vector.components()[0],
+                               11)
+        self.assertAlmostEqual(vector.components()[1],
+                               -2)
+        self.assertAlmostEqual(vector.components()[2],
+                               23)
 
     def testSetComponents(self):
         vector = Vector(1, 2, 3)
 
         vector.setComponents(-3.0, -4.0, 0.0)
 
-        self.assertEqual(vector.components(),
-                         [-3.0, -4.0, 0.0])
+        self.assertAlmostEqual(vector.components()[0],
+                               -3.0)
+        self.assertAlmostEqual(vector.components()[1],
+                               -4.0)
+        self.assertAlmostEqual(vector.components()[2],
+                               0.0)
 
     def testComponents(self):
         vector = Vector(1, 2, 3)
 
         vector.setComponents(-3.0, -4.0, 0.0)
 
-        self.assertEqual(vector.components(),
-                         [-3.0, -4.0, 0.0])
+        self.assertAlmostEqual(vector.components()[0],
+                               -3.0)
+        self.assertAlmostEqual(vector.components()[1],
+                               -4.0)
+        self.assertAlmostEqual(vector.components()[2],
+                               0.0)
+
 
     def testOperatorEqual(self):
         vector_1 = Vector(1, 2, 3)
@@ -76,7 +93,6 @@ class VectorTest(unittest.TestCase):
         self.assertTrue(result == vector_1)
         vector_1 = vector_1.scalarMultiplication(-3.0)
         self.assertTrue(vector_1 == vector_2)
-
 
     def testScalarProduct(self):
         vector_1 = Vector(1, 2, 3)
@@ -136,19 +152,19 @@ class VectorTest(unittest.TestCase):
         vector_minus_z = Vector(0, 0, -1)
 
 
-        result = vector_x.rotateAroundAxis(vector_z, np.pi)
+        result = vector_x.rotateAroundAxis(vector_z, pi)
         self.assertTrue(result == vector_minus_x)
 
-        result = vector_x.rotateAroundAxis(vector_z, np.pi / 2.0)
+        result = vector_x.rotateAroundAxis(vector_z, pi / 2.0)
         self.assertTrue(result == vector_y)
 
-        result = vector_x.addVector(vector_y).rotateAroundAxis(vector_z, np.pi)
+        result = vector_x.addVector(vector_y).rotateAroundAxis(vector_z, pi)
         self.assertTrue(result == vector_minus_x.addVector(vector_minus_y))
 
-        result = vector_z.rotateAroundAxis(vector_z, np.pi)
+        result = vector_z.rotateAroundAxis(vector_z, pi)
         self.assertTrue(result == vector_z)
 
-        result = vector_z.rotateAroundAxis(vector_x, np.pi / 2.0)
+        result = vector_z.rotateAroundAxis(vector_x, pi / 2.0)
         self.assertTrue(result == vector_minus_y)
 
     def testParallelTo(self):
@@ -184,17 +200,17 @@ class VectorTest(unittest.TestCase):
 
         vector_xy = Vector(1, 1, 0)
 
-        self.assertAlmostEqual(vector_x.angle(vector_y), np.pi / 2.0)
-        self.assertAlmostEqual(vector_y.angle(vector_z), np.pi / 2.0)
+        self.assertAlmostEqual(vector_x.angle(vector_y), pi / 2.0)
+        self.assertAlmostEqual(vector_y.angle(vector_z), pi / 2.0)
 
-        self.assertAlmostEqual(vector_x.angle(vector_xy), np.pi / 4.0)
+        self.assertAlmostEqual(vector_x.angle(vector_xy), pi / 4.0)
 
     def testGetVectorWithAngle(self):
 
         for vector in [Vector(0, 1, 0),
                        Vector(1, 2, 3),
                        Vector(3, 2, -1)]:
-            for angle in np.arange(0, np.pi, 0.1):
+            for angle in arange(0, pi, 0.1):
                 vector_with_angle = vector.getVectorWithAngle(angle)
                 self.assertAlmostEqual(vector.angle(vector_with_angle),
                                        angle)
