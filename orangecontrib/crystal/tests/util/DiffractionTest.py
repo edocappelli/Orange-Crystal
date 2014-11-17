@@ -5,18 +5,9 @@ from orangecontrib.crystal.util.Diffraction import Diffraction
 from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission, allGeometryTypes
 
-#debug
-from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
-from PyQt4 import *
-from PyQt4.Qt import *
-import sys
-
-
 class DiffractionTest(unittest.TestCase):
 
     def assertAlmostEqualLists(self, list1, list2):
-        #self.assertAlmostEqual(np.linalg.norm(np.array(list1)-np.array(list2)),0,1)
-        ###### TEMPORARY - one digit
         self.assertAlmostEqual(np.linalg.norm(np.array(list1)-np.array(list2)),0,1)
 
 
@@ -70,18 +61,16 @@ class DiffractionTest(unittest.TestCase):
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        s_intensity_fraction=[0.01745773309816316, 0.03230557157531512, 0.07938090430258403, 0.9205237023176163, 0.9417346136452986]
-        s_phase=[-0.7450035855031368, -0.8040977317553032, -0.7430560369448687, -1.0330253342700109, -2.353084085185629]
-        p_intensity_fraction=[0.014207589907369166, 0.02524475838018493, 0.06585710242749995, 0.5225611069541105, 0.9369534929997342]
-        p_phase=[-0.7941481534852283, -0.7597894833095722, -0.7493652702052911, -0.8164924894919168, -2.3528205469404995]
+        s_intensity_fraction=[0.017519141613069177, 0.0321954521714361, 0.07981125895068454, 0.920965084591721, 0.9417181994525138]
+        s_phase=[-0.745427562155594, -0.8048350757616735, -0.7441070552657782, -1.0347178161614214, -2.353510138419943]
+        p_intensity_fraction=[0.014173087736472335, 0.025303154305706777, 0.06615101317795873, 0.5244213525516417, 0.9369357917670563]
+        p_phase=[-0.793312359389805, -0.7582549664194022, -0.750381901971316, -0.8168058020223106, -2.353282699138147]
 
         self.assertDiffractionResult(s_intensity_fraction,
                                      s_phase,
                                      p_intensity_fraction,
                                      p_phase,
                                      res)
-
-
 
     def testCalculateBraggTransmission(self):
         diffraction_setup = DiffractionSetup(BraggTransmission,
@@ -99,11 +88,10 @@ class DiffractionTest(unittest.TestCase):
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        s_intensity_fraction=[0.6227216744425335, 0.6438556927051833, 0.6414246949533766, 0.5964585113516425, 0.4527754471683625]
-        s_phase=[2.286899392260667, 2.116030444391057, 1.8763927597551866, 1.445392409430685, -0.013387259911397002]
-        p_intensity_fraction=[0.6288315928812124, 0.643693865934977, 0.6259472922778269, 0.5555072803116741, 0.4662075380059585]
-        p_phase=[2.424542198713492, 2.2878910989802055, 2.0940387515328434, 1.7467984811760962, 0.8980799769748959]
-
+        s_intensity_fraction=[0.6226567465900791, 0.6438109466925752, 0.6414813069615722, 0.5966674813771604, 0.45178497063185913]
+        s_phase=[2.286827125757465, 2.11586718740292, 1.8761281776985377, 1.444935411854202, -0.015769881275207204]
+        p_intensity_fraction=[0.6287809489878944, 0.6436830110383608, 0.6260332041734042, 0.5556946212761588, 0.4666570232587092]
+        p_phase=[2.4244705128134725, 2.2877506323333496, 2.093850209325308, 1.7465537434885796, 0.8969740263938913]
 
         self.assertDiffractionResult(s_intensity_fraction,
                                      s_phase,
@@ -128,18 +116,16 @@ class DiffractionTest(unittest.TestCase):
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        s_intensity_fraction=[0.09550464832549886, 0.1588102709294371, 0.28442376568534244, 0.15814726060570578, 0.09512692063559264]
-        s_phase=[2.791850278765956, -0.8122621895778968, -1.6171710281301908, -1.999035269355459, 0.4153143950080879]
-        p_intensity_fraction=[0.0067475416083409515, 0.0927940262113349, 0.1260566388221161, 0.09377613212752883, 0.006829644595304965]
-        p_phase=[-1.8538144756209993, 1.69069964224202, 0.9254637256934777, 0.5050050628718205, 2.080546944343358]
-
+        s_intensity_fraction=[0.0953161518048925, 0.158471134649239, 0.2844237578381098, 0.158487539849245, 0.09531815291902448]
+        s_phase=[2.7878364694515985, -0.816280378494231, -1.6227539168093197, -2.0061870787600458, 0.4081575143878531]
+        p_intensity_fraction=[0.0067872399580799405, 0.09329690887082268, 0.12605693490089803, 0.09327296207883676, 0.006786852383095909]
+        p_phase=[-1.843856553406182, 1.687240781547736, 0.9198814442403762, 0.49730800506928513, 2.059512850321714]
 
         self.assertDiffractionResult(s_intensity_fraction,
                                      s_phase,
                                      p_intensity_fraction,
                                      p_phase,
                                      res)
-
 
     def testCalculateLaueTransmission(self):
         diffraction_setup = DiffractionSetup(LaueTransmission,
@@ -156,11 +142,10 @@ class DiffractionTest(unittest.TestCase):
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        s_intensity_fraction=[0.5005185059940847, 0.3725301844431062, 0.19270321929772727, 0.12894880304002923, 0.25644113466374563]
-        s_phase=[2.2288442916782203, -0.23871849735853018, -0.21168003623088033, 0.26050613235172415, -1.8914833995886369]
-        p_intensity_fraction=[0.4497098976306458, 0.5758691578045317, 0.48106441586554155, 0.3463440929523105, 0.23745864693751512]
-        p_phase=[2.8626116399258565, 0.5331459647248921, 0.1749238966086084, -0.3100000878971298, -2.5858967703879725]
-
+        s_intensity_fraction=[0.500009760116572, 0.3730481560147652, 0.1926195176946302, 0.1283757246156211, 0.25695819698222316]
+        s_phase=[2.2281966144788545, -0.23994912028908538, -0.215722969718611, 0.25956794505611297, -1.8920272377134075]
+        p_intensity_fraction=[0.44963571348593884, 0.5762774883052565, 0.4809772356165785, 0.345952433909957, 0.23751769111657017]
+        p_phase=[2.8624375781774436, 0.5308696618055758, 0.1704734474721342, -0.3129214909448153, -2.5856672658533006]
 
         self.assertDiffractionResult(s_intensity_fraction,
                                      s_phase,
@@ -168,8 +153,8 @@ class DiffractionTest(unittest.TestCase):
                                      p_phase,
                                      res)
 
-
-    def atestXRTDriver(self):
+    @unittest.skip("Do not test against XRT")
+    def testXRTDriver(self):
         import orangecontrib.crystal.util.XRTDriver as XRTDriver
         from pylab import plot, show, legend, ylabel, xlabel, title, savefig, figure
 
@@ -251,8 +236,9 @@ class DiffractionTest(unittest.TestCase):
                                                              asymmetry)
                 savefig(filename)
                 figure()
-                
-    def atestBugsByLaurence(self):
+
+    @unittest.skip("Do not produce former bug output.")
+    def testBugsByLaurence(self):
         geometries = [ BraggTransmission, LaueTransmission]
         thicknessses = [128 * 1e-6, 5*1e-6]
         crystal_names = ["Diamond","Si"]
@@ -286,11 +272,13 @@ class DiffractionTest(unittest.TestCase):
                                 plots.append(p)
                         except Exception as ex:
                             print(ex)
-                           
-        appl = QApplication(sys.argv)
+
+        import sys
+        from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
+        from PyQt4.Qt import QApplication
+
+        application = QApplication(sys.argv)
         ow = PlotViewer2D()
         ow.show()
         ow.setPlots(plots)  
-        appl.exec_()
-
-                        
+        application.exec_()
