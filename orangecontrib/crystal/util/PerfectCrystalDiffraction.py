@@ -67,7 +67,11 @@ class PerfectCrystalDiffraction():
         return gamma
 
     def calculatePhotonOut(self, photon_in):
-        k_in = photon_in.wavevector()#.scalarMultiplication(-1.0)
+        k_in = photon_in.wavevector()
+
+        k_out = self.normalBragg().addVector(k_in)
+        return Photon(photon_in.energy(), k_out)
+
         k_in_parallel_surface = k_in.parallelTo(self.normalSurface())
         k_in_perpendicular_surface = k_in.perpendicularTo(self.normalSurface())
         normal_bragg_parallel_surface = self.normalBragg().parallelTo(self.normalSurface())
