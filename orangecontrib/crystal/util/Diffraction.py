@@ -13,7 +13,6 @@ from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
 from orangecontrib.crystal.util.PerfectCrystalDiffraction import PerfectCrystalDiffraction
-from orangecontrib.crystal.util.ReflectivityAndPhase import ReflectivityAndPhase
 
 
 class Diffraction():
@@ -22,6 +21,7 @@ class Diffraction():
         """
         Constructor.
         """
+        # Initialize events to being unhandled.
         self.setOnCalculationStart(None)
         self.setOnProgress(None)
         self.setOnCalculationEnd(None)
@@ -240,7 +240,7 @@ class Diffraction():
         # Calculate the Bragg normal B_H.
         normal_bragg = self._calculateBraggNormal(d_spacing)
 
-        # Calcuilate the surface normal n.
+        # Calculate the surface normal n.
         normal_surface = self._calculateSurfaceNormal(diffraction_setup.asymmetryAngle())
 
         # Calculate the incoming photon direction (parallel to k_0).
@@ -272,14 +272,15 @@ class Diffraction():
 
         # Raise calculation start.
         self._onCalculationStart()
-        
+
+        # For every deviation from Bragg angle ...
         for index, deviation in enumerate(diffraction_setup.angleDeviationGrid()):
+            # Raise OnProgress event if progressed by 10 percent.
             self._onProgressEveryTenPercent(index, diffraction_setup.angleDeviationPoints())
 
             # Calculate deviated incoming photon.
             photon_direction = self._calculateIncomingPhotonDirection(angle_bragg,
                                                                       deviation)
-
             photon_in = Photon(energy, photon_direction)
 
             # Calculate diffraction for current incoming photon.

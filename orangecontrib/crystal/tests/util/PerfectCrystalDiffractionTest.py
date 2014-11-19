@@ -56,13 +56,13 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         self.assertEqual(perfect_crystal_diffraction.geometryType(),
                          LaueTransmission)
-        self.assertEqual(perfect_crystal_diffraction.normalBragg(),
+        self.assertEqual(perfect_crystal_diffraction.braggNormal(),
                          Vector(0,0,1).scalarMultiplication(2.0 * pi / (3.135416 * 1e-10)))
-        self.assertEqual(perfect_crystal_diffraction.normalSurface(),
+        self.assertEqual(perfect_crystal_diffraction.surface_normal(),
                          Vector(1,0,0))
 
 
-        self.assertEqual(perfect_crystal_diffraction.angleBragg(),
+        self.assertEqual(perfect_crystal_diffraction.braggAngle(),
                          0.685283)
 
         self.assertAlmostEqual(perfect_crystal_diffraction.Psi0(),
@@ -78,17 +78,17 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
     def testNormalBragg(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
-        self.assertEqual(perfect_crystal_diffraction.normalBragg(),
+        self.assertEqual(perfect_crystal_diffraction.braggNormal(),
                          Vector(0,0,1).scalarMultiplication(2.0 * pi / (3.135416 * 1e-10)))
 
     def testNormalSurface(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
-        self.assertEqual(perfect_crystal_diffraction.normalSurface(),
+        self.assertEqual(perfect_crystal_diffraction.surface_normal(),
                          Vector(1,0,0))
 
     def testAngleBragg(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
-        self.assertEqual(perfect_crystal_diffraction.angleBragg(),
+        self.assertEqual(perfect_crystal_diffraction.braggAngle(),
                          0.685283)
 
     def testPsi0(self):
@@ -206,7 +206,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
         gamma_0=perfect_crystal_diffraction.calculateGamma(photon_in)
         psi_h_bar=perfect_crystal_diffraction.PsiHBar()
 
-        reflectivity = perfect_crystal_diffraction._calculateReflectivity(photon_in, zac_q, zac_z, gamma_0, psi_h_bar)
+        reflectivity = perfect_crystal_diffraction._calculateComplexAmplitude(photon_in, zac_q, zac_z, gamma_0, psi_h_bar)
 
         self.assertAlmostEqual(reflectivity.reflectivity(),1.2631121049e-05,10)
         self.assertAlmostEqual(reflectivity.phase(),-1.5996013)
