@@ -212,7 +212,7 @@ class PerfectCrystalDiffraction(object):
         """
         self.log("<DEBUG>: "+str)
 
-    def calculateGamma(self, photon):
+    def _calculateGamma(self, photon):
         """
         Calculates the projection cosine gamma as defined in Zachariasen [3-115].
         :param photon: Photon that is projected onto the surface normal.
@@ -224,7 +224,7 @@ class PerfectCrystalDiffraction(object):
         gamma = -gamma
         return gamma
 
-    def calculatePhotonOut(self, photon_in):
+    def _calculatePhotonOut(self, photon_in):
         """
         Solves the Laue equation to calculates the outgoing photon from the incoming photon and the Bragg normal.
         :param photon_in: Incoming photon.
@@ -251,7 +251,7 @@ class PerfectCrystalDiffraction(object):
         # Return outgoing photon.
         return photon_out
 
-    def calculateZacAlpha(self, photon_in):
+    def _calculateZacAlpha(self, photon_in):
         """
         Calculates alpha ("refraction index difference between waves in the crystal") as defined in Zachariasen [3-114b].
         :param photon_in: Incoming photon.
@@ -270,7 +270,7 @@ class PerfectCrystalDiffraction(object):
         # Return alpha.
         return zac_alpha
 
-    def calculateZacB(self, photon_in, photon_out):
+    def _calculateZacB(self, photon_in, photon_out):
         """
         Calculates asymmetry ratio b as defined in Zachariasen [3-115].
         :param photon_in: Incoming photon.
@@ -283,7 +283,7 @@ class PerfectCrystalDiffraction(object):
 
         return zac_b
 
-    def calculateZacQ(self, zac_b, effective_psi_h, effective_psi_h_bar):
+    def _calculateZacQ(self, zac_b, effective_psi_h, effective_psi_h_bar):
         """
         Calculates q as defined in Zachariasen [3-123].
         :param zac_b: Asymmetry ratio b as defined in Zachariasen [3-115].
@@ -293,7 +293,7 @@ class PerfectCrystalDiffraction(object):
         """
         return zac_b * effective_psi_h * effective_psi_h_bar
 
-    def calculateZacZ(self, zac_b, zac_alpha):
+    def _calculateZacZ(self, zac_b, zac_alpha):
         """
         Calcualtes z as defined in Zachariasen [3-123].
         :param zac_b: Asymmetry ratio b as defined in Zachariasen [3-115].
@@ -302,7 +302,7 @@ class PerfectCrystalDiffraction(object):
         """
         return (1.0e0 - zac_b) * 0.5e0 * self.Psi0() + zac_b * 0.5e0 * zac_alpha
 
-    def createVariable(self, initial_value):
+    def _createVariable(self, initial_value):
         """
         Factory method for calculation variable. Delegates to active calculation strategy.
         :param initial_value: Inital value of the variable.
@@ -310,15 +310,15 @@ class PerfectCrystalDiffraction(object):
         """
         return self._calculation_strategy.createVariable(initial_value)
 
-    def exponentiate(self, power):
+    def _exponentiate(self, power):
         """
         Exponentiates to the power using active calculation strategy. (plain python or arbitrary precision)
         :param power: Calculation variable.
         :return: Exponential.
         """
-        return self._calculation_strategy.exponentiate(self.createVariable(power))
+        return self._calculation_strategy.exponentiate(self._createVariable(power))
 
-    def toComplex(self, variable):
+    def _toComplex(self, variable):
         """
         Converts calculation variable to complex. Delegates to active calculation strategy.
         :param variable: Calculation variable.
@@ -336,12 +336,13 @@ class PerfectCrystalDiffraction(object):
         :param effective_psi_h_bar: Effective PsiHBar (depending of polarisation. See text following [3.-139]).
         :return: Complex amplitude.
         """
-        ctemp = (zac_q + zac_z * zac_z) ** 0.5
+        # Calculate geometry independent parts.
+        tmp_root = (zac_q + zac_z * zac_z) ** 0.5
 
-        zac_x1 = (-1.0 * zac_z + ctemp) / effective_psi_h_bar
-        zac_x2 = (-1.0 * zac_z - ctemp) / effective_psi_h_bar
-        zac_delta1 = 0.5 * (self.Psi0() - zac_z + ctemp)
-        zac_delta2 = 0.5 * (self.Psi0() - zac_z - ctemp)
+        zac_x1 = (-1.0 * zac_z + tmp_root) / effective_psi_h_bar
+        zac_x2 = (-1.0 * zac_z - tmp_root) / effective_psi_h_bar
+        zac_delta1 = 0.5 * (self.Psi0() - zac_z + tmp_root)
+        zac_delta2 = 0.5 * (self.Psi0() - zac_z - tmp_root)
         zac_phi1 = 2 * pi / gamma_0 / photon_in.wavelength() * zac_delta1
         zac_phi2 = 2 * pi / gamma_0 / photon_in.wavelength() * zac_delta2
        
@@ -352,24 +353,24 @@ class PerfectCrystalDiffraction(object):
             self.logDebug("__zac_c1"+str( zac_c1))
             self.logDebug("__zac_c2"+str( zac_c2))
 
-        mp_zac_c1 = self.exponentiate(zac_c1)
-        mp_zac_c2 = self.exponentiate(zac_c2)
+        cv_zac_c1 = self._exponentiate(zac_c1)
+        cv_zac_c2 = self._exponentiate(zac_c2)
 
-        mp_zac_x1 = self.createVariable(zac_x1)
-        mp_zac_x2 = self.createVariable(zac_x2)
+        cv_zac_x1 = self._createVariable(zac_x1)
+        cv_zac_x2 = self._createVariable(zac_x2)
 
-        #C
+        # Calculate complex amplitude according to given geometry.
         if (self.geometryType() is BraggDiffraction):
-            reflectivity = mp_zac_x1 * mp_zac_x2 * (mp_zac_c1 - mp_zac_c2) / (mp_zac_c2 * mp_zac_x2 - mp_zac_c1 * mp_zac_x1)
+            reflectivity = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
         elif (self.geometryType() is LaueDiffraction):
-            reflectivity = mp_zac_x1 * mp_zac_x2 * (mp_zac_c1 - mp_zac_c2) / (mp_zac_x2 - mp_zac_x1)
+            reflectivity = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
         elif (self.geometryType() is BraggTransmission):
-            reflectivity = mp_zac_c1 * mp_zac_c2 * (mp_zac_x2 - mp_zac_x1) / (mp_zac_c2 * mp_zac_x2 - mp_zac_c1 * mp_zac_x1)
+            reflectivity = cv_zac_c1 * cv_zac_c2 * (cv_zac_x2 - cv_zac_x1) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
         elif (self.geometryType() is LaueTransmission):
-            reflectivity = (mp_zac_x2 * mp_zac_c1 - mp_zac_x1 * mp_zac_c2) / (mp_zac_x2 - mp_zac_x1)
+            reflectivity = (cv_zac_x2 * cv_zac_c1 - cv_zac_x1 * cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
 
         if (self.isDebug):
-            self.logDebug("ctemp: "+str(ctemp))
+            self.logDebug("ctemp: "+str(tmp_root))
             self.logDebug("zac_z"+str( zac_z))
             self.logDebug("zac_q"+str( zac_q))
             self.logDebug("zac delta 1"+str( zac_delta1))
@@ -378,14 +379,14 @@ class PerfectCrystalDiffraction(object):
             self.logDebug("wavelength"+str( photon_in.wavelength()))
             self.logDebug("zac phi 1"+str( zac_phi1))
             self.logDebug("zac phi 2"+str(zac_phi2))
-            self.logDebug("zac_c1: "+str( mp_zac_c1))
-            self.logDebug("zac_c2: "+str( mp_zac_c2))
-            self.logDebug("zac_x1: "+str( mp_zac_x1))
-            self.logDebug("zac_x2: "+str( mp_zac_x2))
+            self.logDebug("zac_c1: "+str( cv_zac_c1))
+            self.logDebug("zac_c2: "+str( cv_zac_c2))
+            self.logDebug("zac_x1: "+str( cv_zac_x1))
+            self.logDebug("zac_x2: "+str( cv_zac_x2))
 
         return ReflectivityAndPhase(complex(reflectivity))
 
-    def calculatePolarizationS(self, photon_in, zac_b, zac_z, gamma_0):
+    def _calculatePolarizationS(self, photon_in, zac_b, zac_z, gamma_0):
         """
         Calculates complex amplitude for the S polarization.
         :param photon_in: Incoming photon.
@@ -393,13 +394,13 @@ class PerfectCrystalDiffraction(object):
         :param gamma_0: Projection cosine as defined in Zachariasen [3-115].
         :return: Complex amplitude of S polarization.
         """
-        zac_q = self.calculateZacQ(zac_b,
+        zac_q = self._calculateZacQ(zac_b,
                                    self.PsiH(), self.PsiHBar())
 
         return self._calculateComplexAmplitude(photon_in, zac_q, zac_z, gamma_0,
                                            self.PsiHBar())
 
-    def calculatePolarizationP(self, photon_in, zac_b, zac_z, gamma_0):
+    def _calculatePolarizationP(self, photon_in, zac_b, zac_z, gamma_0):
         """
         Calculates complex amplitude for the P polarization.
         :param photon_in: Incoming photon.
@@ -411,7 +412,7 @@ class PerfectCrystalDiffraction(object):
         effective_psi_h = self.PsiH() * cos(2 * self.braggAngle())
         effective_psi_h_bar = self.PsiHBar() * cos(2 * self.braggAngle())
 
-        zac_q = self.calculateZacQ(zac_b, effective_psi_h, effective_psi_h_bar)
+        zac_q = self._calculateZacQ(zac_b, effective_psi_h, effective_psi_h_bar)
 
         return self._calculateComplexAmplitude(photon_in, zac_q, zac_z, gamma_0,
                                            effective_psi_h_bar)
@@ -427,23 +428,23 @@ class PerfectCrystalDiffraction(object):
                   "P": None}
 
         # Calculate photon out.
-        photon_out = self.calculatePhotonOut(photon_in)
+        photon_out = self._calculatePhotonOut(photon_in)
 
         # Calculate crystal field refraction index difference.
-        zac_alpha = self.calculateZacAlpha(photon_in)
+        zac_alpha = self._calculateZacAlpha(photon_in)
 
         # Calculate asymmetry ratio.
-        zac_b = self.calculateZacB(photon_in, photon_out)
+        zac_b = self._calculateZacB(photon_in, photon_out)
 
         # Calculate z as defined in Zachariasen [3-123].
-        zac_z = self.calculateZacZ(zac_b, zac_alpha)
+        zac_z = self._calculateZacZ(zac_b, zac_alpha)
 
         # Calculate projection cosine.
-        gamma_0 = self.calculateGamma(photon_in)
+        gamma_0 = self._calculateGamma(photon_in)
 
         # Calculate complex amplitude for S and P polarization.
-        result["S"] = self.calculatePolarizationS(photon_in, zac_b, zac_z, gamma_0)
-        result["P"] = self.calculatePolarizationP(photon_in, zac_b, zac_z, gamma_0)
+        result["S"] = self._calculatePolarizationS(photon_in, zac_b, zac_z, gamma_0)
+        result["P"] = self._calculatePolarizationP(photon_in, zac_b, zac_z, gamma_0)
 
         # Note division by |b| in intensity (thus sqrt(|b|) in amplitude)
         # for power balance (see Zachariasen pag. 122)
