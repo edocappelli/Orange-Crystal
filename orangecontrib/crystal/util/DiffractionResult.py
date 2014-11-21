@@ -49,11 +49,11 @@ class DiffractionResult():
 
     def add(self, deviation, s_reflectivity_and_phase, p_reflectivity_and_phase, diff_reflectivity_and_phase):
         self._deviation.append(deviation)
-        self._s_reflectivity.append(s_reflectivity_and_phase.reflectivity())
+        self._s_reflectivity.append(s_reflectivity_and_phase.intensity())
         self._s_phase.append(s_reflectivity_and_phase.phase())
-        self._p_reflectivity.append(p_reflectivity_and_phase.reflectivity())
+        self._p_reflectivity.append(p_reflectivity_and_phase.intensity())
         self._p_phase.append(p_reflectivity_and_phase.phase())
-        self._difference_reflectivity.append(diff_reflectivity_and_phase.reflectivity())
+        self._difference_reflectivity.append(diff_reflectivity_and_phase.intensity())
         self._difference_phase.append(diff_reflectivity_and_phase.phase())
 
     def plot(self):

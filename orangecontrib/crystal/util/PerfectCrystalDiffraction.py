@@ -9,7 +9,7 @@ import mpmath
 import math
 
 from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.util.ReflectivityAndPhase import ReflectivityAndPhase
+from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
 from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
 
 
@@ -384,7 +384,7 @@ class PerfectCrystalDiffraction(object):
             self.logDebug("zac_x1: "+str( cv_zac_x1))
             self.logDebug("zac_x2: "+str( cv_zac_x2))
 
-        return ReflectivityAndPhase(complex(reflectivity))
+        return ComplexAmplitude(complex(reflectivity))
 
     def _calculatePolarizationS(self, photon_in, zac_b, zac_z, gamma_0):
         """
@@ -481,5 +481,5 @@ class PerfectCrystalDiffraction(object):
         self.logDebug('b(exact): '+str(zac_b))
         self.logDebug('alpha: '+str(zac_alpha))
         self.logDebug('k_0 wavelength: '+str(photon_in.wavelength()))
-        self.logDebug('comp ampl S: '+str(result["S"].reflectivity())+str(result["S"].phase()))
-        self.logDebug('comp ampl P: '+str(result["P"].reflectivity())+str(result["P"].phase()))
+        self.logDebug('comp ampl S: '+str(result["S"].intensity())+str(result["S"].phase()))
+        self.logDebug('comp ampl P: '+str(result["P"].intensity())+str(result["P"].phase()))

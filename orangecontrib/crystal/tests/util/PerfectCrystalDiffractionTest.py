@@ -208,7 +208,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction._calculateComplexAmplitude(photon_in, zac_q, zac_z, gamma_0, psi_h_bar)
 
-        self.assertAlmostEqual(reflectivity.reflectivity(),1.2631121049e-05,10)
+        self.assertAlmostEqual(reflectivity.intensity(),1.2631121049e-05,10)
         self.assertAlmostEqual(reflectivity.phase(),-1.5996013)
 
     def testCalculatePolarizationS(self):
@@ -222,7 +222,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction._calculatePolarizationS(photon_in, zac_b, zac_z, gamma_0)
 
-        self.assertAlmostEqual(reflectivity.reflectivity(),1.26311210e-05, 10)
+        self.assertAlmostEqual(reflectivity.intensity(),1.26311210e-05, 10)
         self.assertAlmostEqual(reflectivity.phase(),-1.5996013489)
 
     def testCalculatePolarizationP(self):
@@ -236,7 +236,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction._calculatePolarizationP(photon_in, zac_b, zac_z, gamma_0)
 
-        self.assertAlmostEqual(reflectivity.reflectivity(),6.1247686e-14,19)
+        self.assertAlmostEqual(reflectivity.intensity(),6.1247686e-14,19)
         self.assertAlmostEqual(reflectivity.phase(),-1.78584468)
 
     def testCalculateDiffraction(self):
@@ -245,9 +245,9 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
 
         reflectivity = perfect_crystal_diffraction.calculateDiffraction(photon_in)
 
-        self.assertAlmostEqual(reflectivity["S"].reflectivity(),1.263111884e-05,10)
+        self.assertAlmostEqual(reflectivity["S"].intensity(),1.263111884e-05,10)
         self.assertAlmostEqual(reflectivity["S"].phase(),-1.5995996312)
-        self.assertAlmostEqual(reflectivity["P"].reflectivity(),6.12476691e-14,19)
+        self.assertAlmostEqual(reflectivity["P"].intensity(),6.12476691e-14,19)
         self.assertAlmostEqual(reflectivity["P"].phase(),-1.7858414233)
 
 
