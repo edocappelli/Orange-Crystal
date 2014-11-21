@@ -241,10 +241,10 @@ class PerfectCrystalDiffraction(object):
 
         if self.isDebug:
             self.logDebug("surface normal"+str(self.surface_normal().components()))
-            self.logDebug("Angle bragg normal photon_in"+str((photon_in.unitDirectionVector().angle(self.braggNormal()),
-                                                              pi * 0.5 - photon_in.unitDirectionVector().angle(self.braggNormal()))))
-            self.logDebug("Angle bragg normal photon_out"+str((photon_out.unitDirectionVector().angle(self.braggNormal()),
-                                                               pi * 0.5 - photon_out.unitDirectionVector().angle(self.braggNormal()))))
+            self.logDebug("Angle bragg normal photon_in"+str((photon_in.unitDirectionVector().angles(self.braggNormal()),
+                                                              pi * 0.5 - photon_in.unitDirectionVector().angles(self.braggNormal()))))
+            self.logDebug("Angle bragg normal photon_out"+str((photon_out.unitDirectionVector().angles(self.braggNormal()),
+                                                               pi * 0.5 - photon_out.unitDirectionVector().angles(self.braggNormal()))))
             self.logDebug("photon_in direction"+str(photon_in.unitDirectionVector().components()))
             self.logDebug("photon_out direction"+str(photon_out.unitDirectionVector().components()))
 

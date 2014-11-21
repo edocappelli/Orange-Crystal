@@ -15,13 +15,13 @@ class DiffractionTest(unittest.TestCase):
 
 
     def assertDiffractionResult(self,s_intensity_fraction, s_phase,p_intensity_fraction, p_phase, diffraction_results):
-        self.assertAlmostEqualLists(diffraction_results.sReflectivity(),
+        self.assertAlmostEqualLists(diffraction_results.sIntensity(),
                                     s_intensity_fraction)
 
         self.assertAlmostEqualLists(diffraction_results.sPhase(),
                                     s_phase)
 
-        self.assertAlmostEqualLists(diffraction_results.pReflectivity(),
+        self.assertAlmostEqualLists(diffraction_results.pIntensity(),
                                     p_intensity_fraction)
 
         self.assertAlmostEqualLists(diffraction_results.pPhase(),
@@ -294,10 +294,10 @@ class DiffractionTest(unittest.TestCase):
                 diffraction = Diffraction()
                 res = diffraction.calculateDiffraction(diffraction_setup)
 
-                x = [i * 1e+6 for i in res.deviation()]
-                plot(x, res.sReflectivity(), label="S polarization")
-                x = [i * 1e+6 for i in xrt_res.deviation()]
-                plot(x, xrt_res.sReflectivity(), label="XRT S polarization")
+                x = [i * 1e+6 for i in res.angleDeviations()]
+                plot(x, res.sIntensity(), label="S polarization")
+                x = [i * 1e+6 for i in xrt_res.angleDeviations()]
+                plot(x, xrt_res.sIntensity(), label="XRT S polarization")
                 legend()
                 title(geo.description())
                 ylabel('Reflectivity')
@@ -307,10 +307,10 @@ class DiffractionTest(unittest.TestCase):
                 savefig(filename)
                 figure()
 
-                x = [i * 1e+6 for i in res.deviation()]
-                plot(x, res.pReflectivity(), label="P polarization")
-                x = [i * 1e+6 for i in xrt_res.deviation()]
-                plot(x, xrt_res.pReflectivity(), label="XRT P polarization")
+                x = [i * 1e+6 for i in res.angleDeviations()]
+                plot(x, res.pIntensity(), label="P polarization")
+                x = [i * 1e+6 for i in xrt_res.angleDeviations()]
+                plot(x, xrt_res.pIntensity(), label="XRT P polarization")
                 legend()
                 title(geo.description())
                 ylabel('Reflectivity')
@@ -320,9 +320,9 @@ class DiffractionTest(unittest.TestCase):
                 savefig(filename)
                 figure()
 
-                x = [i * 1e+6 for i in res.deviation()]
+                x = [i * 1e+6 for i in res.angleDeviations()]
                 plot(x, res.sPhase(), label="S polarization")
-                x = [i * 1e+6 for i in xrt_res.deviation()]
+                x = [i * 1e+6 for i in xrt_res.angleDeviations()]
                 plot(x, xrt_res.sPhase(), label="XRT S polarization")
                 legend()
                 title(geo.description())
@@ -333,9 +333,9 @@ class DiffractionTest(unittest.TestCase):
                 savefig(filename)
                 figure()
 
-                x = [i * 1e+6 for i in res.deviation()]
+                x = [i * 1e+6 for i in res.angleDeviations()]
                 plot(x, res.pPhase(), label="P polarization")
-                x = [i * 1e+6 for i in xrt_res.deviation()]
+                x = [i * 1e+6 for i in xrt_res.angleDeviations()]
                 plot(x, xrt_res.pPhase(), label="XRT P polarization")
                 legend()
                 title(geo.description())
