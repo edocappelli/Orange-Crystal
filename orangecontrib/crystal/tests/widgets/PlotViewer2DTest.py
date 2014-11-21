@@ -9,6 +9,7 @@ from orangecontrib.crystal.util.GeometryType import BraggDiffraction
 from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
 
 
+@unittest.skip("Blocking QT test")
 class PlotViewer2DTest(unittest.TestCase):
     def testPlotViewer(self):
         appl = QApplication(sys.argv)
@@ -31,4 +32,4 @@ class PlotViewer2DTest(unittest.TestCase):
 
         plot_data_2d = res.asPlotData2D()
         ow.setPlots(plot_data_2d)  
-        appl.exec_()
+        #appl.exec_()

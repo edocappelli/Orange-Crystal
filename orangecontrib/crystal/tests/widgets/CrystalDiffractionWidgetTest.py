@@ -9,6 +9,7 @@ from orangecontrib.crystal.util.GeometryType import BraggDiffraction
 from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
 
 
+@unittest.skip("Blocking QT test")
 class CrystalDiffractionWidgetTest(unittest.TestCase):
     def testPlotViewer(self):
         appl = QApplication(sys.argv)
