@@ -1,0 +1,7 @@
+recursive-include orangecontrib *.pyx
+recursive-include orangecontrib *.py
+
+recursive-include orangecontrib/crystal/widgets *.png *.svg *.ico *.jpg *.bmp
+recursive-include orangecontrib/shadow/widgets/experimental_elements *.dat
+
+include README.txt

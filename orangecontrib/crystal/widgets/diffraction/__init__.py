@@ -9,5 +9,5 @@ BACKGROUND = "#C3F3F3"
 
 ICON = "icons/crystal.svg"
 
-PRIORITY = 1
+PRIORITY = 301
 
