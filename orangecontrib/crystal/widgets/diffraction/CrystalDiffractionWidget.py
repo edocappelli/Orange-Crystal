@@ -13,6 +13,7 @@ import Orange
 from Orange.widgets import widget, settings, gui
 import Orange.data
 
+from orangecontrib.crystal.util.DiffractionExceptions import DiffractionException
 from orangecontrib.crystal.util.GeometryType import GeometryType
 from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
@@ -169,13 +170,24 @@ class CrystalDiffractionWidget(widget.OWWidget):
         
         diffraction = Diffraction()
         diffraction.setOnProgress(self.calculationProgress)
-        res = diffraction.calculateDiffraction(diffraction_setup)
+
+        try:
+            res = diffraction.calculateDiffraction(diffraction_setup)
+        except DiffractionException as de:
+            self.showException(de)
+            return
 
         self.send("Crystal diffraction", res)
         #from PlotViewer2D import PlotViewer2D
         #pv = PlotViewer2D()
         #pv.setPlots(res.asPlotData2D())
         #pv.show()
+
+    def showException(self, exception):
+        message_box = gui.QtGui.QMessageBox()
+        exception_text=str(exception)
+        message_box.setText(exception_text)
+        message_box.exec_()
 
     
 if __name__=="__main__":
