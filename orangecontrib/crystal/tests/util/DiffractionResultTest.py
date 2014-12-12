@@ -18,7 +18,9 @@ def diffractionSetup():
                                          miller_k=1,
                                          miller_l=1,
                                          asymmetry_angle=3,
-                                         energy=10000,
+                                         energy_min=10000,
+                                         energy_max=10000,
+                                         energy_points=1,
                                          angle_deviation_min= -100.0e-6,
                                          angle_deviation_max=100e-6,
                                          angle_deviation_points=50)
@@ -157,7 +159,9 @@ class DiffractionResultTest(unittest.TestCase):
                                              miller_k=1,
                                              miller_l=1,
                                              asymmetry_angle=3,
-                                             energy=10000,
+                                             energy_min=10000,
+                                             energy_max=10000,
+                                             energy_points=1,
                                              angle_deviation_min= -100.0e-6,
                                              angle_deviation_max=100e-6,
                                              angle_deviation_points=50)

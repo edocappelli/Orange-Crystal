@@ -164,6 +164,8 @@ class CrystalDiffractionWidget(widget.OWWidget):
                                              int(self.value_sp_miller_l),
                                              float(self.value_sp_asymmetry_angle),
                                              float(self.value_le_energy)*1e3,
+                                             float(self.value_le_energy)*1e3,
+                                             1,
                                              float(self.value_le_angle_min) * 10**-6,
                                              float(self.value_le_angle_max) * 10 **-6,
                                              int(self.value_le_angle_points))

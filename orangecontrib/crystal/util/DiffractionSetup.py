@@ -11,7 +11,9 @@ class DiffractionSetup(object):
     def __init__(self, geometry_type, crystal_name, thickness,
                  miller_h, miller_k, miller_l,
                  asymmetry_angle,
-                 energy,
+                 energy_min,
+                 energy_max,
+                 energy_points,
                  angle_deviation_min,
                  angle_deviation_max,
                  angle_deviation_points):
@@ -24,7 +26,9 @@ class DiffractionSetup(object):
         :param miller_k: Miller index K.
         :param miller_l: Miller index L.
         :param asymmetry_angle: The asymmetry angle between surface normal and Bragg normal.
-        :param energy: The energy.
+        :param energy_min: The minimum energy.
+        :param energy_max: The maximum energy.
+        :param energy_points: Number of energy points.
         :param angle_deviation_min: Minimal angle deviation.
         :param angle_deviation_max: Maximal angle deviation.
         :param angle_deviation_points: Number of deviations points.
@@ -37,7 +41,9 @@ class DiffractionSetup(object):
         self._miller_k = miller_k
         self._miller_l = miller_l
         self._asymmetry_angle = asymmetry_angle
-        self._energy = energy
+        self._energy_min = energy_min
+        self._energy_max = energy_max
+        self._energy_points = energy_points
         self._angle_deviation_min = angle_deviation_min
         self._angle_deviation_max = angle_deviation_max
         self._angle_deviation_points = angle_deviation_points
@@ -91,12 +97,35 @@ class DiffractionSetup(object):
         """
         return self._asymmetry_angle
 
-    def energy(self):
+    def energyMin(self):
         """
-        Returns the energy in eV.
-        :return: The energy in eV.
+        Returns the minimum energy in eV.
+        :return: The minimum energy in eV.
         """
-        return self._energy
+        return self._energy_min
+
+    def energyMax(self):
+        """
+        Returns the maximum energy in eV.
+        :return: The maximum energy in eV.
+        """
+        return self._energy_max
+
+    def energyPoints(self):
+        """
+        Returns the number of energy points.
+        :return: Number of energy points.
+        """
+        return self._energy_points
+
+    def energies(self):
+        """
+        Returns the energies of this setup.
+        :return: The angle deviations grid.
+        """
+        return numpy.linspace(self.energyMin(),
+                              self.energyMax(),
+                              self.energyPoints())
 
     def angleDeviationMin(self):
         """
@@ -141,7 +170,9 @@ class DiffractionSetup(object):
                                                               self.millerK(),
                                                               self.millerL())
         info_dict["Asymmetry Angle"] = str(self.asymmetryAngle())
-        info_dict["Energy"] = str(self.energy())
+        info_dict["Minimum energy"] = str(self.energyMin())
+        info_dict["Maximum energy"] = str(self.energyMax())
+        info_dict["Number of energy points"] = str(self.energyPoints())
         info_dict["Angle deviation minimum"] = "%.2e" % (self.angleDeviationMin())
         info_dict["Angle deviation maximum"] = "%.2e" % (self.angleDeviationMax())
         info_dict["Angle deviation points"] = str(self.angleDeviationPoints())
@@ -175,8 +206,15 @@ class DiffractionSetup(object):
         if self._asymmetry_angle != candidate._asymmetry_angle:
             return False
 
-        if self._energy != candidate._energy:
+        if self._energy_min != candidate._energy_min:
             return False
+
+        if self._energy_max != candidate._energy_max:
+            return False
+
+        if self._energy_points != candidate._energy_points:
+            return False
+
 
         if self._angle_deviation_min != candidate._angle_deviation_min:
             return False

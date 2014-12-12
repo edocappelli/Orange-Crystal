@@ -19,7 +19,9 @@ def diffractionSetup():
                                          miller_k=1,
                                          miller_l=1,
                                          asymmetry_angle=11,
-                                         energy=10000,
+                                         energy_min=10000,
+                                         energy_max=10000,
+                                         energy_points=1,
                                          angle_deviation_min= -100.0e-6,
                                          angle_deviation_max=100e-6,
                                          angle_deviation_points=175)
@@ -45,8 +47,12 @@ class DiffractionSetupTest(unittest.TestCase):
                          1)
         self.assertEqual(diffraction_setup._asymmetry_angle,
                          11)
-        self.assertEqual(diffraction_setup._energy,
+        self.assertEqual(diffraction_setup._energy_min,
                          10000)
+        self.assertEqual(diffraction_setup._energy_max,
+                         10000)
+        self.assertEqual(diffraction_setup._energy_points,
+                         1)
         self.assertEqual(diffraction_setup._angle_deviation_min,
                          -100.0e-6)
         self.assertEqual(diffraction_setup._angle_deviation_max,
@@ -89,10 +95,20 @@ class DiffractionSetupTest(unittest.TestCase):
         self.assertEqual(diffraction_setup.asymmetryAngle(),
                          11)
 
-    def testEnergy(self):
+    def testEnergyMin(self):
         diffraction_setup = diffractionSetup()
-        self.assertEqual(diffraction_setup.energy(),
+        self.assertEqual(diffraction_setup.energyMin(),
                          10000)
+
+    def testEnergyMax(self):
+        diffraction_setup = diffractionSetup()
+        self.assertEqual(diffraction_setup.energyMax(),
+                         10000)
+
+    def testEnergyMin(self):
+        diffraction_setup = diffractionSetup()
+        self.assertEqual(diffraction_setup.energyPoints(),
+                         1)
 
     def testAngleDeviationMin(self):
         diffraction_setup = diffractionSetup()
@@ -130,8 +146,12 @@ class DiffractionSetupTest(unittest.TestCase):
                          "(1,1,1)")
         self.assertEqual(info_dict["Asymmetry Angle"],
                          "11")
-        self.assertEqual(info_dict["Energy"],
+        self.assertEqual(info_dict["Minimum energy"],
                          "10000")
+        self.assertEqual(info_dict["Maximum energy"],
+                         "10000")
+        self.assertEqual(info_dict["Number of energy points"],
+                         "1")
         self.assertEqual(info_dict["Angle deviation minimum"],
                          "-1.00e-04")
         self.assertEqual(info_dict["Angle deviation maximum"],
@@ -148,7 +168,9 @@ class DiffractionSetupTest(unittest.TestCase):
                                                  miller_k=1,
                                                  miller_l=1,
                                                  asymmetry_angle=11,
-                                                 energy=8000,
+                                                 energy_min=8000,
+                                                 energy_max=8000,
+                                                 energy_points=1,
                                                  angle_deviation_min= -100.0e-6,
                                                  angle_deviation_max=100e-6,
                                                  angle_deviation_points=175)
@@ -166,7 +188,9 @@ class DiffractionSetupTest(unittest.TestCase):
                                                  miller_k=1,
                                                  miller_l=1,
                                                  asymmetry_angle=11,
-                                                 energy=8000,
+                                                 energy_min=8000,
+                                                 energy_max=8000,
+                                                 energy_points=1,
                                                  angle_deviation_min= -100.0e-6,
                                                  angle_deviation_max=100e-6,
                                                  angle_deviation_points=175)

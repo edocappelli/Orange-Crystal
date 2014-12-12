@@ -193,7 +193,7 @@ class Diffraction():
         :return: DiffractionResult representing this setup.
         """
         # Calculate energy in keV.
-        energy = diffraction_setup.energy()
+        energy = diffraction_setup.energies()[0]
         energy_in_kev = energy / 1000.0
 
         # Retrieve Miller indices from setup(for readability) .
