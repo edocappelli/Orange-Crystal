@@ -11,6 +11,7 @@ class PhotonTest(unittest.TestCase):
     def testConstructor(self):
         photon = Photon(4000, Vector(0, 0, 1))
 
+        self.assertIsInstance(photon, Photon)
         self.assertEqual(photon.energy(), 4000)
         self.assertTrue(photon.unitDirectionVector() == Vector(0, 0, 1))
 
@@ -61,3 +62,23 @@ class PhotonTest(unittest.TestCase):
         photon = Photon(4000, Vector(0, 0, 5))
 
         self.assertTrue(photon.unitDirectionVector() == Vector(0, 0, 1))
+
+    def testOperatorEqual(self):
+        photon_one = Photon(4000, Vector(0, 0, 5))
+        photon_two = Photon(4000, Vector(0, 1, 1))
+        photon_three = Photon(2000, Vector(0, 0, 5))
+
+        self.assertTrue(photon_one == photon_one)
+        self.assertFalse(photon_one == photon_two)
+        self.assertFalse(photon_one == photon_three)
+        self.assertFalse(photon_two == photon_three)
+
+    def testOperatorNotEqual(self):
+        photon_one = Photon(4000, Vector(0, 0, 5))
+        photon_two = Photon(4000, Vector(0, 1, 1))
+        photon_three = Photon(2000, Vector(0, 0, 5))
+
+        self.assertFalse(photon_one != photon_one)
+        self.assertTrue(photon_one != photon_two)
+        self.assertTrue(photon_one != photon_three)
+        self.assertTrue(photon_two != photon_three)

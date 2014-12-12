@@ -1,9 +1,8 @@
-import scipy.constants.codata
-
 """
 Represents a photon.
 Except for energy all units are in SI. Energy is in eV.
 """
+import scipy.constants.codata
 
 class Photon():
 

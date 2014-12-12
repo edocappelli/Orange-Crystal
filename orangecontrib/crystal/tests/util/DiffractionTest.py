@@ -1,3 +1,7 @@
+"""
+Unittest for Diffraction class.
+"""
+
 import unittest
 import numpy as np
 import xraylib
@@ -374,17 +378,17 @@ class DiffractionTest(unittest.TestCase):
                         diffraction = Diffraction()
                         try:
                             res = diffraction.calculateDiffraction(diffraction_setup)
-                            for p in res.asPlotData2D():
+                            for p in res.asPlotData1D():
                                 plots.append(p)
                         except Exception as ex:
                             print(ex)
 
         import sys
-        from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
+        from orangecontrib.crystal.widgets.diffraction.PlotViewer1D import PlotViewer1D
         from PyQt4.Qt import QApplication
 
         application = QApplication(sys.argv)
-        ow = PlotViewer2D()
+        ow = PlotViewer1D()
         ow.show()
         ow.setPlots(plots)  
         application.exec_()

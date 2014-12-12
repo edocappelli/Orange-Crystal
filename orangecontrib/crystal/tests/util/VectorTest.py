@@ -1,11 +1,16 @@
+"""
+Unittest for Vector class.
+"""
 import unittest
 from numpy import pi, arange, array
 
 from orangecontrib.crystal.util.Vector import Vector
 
+
 class VectorTest(unittest.TestCase):
     def testConstructor(self):
         vector = Vector(1, 2, 3)
+        self.assertIsInstance(vector, Vector)
 
         self.assertAlmostEqual(vector.components()[0],
                                1)
@@ -48,7 +53,6 @@ class VectorTest(unittest.TestCase):
         self.assertAlmostEqual(vector.components()[2],
                                0.0)
 
-
     def testOperatorEqual(self):
         vector_1 = Vector(1, 2, 3)
         vector_2 = Vector(1.0, 2.0, 3.0)
@@ -57,7 +61,7 @@ class VectorTest(unittest.TestCase):
         self.assertTrue(vector_1 == vector_2)
         self.assertFalse(vector_1 == vector_3)
 
-    def testOperatorUnequal(self):
+    def testOperatorNotEqual(self):
         vector_1 = Vector(1, 2, 3)
         vector_2 = Vector(1.0, 2.0, 3.0)
         vector_3 = Vector(-1, 0, 0)
@@ -74,15 +78,6 @@ class VectorTest(unittest.TestCase):
 
         self.assertTrue(result == vector_sum)
 
-    def testSubtractVector(self):
-        vector_1 = Vector(1, 2, 3)
-        vector_2 = Vector(-1, 2, 1)
-        vector_diff = Vector(2, 0, 2)
-
-        result = vector_1.subtractVector(vector_2)
-
-        self.assertTrue(result == vector_diff)
-
     def testScalarMultiplication(self):
         vector_1 = Vector(1, 2, 3)
         vector_2 = Vector(3, 6, 9)
@@ -93,6 +88,15 @@ class VectorTest(unittest.TestCase):
         self.assertTrue(result == vector_1)
         vector_1 = vector_1.scalarMultiplication(-3.0)
         self.assertTrue(vector_1 == vector_2)
+
+    def testSubtractVector(self):
+        vector_1 = Vector(1, 2, 3)
+        vector_2 = Vector(-1, 2, 1)
+        vector_diff = Vector(2, 0, 2)
+
+        result = vector_1.subtractVector(vector_2)
+
+        self.assertTrue(result == vector_diff)
 
     def testScalarProduct(self):
         vector_1 = Vector(1, 2, 3)
@@ -126,14 +130,12 @@ class VectorTest(unittest.TestCase):
         result = vector_x.crossProduct(vector_x)
         self.assertTrue(result == vector_null)
 
-
     def testNorm(self,):
         vector_6 = Vector(2, 4, 4)
         vector_2 = Vector(2, 0, 0)
 
         self.assertAlmostEqual(vector_6.norm(), 6.0)
         self.assertAlmostEqual(vector_2.norm(), 2.0)
-
 
     def testGetNormalizedVector(self):
         vector_6 = Vector(2, 4, 4)

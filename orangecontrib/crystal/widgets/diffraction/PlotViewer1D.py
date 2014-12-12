@@ -17,7 +17,7 @@ from Orange.widgets import widget, settings, gui
 import Orange.data
 
 from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
-from orangecontrib.crystal.util.PlotData2D import PlotData2D
+from orangecontrib.crystal.util.PlotData1D import PlotData1D
 
 class PlotInfoModel(QAbstractTableModel):
     def __init__(self, data_dict):
@@ -103,7 +103,7 @@ class PlotSetModel(QAbstractTableModel):
     def plotByIndex(self, index):
         return self._plotsList()[index]
 
-class PlotViewer2D(widget.OWWidget):
+class PlotViewer1D(widget.OWWidget):
     name = "Plot Viewer 2D"
     description = "Can plot 2D data"
     icon = "icons/screen.svg"
@@ -171,7 +171,7 @@ class PlotViewer2D(widget.OWWidget):
         self.combobox.setModel(self.model_plots)
         
     def onDiffractionResult(self, diffraction_results):
-        plots = diffraction_results.asPlotData2D()
+        plots = diffraction_results.asPlotData1D()
         self.setPlots(plots)
         self.table.setVisible(False)
         self.table.resizeColumnsToContents()
@@ -240,6 +240,6 @@ class PlotViewer2D(widget.OWWidget):
 
 if __name__=="__main__":
     appl = QApplication(sys.argv)
-    ow = PlotViewer2D()
+    ow = PlotViewer1D()
     ow.show()
     appl.exec_()

@@ -4,7 +4,7 @@ Represents diffraction results.
 from pylab import plot, show
 import matplotlib.pyplot as plt
 
-from orangecontrib.crystal.util.PlotData2D import PlotData2D
+from orangecontrib.crystal.util.PlotData1D import PlotData1D
 
 
 class DiffractionResult():
@@ -106,7 +106,7 @@ class DiffractionResult():
         self._difference_reflectivity.append(difference_complex_amplitude.intensity())
         self._difference_phase.append(difference_complex_amplitude.phase())
 
-    def asPlotData2D(self):
+    def asPlotData1D(self):
         """
         Returns this result instance in PlotData2D representation.
         """
@@ -125,37 +125,37 @@ class DiffractionResult():
                 plot_data.addPlotInfo(key, value)
 
         # Intensity S polarization.
-        s_intensity = PlotData2D("Intensity - Polarization S",
+        s_intensity = PlotData1D("Intensity - Polarization S",
                                  "Angle deviation in urad",
                                  "Intensity")
         addPlotInfo(info_dict, s_intensity, angles_in_um, self.sIntensity())
 
         # Intensity P polarization.
-        p_intensity = PlotData2D("Intensity - Polarization P",
+        p_intensity = PlotData1D("Intensity - Polarization P",
                                  "Angle deviation in urad",
                                  "Intensity")
         addPlotInfo(info_dict, p_intensity, angles_in_um, self.pIntensity())
 
         # Intensity difference S and P polarization.
-        intensity_difference = PlotData2D("Intensity difference",
+        intensity_difference = PlotData1D("Intensity difference",
                                           "Angle deviation in urad",
                                           "Intensity")
         addPlotInfo(info_dict, intensity_difference, angles_in_um, self.differenceIntensity())
 
         # Phase S polarization.
-        s_phase = PlotData2D("Phase - Polarization S",
+        s_phase = PlotData1D("Phase - Polarization S",
                              "Angle deviation in urad",
                              "Phase in rad")
         addPlotInfo(info_dict, s_phase, angles_in_um, self.sPhase())
 
         # Phase P polarization.
-        p_phase = PlotData2D("Phase - Polarization P",
+        p_phase = PlotData1D("Phase - Polarization P",
                              "Angle deviation in urad",
                              "Phase in rad")
         addPlotInfo(info_dict, p_phase, angles_in_um, self.pPhase())
 
         # Phase of S and P polarization difference.
-        phase_difference = PlotData2D("Phase difference",
+        phase_difference = PlotData1D("Phase difference",
                                       "Angle deviation in urad",
                                       "Phase in rad")
         addPlotInfo(info_dict, phase_difference, angles_in_um, self.differencePhase())

@@ -1,3 +1,7 @@
+"""
+Unittest for DiffractionResult class.
+"""
+
 import unittest
 
 from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
@@ -161,7 +165,7 @@ class DiffractionResultTest(unittest.TestCase):
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        plot_data_2d = res.asPlotData2D()
+        plot_data_2d = res.asPlotData1D()
         plot_info =  plot_data_2d[0].plotInfo()
         self.assertIn("Geometry Type", plot_info)
         self.assertIn("Crystal Name", plot_info)

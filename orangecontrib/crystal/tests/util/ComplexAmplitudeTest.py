@@ -1,3 +1,7 @@
+"""
+Unittest for ComplexAmplitude class.
+"""
+
 import unittest
 import numpy as np
 

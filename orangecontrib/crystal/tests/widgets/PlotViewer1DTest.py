@@ -6,16 +6,16 @@ from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.util.Diffraction import Diffraction
 
 from orangecontrib.crystal.util.GeometryType import BraggDiffraction
-from orangecontrib.crystal.widgets.diffraction.PlotViewer2D import PlotViewer2D
+from orangecontrib.crystal.widgets.diffraction.PlotViewer1D import PlotViewer1D
 
 
 @unittest.skip("Blocking QT test")
-class PlotViewer2DTest(unittest.TestCase):
+class PlotViewer1DTest(unittest.TestCase):
     def testPlotViewer(self):
         appl = QApplication(sys.argv)
-        ow = PlotViewer2D()
+        ow = PlotViewer1D()
         ow.show()
-        diffraction_setup = DiffractionSetup(BraggDiffraction,
+        diffraction_setup = DiffractionSetup(BraggDiffraction(),
                                              "Si",
                                              thickness=0.0100 * 1e-2,
                                              miller_h=1,
@@ -30,6 +30,6 @@ class PlotViewer2DTest(unittest.TestCase):
         diffraction = Diffraction()
         res = diffraction.calculateDiffraction(diffraction_setup)
 
-        plot_data_2d = res.asPlotData2D()
-        ow.setPlots(plot_data_2d)  
-        #appl.exec_()
+        plot_data_1d = res.asPlotData1D()
+        ow.setPlots(plot_data_1d)
+        appl.exec_()

@@ -1,5 +1,4 @@
-﻿# -*- coding: utf-8 -*-
-"""
+﻿"""
 The module compares reflectivity, transmittivity, refraction index,
 absorption coefficient etc. with those calculated by XOP.
 """
@@ -7,11 +6,7 @@ absorption coefficient etc. with those calculated by XOP.
 import os
 import sys
 import math
-#import cmath
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import cmath
 from pylab import plot, show
 
 import xrt.backends.raycing.materials as rm
@@ -48,7 +43,6 @@ class XRTResult(object):
         show()
 
 
-
 def for_one_alpha(crystal, alphaDeg, hkl, geom, E, theta):
     alpha = math.radians(alphaDeg)
     s0 = (np.zeros_like(theta), np.cos(theta + alpha), -np.sin(theta + alpha))
@@ -66,8 +60,6 @@ def for_one_alpha(crystal, alphaDeg, hkl, geom, E, theta):
 
 
 def calculateDiffraction(hkl='111', E0=10000.0, beamPath=0.1, alpha= -5.0, factDW=1.):
-#    alpha = alpha * np.pi / 180.0
-    convFactor = 180 / math.pi * 3600.  # arcsec
     if hkl == '111':  # Si111
         dtheta = np.linspace(-100, 100, 400) * 1e-6
         dSpacing = 3.13562
@@ -80,20 +72,17 @@ def calculateDiffraction(hkl='111', E0=10000.0, beamPath=0.1, alpha= -5.0, factD
     thetaCenter = math.asin(rm.ch / (2 * dSpacing * E0))
     t = beamPath * math.sin(thetaCenter)
 
-    geo_types = {BraggDiffraction : 'Bragg reflected',
-                 LaueDiffraction  : 'Laue reflected' ,
-                 BraggTransmission: 'Bragg transmitted',
-                 LaueTransmission : 'Laue transmitted'}
+    geo_types = {BraggDiffraction() : 'Bragg reflected',
+                 LaueDiffraction()  : 'Laue reflected' ,
+                 BraggTransmission(): 'Bragg transmitted',
+                 LaueTransmission() : 'Laue transmitted'}
 
-    siCrystal = {}
-    cur_S = {}
-    cur_P = {}
     result = {}
     for geo, geo_str in geo_types.items():
         current_result = XRTResult()
         t = beamPath * math.cos(thetaCenter)
         siCrystal = rm.CrystalDiamond(hklInd, dSpacing, t=t,
-                                           geom=geo_str, factDW=factDW)
+                                      geom=geo_str, factDW=factDW)
         theta = dtheta + thetaCenter
         E = np.ones_like(dtheta) * E0
         cur_S, cur_P = for_one_alpha(siCrystal, alpha, hkl,

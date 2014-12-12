@@ -1,3 +1,6 @@
+"""
+Unittest for GeometryType class.
+"""
 import unittest
 
 from orangecontrib.crystal.util.GeometryType import GeometryType, BraggDiffraction, LaueDiffraction, \

@@ -1,3 +1,7 @@
+"""
+Unittest for PerfectCrystalDiffraction class.
+"""
+
 import unittest
 from numpy import pi
 

@@ -13,7 +13,7 @@ import Orange
 from Orange.widgets import widget, settings, gui
 import Orange.data
 
-import orangecontrib.crystal.util.GeometryType as GeometryType
+from orangecontrib.crystal.util.GeometryType import GeometryType
 from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
 from orangecontrib.crystal.util.Diffraction import Diffraction

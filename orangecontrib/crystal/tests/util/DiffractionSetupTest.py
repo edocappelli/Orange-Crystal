@@ -1,3 +1,7 @@
+"""
+Unittest for DiffractionSetup class.
+"""
+
 import unittest
 from quantities import *
 
