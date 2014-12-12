@@ -6,7 +6,7 @@ Except for energy all units are in SI. Energy is in eV.
 
 from numpy import pi, cos, sqrt, real
 import mpmath
-import math
+import cmath
 
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
@@ -50,7 +50,8 @@ class CalculationStrategyMPMath(CalculationStrategy):
         """
         Constructor.
         """
-        mpmath.dps = 32
+        # Use 32 digits in mpmath calculations.
+        mpmath.mp.dps = 32
 
     def createVariable(self, initial_value):
         """
@@ -88,7 +89,7 @@ class CalculationStrategyMath(CalculationStrategy):
         :param initial_value: Initial value of the variable.
         :return: mpmath variable.
         """
-        return initial_value
+        return complex(initial_value)
 
     def exponentiate(self, power):
         """
@@ -96,7 +97,7 @@ class CalculationStrategyMath(CalculationStrategy):
         :param power: The power to raise to.
         :return: Exponential.
         """
-        return math.exp(power)
+        return cmath.exp(power)
 
     def toComplex(self, variable):
         """

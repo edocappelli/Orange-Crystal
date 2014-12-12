@@ -7,8 +7,11 @@ import xraylib
 from numpy import sin,cos,pi
 from math import isnan
 import scipy.constants.codata
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, BraggTransmission, LaueDiffraction, LaueTransmission
 
+from orangecontrib.crystal.util.GeometryType import BraggDiffraction, BraggTransmission, LaueDiffraction, LaueTransmission
+from orangecontrib.crystal.util.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
+                                                             StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
+                                                             StructureFactorFHbarIsZeroException
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
@@ -166,22 +169,22 @@ class Diffraction():
         # Check if the given geometry is a valid Bragg/Laue geometry.
         if diffraction_setup.geometryType() == BraggDiffraction() or diffraction_setup.geometryType() == BraggTransmission():
             if diffraction_setup.asymmetryAngle() >= bragg_angle_in_degree:
-                raise Exception("Impossible geometry. Asymmetry angle larger than Bragg angle in Bragg geometry. No reflection possible.")
+                raise ReflectionImpossibleException()
         elif diffraction_setup.geometryType() == LaueDiffraction() or diffraction_setup.geometryType() == LaueTransmission():
             if diffraction_setup.asymmetryAngle() <= bragg_angle_in_degree:
-                raise Exception("Impossible geometry. Asymmetry angle smaller than Bragg angle in Laue geometry. No transmission possible.")
+                raise TransmissionImpossibleException()
 
         # Check structure factor F_0.
         if abs(F_0.real) < 1e-7 or isnan(F_0.real):
-            raise Exception("Structure factor for F_0 is zero.")
+            raise StructureFactorF0isZeroException()
 
         # Check structure factor F_H.
         if abs(F_H.real) < 1e-7 or isnan(F_H.real) or abs(F_H.imag) < 1e-7 or isnan(F_H.imag):
-            raise Exception("Structure factor for H=(hkl) is zero. Forbidden reflection for given Miller indices?")
+            raise StructureFactorFHisZeroException()
 
         # Check structure factor F_H_bar.
         if abs(F_H_bar.real) < 1e-7 or isnan(F_H_bar.real) or abs(F_H_bar.imag) < 1e-7 or isnan(F_H_bar.imag):
-            raise Exception("Structure factor for H_bar=(-h,-k,-l) is zero. Forbidden reflection for given Miller indices?")
+            raise StructureFactorFHbarIsZeroException()
 
     def calculateDiffraction(self, diffraction_setup):
         """

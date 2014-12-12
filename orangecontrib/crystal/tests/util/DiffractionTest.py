@@ -11,6 +11,9 @@ from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.GeometryType import GeometryType, BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+from orangecontrib.crystal.util.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
+                                                             StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
+                                                             StructureFactorFHbarIsZeroException
 
 class DiffractionTest(unittest.TestCase):
 
@@ -223,22 +226,22 @@ class DiffractionTest(unittest.TestCase):
         # Test impossible Bragg reflection.
         diffraction_setup._asymmetry_angle = 45
 
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(ReflectionImpossibleException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
         diffraction_setup._geometry_type = BraggTransmission()
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(ReflectionImpossibleException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
         # Test impossible Laue reflection.
         diffraction_setup._asymmetry_angle = 10
 
         diffraction_setup._geometry_type = LaueDiffraction()
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(TransmissionImpossibleException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
         diffraction_setup._geometry_type = LaueTransmission()
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(TransmissionImpossibleException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
         # Test forbidden reflection
@@ -246,21 +249,21 @@ class DiffractionTest(unittest.TestCase):
         diffraction_setup._asymmetry_angle = 0
 
         # ... for F_0.
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(StructureFactorF0isZeroException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,0.0,F_H,F_H_bar)
 
         # ... for F_H.
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(StructureFactorFHisZeroException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,0.0,F_H_bar)
 
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(StructureFactorFHisZeroException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,float('nan')*1j,F_H_bar)
 
         # ... for F_H_bar.
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(StructureFactorFHbarIsZeroException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,0.0)
 
-        self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
+        self.assertRaises(StructureFactorFHbarIsZeroException,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,float('nan')*1j)
 
     @unittest.skip("Do not test against XRT")
