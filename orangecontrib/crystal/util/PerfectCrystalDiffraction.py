@@ -360,13 +360,13 @@ class PerfectCrystalDiffraction(object):
         cv_zac_x2 = self._createVariable(zac_x2)
 
         # Calculate complex amplitude according to given geometry.
-        if (self.geometryType() is BraggDiffraction):
+        if (self.geometryType() == BraggDiffraction()):
             reflectivity = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
-        elif (self.geometryType() is LaueDiffraction):
+        elif (self.geometryType() == LaueDiffraction()):
             reflectivity = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
-        elif (self.geometryType() is BraggTransmission):
+        elif (self.geometryType() == BraggTransmission()):
             reflectivity = cv_zac_c1 * cv_zac_c2 * (cv_zac_x2 - cv_zac_x1) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
-        elif (self.geometryType() is LaueTransmission):
+        elif (self.geometryType() == LaueTransmission()):
             reflectivity = (cv_zac_x2 * cv_zac_c1 - cv_zac_x1 * cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
 
         if (self.isDebug):
@@ -451,9 +451,9 @@ class PerfectCrystalDiffraction(object):
         #
         # This factor only applies to diffracted beam, not to transmitted beams
         # (see private communication M. Rio (ESRF) and J. Sutter (DLS))
-        if (self.geometryType() is BraggDiffraction \
+        if (self.geometryType() == BraggDiffraction() \
             or \
-            self.geometryType() is LaueDiffraction):
+            self.geometryType() == LaueDiffraction()):
             result["S"].rescale(1.0 / sqrt(abs(zac_b)))
             result["P"].rescale(1.0 / sqrt(abs(zac_b)))
 

@@ -15,7 +15,7 @@ def generatePerfectCrystalDiffraction():
     psi_H_bar = -0.00003155997069 -0.00004446850675j
     d_spacing = 3.135416 * 1e-10
 
-    geometry_type = LaueTransmission
+    geometry_type = LaueTransmission()
     normal_bragg = Vector(0,0,1).scalarMultiplication(2.0 * pi / d_spacing)
     normal_surface = Vector(1.0,0.0,0.0)
 
@@ -55,7 +55,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
         self.assertIsInstance(perfect_crystal_diffraction, PerfectCrystalDiffraction)
 
         self.assertEqual(perfect_crystal_diffraction.geometryType(),
-                         LaueTransmission)
+                         LaueTransmission())
         self.assertEqual(perfect_crystal_diffraction.braggNormal(),
                          Vector(0,0,1).scalarMultiplication(2.0 * pi / (3.135416 * 1e-10)))
         self.assertEqual(perfect_crystal_diffraction.surface_normal(),
@@ -119,7 +119,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
     def testGeometryType(self):
         perfect_crystal_diffraction = generatePerfectCrystalDiffraction()
         self.assertEqual(perfect_crystal_diffraction.geometryType(),
-                         LaueTransmission)
+                         LaueTransmission())
 
 
     def testCreateVariable(self):

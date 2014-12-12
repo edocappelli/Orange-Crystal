@@ -5,39 +5,50 @@ from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
 
 class ComplexAmplitudeTest(unittest.TestCase):
     def testConstructor(self):
-        
         number = 1 + 2j
-        rap = ComplexAmplitude(number)
+        complex_amplitude = ComplexAmplitude(number)
         
-        self.assertAlmostEqual(rap._ComplexAmplitude__complex_amplitude,
+        self.assertAlmostEqual(complex_amplitude._ComplexAmplitude__complex_amplitude,
                                number)
         
     def testSetComplexAmplitude(self):
-        rap = ComplexAmplitude(0)
+        complex_amplitude = ComplexAmplitude(0)
         number = 1 + 2j
-        rap.setComplexAmplitude(number)
+        complex_amplitude.setComplexAmplitude(number)
         
-        self.assertAlmostEqual(rap._ComplexAmplitude__complex_amplitude,
+        self.assertAlmostEqual(complex_amplitude._ComplexAmplitude__complex_amplitude,
                                number)
 
-    def testReflectivity(self):
+    def testIntensity(self):
         number = 1 + 2j
-        rap = ComplexAmplitude(number)
+        complex_amplitude = ComplexAmplitude(number)
 
-        self.assertAlmostEqual(rap.intensity(),
+        self.assertAlmostEqual(complex_amplitude.intensity(),
                                5)
 
     def testRescale(self):
         number = 1 + 2j
-        rap = ComplexAmplitude(number)
+        complex_amplitude = ComplexAmplitude(number)
 
-        rap.rescale(2.0)
+        complex_amplitude.rescale(2.0)
 
-        self.assertAlmostEqual(rap._ComplexAmplitude__complex_amplitude,
+        self.assertAlmostEqual(complex_amplitude._ComplexAmplitude__complex_amplitude,
                                2+4j)
 
     def testPhase(self):
-        rap = ComplexAmplitude(1 + 1j)
+        complex_amplitude = ComplexAmplitude(1 + 1j)
 
-        self.assertAlmostEqual(rap.phase(),
+        self.assertAlmostEqual(complex_amplitude.phase(),
                                np.pi / 4.0)
+
+    def testDivison(self):
+        number_one = 1 + 2j
+        complex_amplitude_one = ComplexAmplitude(number_one)
+
+        number_two = 1 + 1j
+        complex_amplitude_two = ComplexAmplitude(number_two)
+
+        result = complex_amplitude_one / complex_amplitude_two
+
+        self.assertAlmostEqual(result.intensity(),2.5)
+        self.assertAlmostEqual(result.phase(), 0.32175055)

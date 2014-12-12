@@ -164,10 +164,10 @@ class Diffraction():
         bragg_angle_in_degree = bragg_angle * 180 / pi
 
         # Check if the given geometry is a valid Bragg/Laue geometry.
-        if diffraction_setup.geometryType() is BraggDiffraction or diffraction_setup.geometryType() is BraggTransmission:
+        if diffraction_setup.geometryType() == BraggDiffraction() or diffraction_setup.geometryType() == BraggTransmission():
             if diffraction_setup.asymmetryAngle() >= bragg_angle_in_degree:
                 raise Exception("Impossible geometry. Asymmetry angle larger than Bragg angle in Bragg geometry. No reflection possible.")
-        elif diffraction_setup.geometryType() is LaueDiffraction or diffraction_setup.geometryType() is LaueTransmission:
+        elif diffraction_setup.geometryType() == LaueDiffraction() or diffraction_setup.geometryType() == LaueTransmission():
             if diffraction_setup.asymmetryAngle() <= bragg_angle_in_degree:
                 raise Exception("Impossible geometry. Asymmetry angle smaller than Bragg angle in Laue geometry. No transmission possible.")
 

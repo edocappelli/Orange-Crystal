@@ -6,13 +6,12 @@ from orangecontrib.crystal.util.Diffraction import Diffraction
 from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission, allGeometryTypes
+from orangecontrib.crystal.util.GeometryType import GeometryType, BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
 
 class DiffractionTest(unittest.TestCase):
 
     def assertAlmostEqualLists(self, list1, list2):
         self.assertAlmostEqual(np.linalg.norm(np.array(list1)-np.array(list2)),0,1)
-
 
     def assertDiffractionResult(self,s_intensity_fraction, s_phase,p_intensity_fraction, p_phase, diffraction_results):
         self.assertAlmostEqualLists(diffraction_results.sIntensity(),
@@ -32,11 +31,10 @@ class DiffractionTest(unittest.TestCase):
         self.assertIsInstance(diffraction, Diffraction)
 
     def testCalculateDiffraction(self):
-
         res = {}
-        for geometry_type in allGeometryTypes():
+        for geometry_type in GeometryType.allGeometryTypes():
             effective_asymmetry = 0.0
-            if geometry_type is LaueDiffraction or geometry_type is LaueTransmission:
+            if geometry_type == LaueDiffraction() or geometry_type == LaueTransmission():
                 effective_asymmetry = 90.0
 
             diffraction_setup = DiffractionSetup(geometry_type,
@@ -54,7 +52,7 @@ class DiffractionTest(unittest.TestCase):
             res[geometry_type] = diffraction.calculateDiffraction(diffraction_setup)
 
     def testCalculateBraggDiffraction(self):
-        diffraction_setup = DiffractionSetup(BraggDiffraction,
+        diffraction_setup = DiffractionSetup(BraggDiffraction(),
                                              "Si",
                                              thickness=0.0100 * 1e-2,
                                              miller_h=1,
@@ -81,7 +79,7 @@ class DiffractionTest(unittest.TestCase):
                                      res)
 
     def testCalculateBraggTransmission(self):
-        diffraction_setup = DiffractionSetup(BraggTransmission,
+        diffraction_setup = DiffractionSetup(BraggTransmission(),
                                              "Si",
                                              thickness=7 * 1e-6,
                                              miller_h=1,
@@ -108,7 +106,7 @@ class DiffractionTest(unittest.TestCase):
                                      res)
 
     def testCalculateLaueDiffraction(self):
-        diffraction_setup = DiffractionSetup(LaueDiffraction,
+        diffraction_setup = DiffractionSetup(LaueDiffraction(),
                                              "Si",
                                              thickness=100 * 1e-6,
                                              miller_h=1,
@@ -134,7 +132,7 @@ class DiffractionTest(unittest.TestCase):
                                      res)
 
     def testCalculateLaueTransmission(self):
-        diffraction_setup = DiffractionSetup(LaueTransmission,
+        diffraction_setup = DiffractionSetup(LaueTransmission(),
                                              "Si",
                                              thickness=100 * 1e-6,
                                              miller_h=1,
@@ -194,7 +192,7 @@ class DiffractionTest(unittest.TestCase):
     def testCheckSetup(self):
         diffraction = Diffraction()
 
-        diffraction_setup = DiffractionSetup(BraggDiffraction,
+        diffraction_setup = DiffractionSetup(BraggDiffraction(),
                                              "Si",
                                              thickness=128 * 1e-6,
                                              miller_h=1,
@@ -224,23 +222,23 @@ class DiffractionTest(unittest.TestCase):
         self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
-        diffraction_setup._geometry_type = BraggTransmission
+        diffraction_setup._geometry_type = BraggTransmission()
         self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
         # Test impossible Laue reflection.
         diffraction_setup._asymmetry_angle = 10
 
-        diffraction_setup._geometry_type = LaueDiffraction
+        diffraction_setup._geometry_type = LaueDiffraction()
         self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
-        diffraction_setup._geometry_type = LaueTransmission
+        diffraction_setup._geometry_type = LaueTransmission()
         self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,F_H_bar)
 
         # Test forbidden reflection
-        diffraction_setup._geometry_type = BraggDiffraction
+        diffraction_setup._geometry_type = BraggDiffraction()
         diffraction_setup._asymmetry_angle = 0
 
         # ... for F_0.
@@ -261,7 +259,6 @@ class DiffractionTest(unittest.TestCase):
         self.assertRaises(Exception,diffraction._checkSetup,diffraction_setup,
                           angle_bragg,F_0,F_H,float('nan')*1j)
 
-
     @unittest.skip("Do not test against XRT")
     def testXRTDriver(self):
         import orangecontrib.crystal.util.XRTDriver as XRTDriver
@@ -277,7 +274,7 @@ class DiffractionTest(unittest.TestCase):
                 xrt_res = res[geo]
 
                 effective_asymmetry = asymmetry
-                if geo is LaueDiffraction or geo is LaueTransmission:
+                if geo == LaueDiffraction() or geo == LaueTransmission():
                     effective_asymmetry = 90.0-asymmetry
 
                 diffraction_setup = DiffractionSetup(geo,
@@ -348,7 +345,7 @@ class DiffractionTest(unittest.TestCase):
 
     @unittest.skip("Do not produce former bug output.")
     def testBugsByLaurence(self):
-        geometries = [ BraggTransmission, LaueTransmission]
+        geometries = [ BraggTransmission(), LaueTransmission()]
         thicknessses = [128 * 1e-6, 5*1e-6]
         crystal_names = ["Diamond","Si"]
         asymmetries = [0,10,30,50]
@@ -359,7 +356,7 @@ class DiffractionTest(unittest.TestCase):
                 for asymmetry in asymmetries:
                     effective_asymmetry = asymmetry
                     for geo in geometries:
-                        if geo is LaueDiffraction or geo is LaueTransmission:
+                        if geo == LaueDiffraction() or geo == LaueTransmission():
                             effective_asymmetry = 90.0-asymmetry
                         
                         diffraction_setup = DiffractionSetup(geo,
