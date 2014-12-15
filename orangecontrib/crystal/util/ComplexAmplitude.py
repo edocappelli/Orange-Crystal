@@ -57,6 +57,6 @@ class ComplexAmplitude(object):
         :return: Result of the division.
         """
         division = ComplexAmplitude(self.complexAmplitude()
-                                        /
-                                        divisor.complexAmplitude())
+                                    /
+                                    divisor.complexAmplitude())
         return division

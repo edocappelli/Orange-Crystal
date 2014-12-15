@@ -1,6 +1,7 @@
 """
 Represents diffraction results.
 """
+import numpy
 from pylab import plot, show
 import matplotlib.pyplot as plt
 
@@ -8,6 +9,11 @@ from orangecontrib.crystal.util.PlotData1D import PlotData1D
 
 
 class DiffractionResult():
+
+    INDEX_POLARIZATION_S = 0
+    INDEX_POLARIZATION_P = 1
+    INDEX_DIFFERENCE_SP = 2
+
     def __init__(self, diffraction_setup, bragg_angle):
         """
         Constructor.
@@ -16,13 +22,18 @@ class DiffractionResult():
         """
         self._diffraction_setup = diffraction_setup.clone()
         self._bragg_angle = bragg_angle
-        self._angle_deviations = []
-        self._s_reflectivity = []
-        self._s_phase = []
-        self._p_reflectivity = []
-        self._p_phase = []
-        self._difference_reflectivity = []
-        self._difference_phase = []
+
+        number_energies = len(self.energies())
+        number_angles = len(self.angleDeviations())
+        number_polarizations = 3
+
+        self._intensities = numpy.zeros((number_energies,
+                                         number_angles,
+                                         number_polarizations))
+
+        self._phases = numpy.zeros((number_energies,
+                                    number_angles,
+                                    number_polarizations))
 
     def diffractionSetup(self):
         """
@@ -38,12 +49,37 @@ class DiffractionResult():
         """
         return self._bragg_angle
 
+    def energies(self):
+        """
+        Returns the energies used for these results.
+        :return: Energies used for these results.
+        """
+        return self._diffraction_setup.energies()
+
+    def _energyIndexByEnergy(self, energy):
+        """
+        Returns the index of the entry in the energies list that is closest to the given energy.
+        :param energy: Energy to find index for.
+        :return: Energy index that corresponds to the energy.
+        """
+        energy_index = abs(self.energies()-energy).argmin()
+        return energy_index
+
     def angleDeviations(self):
         """
         Returns the angle deviations used for these results.
         :return: Angle deviations used for these results.
         """
-        return self._angle_deviations
+        return self._diffraction_setup.angleDeviationGrid()
+
+    def _deviationIndexByDeviation(self, deviation):
+        """
+        Returns the index of the entry in the angle deviations list that is closest to the given deviation.
+        :param deviation: Deviation to find index for.
+        :return: Deviation index that corresponds to the deviation.
+        """
+        deviation_index = abs(self.angleDeviations()-deviation).argmin()
+        return deviation_index
 
     def angles(self):
         """
@@ -52,59 +88,68 @@ class DiffractionResult():
         """
         return [self.braggAngle() + dev for dev in  self.angleDeviations()]
 
-    def sIntensity(self):
+    def sIntensity(self, energy):
         """
         Returns the intensity of the S polarization.
+        :param energy: Energy to return intensity for.
         :return: Intensity of the S polarization.
         """
-        return self._s_reflectivity
+        return self._intensities[energy_index, :, self.INDEX_POLARIZATION_S]
 
-    def sPhase(self):
+    def sPhase(self, energy):
         """
         Returns the phase of the S polarization.
+        :param energy: Energy to return phase for.
         :return: Phase of the S polarization.
         """
-        return self._s_phase
+        return self._phases[0, :, self.INDEX_POLARIZATION_S]
 
-    def pIntensity(self):
+    def pIntensity(self, energy):
         """
         Returns the intensity of the P polarization.
+        :param energy: Energy to return intensity for.
         :return: Intensity of the P polarization.
         """
-        return self._p_reflectivity
+        return self._intensities[0, :, self.INDEX_POLARIZATION_P]
 
-    def pPhase(self):
+    def pPhase(self, energy):
         """
         Returns the phase of the P polarization.
+        :param energy: Energy to return phase for.
         :return: Phase of the P polarization.
         """
-        return self._p_phase
+        return self._phases[0, :, self.INDEX_POLARIZATION_P]
 
-    def differenceIntensity(self):
+    def differenceIntensity(self, energy):
         """
         Returns the intensity of the difference between S and P polarizations.
+        :param energy: Energy to return intensity for.
         :return: Intensity of the  difference between the S and P polarization.
         """
-        return self._difference_reflectivity
+        return self._intensities[0, :, self.INDEX_DIFFERENCE_SP]
 
-    def differencePhase(self):
+    def differencePhase(self, energy):
         """
         Returns the phase of the difference between S and P polarizations.
+        :param energy: Energy to return phase for.
         :return: Phase of the difference between S and P polarization.
         """
-        return self._difference_phase
+        return self._phases[0, :, self.INDEX_DIFFERENCE_SP]
 
-    def add(self, deviation, s_complex_amplitude, p_complex_amplitude, difference_complex_amplitude):
+    def add(self, energy, deviation, s_complex_amplitude, p_complex_amplitude, difference_complex_amplitude):
         """
         Adds a result for a given deviation.
         """
-        self._angle_deviations.append(deviation)
-        self._s_reflectivity.append(s_complex_amplitude.intensity())
-        self._s_phase.append(s_complex_amplitude.phase())
-        self._p_reflectivity.append(p_complex_amplitude.intensity())
-        self._p_phase.append(p_complex_amplitude.phase())
-        self._difference_reflectivity.append(difference_complex_amplitude.intensity())
-        self._difference_phase.append(difference_complex_amplitude.phase())
+        energy_index = self._energyIndexByEnergy(energy)
+        deviation_index = self._deviationIndexByDeviation(deviation)
+
+        self._intensities[energy_index, deviation_index, self.INDEX_POLARIZATION_S] = s_complex_amplitude.intensity()
+        self._intensities[energy_index, deviation_index, self.INDEX_POLARIZATION_P] = p_complex_amplitude.intensity()
+        self._intensities[energy_index, deviation_index, self.INDEX_DIFFERENCE_SP] = difference_complex_amplitude.intensity()
+
+        self._phases[energy_index, deviation_index, self.INDEX_POLARIZATION_S] = s_complex_amplitude.phase()
+        self._phases[energy_index, deviation_index, self.INDEX_POLARIZATION_P] = p_complex_amplitude.phase()
+        self._phases[energy_index, deviation_index, self.INDEX_DIFFERENCE_SP] = difference_complex_amplitude.phase()
 
     def asPlotData1D(self):
         """
@@ -124,46 +169,51 @@ class DiffractionResult():
             for key, value in info_dict.items():
                 plot_data.addPlotInfo(key, value)
 
-        # Intensity S polarization.
-        s_intensity = PlotData1D("Intensity - Polarization S",
-                                 "Angle deviation in urad",
-                                 "Intensity")
-        addPlotInfo(info_dict, s_intensity, angles_in_um, self.sIntensity())
+        plots = []
+        for energy in self.energies():
+            # Intensity S polarization.
+            s_intensity = PlotData1D("Intensity - Polarization S",
+                                     "Angle deviation in urad",
+                                     "Intensity")
+            addPlotInfo(info_dict, s_intensity, angles_in_um, self.sIntensity(energy))
+            plots.append(s_intensity)
 
-        # Intensity P polarization.
-        p_intensity = PlotData1D("Intensity - Polarization P",
-                                 "Angle deviation in urad",
-                                 "Intensity")
-        addPlotInfo(info_dict, p_intensity, angles_in_um, self.pIntensity())
+            # Intensity P polarization.
+            p_intensity = PlotData1D("Intensity - Polarization P",
+                                     "Angle deviation in urad",
+                                     "Intensity")
+            addPlotInfo(info_dict, p_intensity, angles_in_um, self.pIntensity(energy))
+            plots.append(p_intensity)
 
-        # Intensity difference S and P polarization.
-        intensity_difference = PlotData1D("Intensity difference",
+            # Intensity difference S and P polarization.
+            intensity_difference = PlotData1D("Intensity difference",
+                                              "Angle deviation in urad",
+                                              "Intensity")
+            addPlotInfo(info_dict, intensity_difference, angles_in_um, self.differenceIntensity(energy))
+            plots.append(intensity_difference)
+
+            # Phase S polarization.
+            s_phase = PlotData1D("Phase - Polarization S",
+                                 "Angle deviation in urad",
+                                 "Phase in rad")
+            addPlotInfo(info_dict, s_phase, angles_in_um, self.sPhase(energy))
+            plots.append(s_phase)
+
+            # Phase P polarization.
+            p_phase = PlotData1D("Phase - Polarization P",
+                                 "Angle deviation in urad",
+                                 "Phase in rad")
+            addPlotInfo(info_dict, p_phase, angles_in_um, self.pPhase(energy))
+            plots.append(p_phase)
+
+            # Phase of S and P polarization difference.
+            phase_difference = PlotData1D("Phase difference",
                                           "Angle deviation in urad",
-                                          "Intensity")
-        addPlotInfo(info_dict, intensity_difference, angles_in_um, self.differenceIntensity())
+                                          "Phase in rad")
+            addPlotInfo(info_dict, phase_difference, angles_in_um, self.differencePhase(energy))
+            plots.append(phase_difference)
 
-        # Phase S polarization.
-        s_phase = PlotData1D("Phase - Polarization S",
-                             "Angle deviation in urad",
-                             "Phase in rad")
-        addPlotInfo(info_dict, s_phase, angles_in_um, self.sPhase())
-
-        # Phase P polarization.
-        p_phase = PlotData1D("Phase - Polarization P",
-                             "Angle deviation in urad",
-                             "Phase in rad")
-        addPlotInfo(info_dict, p_phase, angles_in_um, self.pPhase())
-
-        # Phase of S and P polarization difference.
-        phase_difference = PlotData1D("Phase difference",
-                                      "Angle deviation in urad",
-                                      "Phase in rad")
-        addPlotInfo(info_dict, phase_difference, angles_in_um, self.differencePhase())
-
-        return [s_intensity, s_phase,
-                p_intensity, p_phase,
-                intensity_difference, phase_difference,
-               ]
+        return plots
 
     def _debugPlot(self):
         """

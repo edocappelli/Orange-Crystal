@@ -141,7 +141,6 @@ class PerfectCrystalDiffraction(object):
         self._d_spacing = d_spacing
 
         global use_mpmath
-
         if use_mpmath:
             self._calculation_strategy = CalculationStrategyMPMath()
         else:
@@ -374,13 +373,13 @@ class PerfectCrystalDiffraction(object):
 
         # Calculate complex amplitude according to given geometry.
         if (self.geometryType() == BraggDiffraction()):
-            reflectivity = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
+            complex_amplitude = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
         elif (self.geometryType() == LaueDiffraction()):
-            reflectivity = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
+            complex_amplitude = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
         elif (self.geometryType() == BraggTransmission()):
-            reflectivity = cv_zac_c1 * cv_zac_c2 * (cv_zac_x2 - cv_zac_x1) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
+            complex_amplitude = cv_zac_c1 * cv_zac_c2 * (cv_zac_x2 - cv_zac_x1) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
         elif (self.geometryType() == LaueTransmission()):
-            reflectivity = (cv_zac_x2 * cv_zac_c1 - cv_zac_x1 * cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
+            complex_amplitude = (cv_zac_x2 * cv_zac_c1 - cv_zac_x1 * cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
 
         if (self.isDebug):
             self.logDebug("ctemp: "+str(tmp_root))
@@ -397,7 +396,7 @@ class PerfectCrystalDiffraction(object):
             self.logDebug("zac_x1: "+str( cv_zac_x1))
             self.logDebug("zac_x2: "+str( cv_zac_x2))
 
-        return ComplexAmplitude(complex(reflectivity))
+        return ComplexAmplitude(complex(complex_amplitude))
 
     def _calculatePolarizationS(self, photon_in, zac_b, zac_z, gamma_0):
         """

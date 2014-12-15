@@ -20,17 +20,17 @@ class DiffractionTest(unittest.TestCase):
     def assertAlmostEqualLists(self, list1, list2):
         self.assertAlmostEqual(np.linalg.norm(np.array(list1)-np.array(list2)),0,1)
 
-    def assertDiffractionResult(self,s_intensity_fraction, s_phase,p_intensity_fraction, p_phase, diffraction_results):
-        self.assertAlmostEqualLists(diffraction_results.sIntensity(),
+    def assertDiffractionResult(self,energy, s_intensity_fraction, s_phase,p_intensity_fraction, p_phase, diffraction_results):
+        self.assertAlmostEqualLists(diffraction_results.sIntensity(energy),
                                     s_intensity_fraction)
 
-        self.assertAlmostEqualLists(diffraction_results.sPhase(),
+        self.assertAlmostEqualLists(diffraction_results.sPhase(energy),
                                     s_phase)
 
-        self.assertAlmostEqualLists(diffraction_results.pIntensity(),
+        self.assertAlmostEqualLists(diffraction_results.pIntensity(energy),
                                     p_intensity_fraction)
 
-        self.assertAlmostEqualLists(diffraction_results.pPhase(),
+        self.assertAlmostEqualLists(diffraction_results.pPhase(energy),
                                     p_phase)
 
     def testConstructor(self):
@@ -83,7 +83,8 @@ class DiffractionTest(unittest.TestCase):
         p_intensity_fraction=[0.014173087736472335, 0.025303154305706777, 0.06615101317795873, 0.5244213525516417, 0.9369357917670563]
         p_phase=[-0.793312359389805, -0.7582549664194022, -0.750381901971316, -0.8168058020223106, -2.353282699138147]
 
-        self.assertDiffractionResult(s_intensity_fraction,
+        self.assertDiffractionResult(10000,
+                                     s_intensity_fraction,
                                      s_phase,
                                      p_intensity_fraction,
                                      p_phase,
@@ -112,7 +113,8 @@ class DiffractionTest(unittest.TestCase):
         p_intensity_fraction=[0.6287809489878944, 0.6436830110383608, 0.6260332041734042, 0.5556946212761588, 0.4666570232587092]
         p_phase=[2.4244705128134725, 2.2877506323333496, 2.093850209325308, 1.7465537434885796, 0.8969740263938913]
 
-        self.assertDiffractionResult(s_intensity_fraction,
+        self.assertDiffractionResult(10174,
+                                     s_intensity_fraction,
                                      s_phase,
                                      p_intensity_fraction,
                                      p_phase,
@@ -140,7 +142,8 @@ class DiffractionTest(unittest.TestCase):
         p_intensity_fraction=[0.0067872399580799405, 0.09329690887082268, 0.12605693490089803, 0.09327296207883676, 0.006786852383095909]
         p_phase=[-1.843856553406182, 1.687240781547736, 0.9198814442403762, 0.49730800506928513, 2.059512850321714]
 
-        self.assertDiffractionResult(s_intensity_fraction,
+        self.assertDiffractionResult(8000,
+                                     s_intensity_fraction,
                                      s_phase,
                                      p_intensity_fraction,
                                      p_phase,
@@ -168,7 +171,8 @@ class DiffractionTest(unittest.TestCase):
         p_intensity_fraction=[0.44963571348593884, 0.5762774883052565, 0.4809772356165785, 0.345952433909957, 0.23751769111657017]
         p_phase=[2.8624375781774436, 0.5308696618055758, 0.1704734474721342, -0.3129214909448153, -2.5856672658533006]
 
-        self.assertDiffractionResult(s_intensity_fraction,
+        self.assertDiffractionResult(10000,
+                                     s_intensity_fraction,
                                      s_phase,
                                      p_intensity_fraction,
                                      p_phase,

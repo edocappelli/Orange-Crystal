@@ -293,7 +293,8 @@ class Diffraction():
             polarization_difference = result_deviation["S"] / result_deviation["P"]
 
             # Add result of current deviation.
-            result.add(deviation,
+            result.add(energy,
+                       deviation,
                        result_deviation["S"],
                        result_deviation["P"],
                        polarization_difference)
