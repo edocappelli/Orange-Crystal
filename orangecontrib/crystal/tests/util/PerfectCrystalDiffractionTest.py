@@ -136,7 +136,7 @@ class PerfectCrystalDiffractionTest(unittest.TestCase):
         mpc = perfect_crystal_diffraction._createVariable(complex_number)
 
         self.assertAlmostEqual(mpc,complex_number)
-#        self.assertIsInstance(mpc,mpmath.ctx_mp_python.mpc)
+        self.assertIsInstance(mpc,(mpmath.ctx_mp_python.mpc,complex))
 
 
     def testCalculateGamma(self):

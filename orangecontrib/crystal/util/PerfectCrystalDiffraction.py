@@ -5,8 +5,14 @@ Except for energy all units are in SI. Energy is in eV.
 """
 
 from numpy import pi, cos, sqrt, real
-import mpmath
-import cmath
+
+# Use mpmath if possible. Otherwise use native cmath.
+try:
+    import mpmath
+    use_mpmath = True
+except:
+    import cmath
+    use_mpmath = False
 
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
@@ -134,7 +140,13 @@ class PerfectCrystalDiffraction(object):
         self._thickness = thickness
         self._d_spacing = d_spacing
 
-        self._calculation_strategy = CalculationStrategyMPMath()
+        global use_mpmath
+
+        if use_mpmath:
+            self._calculation_strategy = CalculationStrategyMPMath()
+        else:
+            self._calculation_strategy = CalculationStrategyMath()
+
 
     def braggNormal(self):
         """

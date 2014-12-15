@@ -22,7 +22,7 @@ def diffractionSetup():
                                          energy_min=10000,
                                          energy_max=10000,
                                          energy_points=1,
-                                         angle_deviation_min= -100.0e-6,
+                                         angle_deviation_min=-100.0e-6,
                                          angle_deviation_max=100e-6,
                                          angle_deviation_points=175)
     return diffraction_setup
