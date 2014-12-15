@@ -38,8 +38,10 @@ class CrystalDiffractionWidget(widget.OWWidget):
     
     value_sp_asymmetry_angle = settings.Setting(0)
 
-    value_le_energy = settings.Setting(8.0)
-    
+    value_le_energy_min = settings.Setting(8.0)
+    value_le_energy_max = settings.Setting(8.0)
+    value_le_energy_points = settings.Setting(1)
+
     value_le_angle_min = settings.Setting(-100)
     value_le_angle_max = settings.Setting(100)
     value_le_angle_points = settings.Setting(200)
@@ -116,10 +118,20 @@ class CrystalDiffractionWidget(widget.OWWidget):
                                            step=1,
                                            label="Asymmetry angle [deg]")
 
-        self.le_energy = gui.lineEdit(self,
-                                      self,
-                                      "value_le_energy",
-                                      label="Energy [keV]")
+        self.le_energy_min = gui.lineEdit(self,
+                                          self,
+                                          "value_le_energy_min",
+                                          label="Minimum energy [keV]")
+
+        self.le_energy_max = gui.lineEdit(self,
+                                          self,
+                                          "value_le_energy_max",
+                                          label="Maximum energy [keV]")
+
+        self.le_energy_min = gui.lineEdit(self,
+                                          self,
+                                          "value_le_energy_points",
+                                          label="Energy points")
 
         self.le_angle_min = gui.lineEdit(self,
                                          self,
@@ -163,9 +175,9 @@ class CrystalDiffractionWidget(widget.OWWidget):
                                              int(self.value_sp_miller_k),
                                              int(self.value_sp_miller_l),
                                              float(self.value_sp_asymmetry_angle),
-                                             float(self.value_le_energy)*1e3,
-                                             float(self.value_le_energy)*1e3,
-                                             1,
+                                             float(self.value_le_energy_min)*1e3,
+                                             float(self.value_le_energy_max)*1e3,
+                                             int(self.value_le_energy_points),
                                              float(self.value_le_angle_min) * 10**-6,
                                              float(self.value_le_angle_max) * 10 **-6,
                                              int(self.value_le_angle_points))
