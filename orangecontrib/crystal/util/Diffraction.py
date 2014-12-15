@@ -186,16 +186,7 @@ class Diffraction():
         if abs(F_H_bar.real) < 1e-7 or isnan(F_H_bar.real) or abs(F_H_bar.imag) < 1e-7 or isnan(F_H_bar.imag):
             raise StructureFactorFHbarIsZeroException()
 
-    def calculateDiffraction(self, diffraction_setup):
-        """
-        Calculates the diffraction/transmission given by the setup.
-        :param diffraction_setup: The diffraction setup.
-        :return: DiffractionResult representing this setup.
-        """
-        # Calculate energy in keV.
-        energy = diffraction_setup.energies()[0]
-        energy_in_kev = energy / 1000.0
-
+    def _perfectCrystalForEnergy(self, diffraction_setup, energy):
         # Retrieve Miller indices from setup(for readability) .
         miller_h = diffraction_setup.millerH()
         miller_k = diffraction_setup.millerK()
@@ -203,6 +194,10 @@ class Diffraction():
 
         # Load crystal from xraylib.
         crystal = xraylib.Crystal_GetCrystal(diffraction_setup.crystalName())
+
+        # Calculate energy in keV.
+        energy_in_kev = energy / 1000.0
+
 
         # Retrieve bragg angle from xraylib.
         angle_bragg = xraylib.Bragg_angle(crystal,
@@ -270,8 +265,17 @@ class Diffraction():
                                                     diffraction_setup.thickness(),
                                                     d_spacing)
 
-        # Create DiffractionResult instance.
-        result = DiffractionResult(diffraction_setup, angle_bragg)
+        return perfect_crystal
+
+    def _calculateDiffractionForEnergy(self, diffraction_setup, energy, result):
+        """
+        Calculates the diffraction/transmission given by the setup.
+        :param diffraction_setup: The diffraction setup.
+        :return: DiffractionResult representing this setup.
+        """
+
+        # Get PerfectCrystal instance for the current energy.
+        perfect_crystal = self._perfectCrystalForEnergy(diffraction_setup, energy)
 
         # Raise calculation start.
         self._onCalculationStart()
@@ -282,7 +286,7 @@ class Diffraction():
             self._onProgressEveryTenPercent(index, diffraction_setup.angleDeviationPoints())
 
             # Calculate deviated incoming photon.
-            photon_direction = self._calculateIncomingPhotonDirection(angle_bragg,
+            photon_direction = self._calculateIncomingPhotonDirection(perfect_crystal.braggAngle(),
                                                                       deviation)
             photon_in = Photon(energy, photon_direction)
 
@@ -301,6 +305,21 @@ class Diffraction():
 
         # Raise calculation end.
         self._onCalculationEnd()
+
+        # Return diffraction results.
+        return result
+
+    def calculateDiffraction(self, diffraction_setup):
+        """
+        Calculates the diffraction/transmission given by the setup.
+        :param diffraction_setup: The diffraction setup.
+        :return: DiffractionResult representing this setup.
+        """
+        # Create DiffractionResult instance.
+        result = DiffractionResult(diffraction_setup, 0.0)
+
+        for energy in diffraction_setup.energies():
+            self._calculateDiffractionForEnergy(diffraction_setup, energy, result)
 
         # Return diffraction results.
         return result

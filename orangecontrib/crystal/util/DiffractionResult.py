@@ -144,7 +144,7 @@ class DiffractionResult():
 
     def add(self, energy, deviation, s_complex_amplitude, p_complex_amplitude, difference_complex_amplitude):
         """
-        Adds a result for a given deviation.
+        Adds a result for a given energy and deviation.
         """
         energy_index = self._energyIndexByEnergy(energy)
         deviation_index = self._deviationIndexByDeviation(deviation)

@@ -160,7 +160,7 @@ class DiffractionResultTest(unittest.TestCase):
         # Test for energy 10000
         # s polarization
         self.assertAlmostEqual(diffraction_result.pIntensity(10000)[0],
-                               99960004)
+                               99960004.0)
         self.assertAlmostEqual(diffraction_result.pIntensity(10000)[24],
                                99999183.675265953)
         self.assertAlmostEqual(diffraction_result.pIntensity(10000)[25],
@@ -170,7 +170,7 @@ class DiffractionResultTest(unittest.TestCase):
 
         # p polarization
         self.assertAlmostEqual(diffraction_result.sIntensity(10000)[0],
-                               99980001)
+                               99980001.0)
         self.assertAlmostEqual(diffraction_result.sIntensity(10000)[24],
                                99999591.837216482)
         self.assertAlmostEqual(diffraction_result.sIntensity(10000)[25],
@@ -180,6 +180,17 @@ class DiffractionResultTest(unittest.TestCase):
 
 
         # Test for energy 10001
+        # s polarization
+        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[0],
+                               100000000.0)
+        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[24],
+                               100019592.79640016)
+        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[25],
+                               100020409.20443282)
+        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[49],
+                               100040004.0)
+
+        # p polarization
         self.assertAlmostEqual(diffraction_result.pIntensity(10001)[0],
                                99980001.0)
         self.assertAlmostEqual(diffraction_result.pIntensity(10001)[24],
