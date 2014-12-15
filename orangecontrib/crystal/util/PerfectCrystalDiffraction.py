@@ -29,7 +29,7 @@ class CalculationStrategy(object):
         :param initial_value: Initial value of the variable.
         :return: Calculation variable.
         """
-        raise Exception("Must overload this method.")
+        raise Exception("Must override this method.")
 
     def exponentiate(self, power):
         """
@@ -37,7 +37,7 @@ class CalculationStrategy(object):
         :param power: The power to raise to.
         :return: Exponential.
         """
-        raise Exception("Must overload this method.")
+        raise Exception("Must override this method.")
 
     def toComplex(self, variable):
         """
@@ -45,7 +45,7 @@ class CalculationStrategy(object):
         :param variable: Calculation variable to convert.
         :return: Native python complex variable.
         """
-        raise Exception("Must overload this method.")
+        raise Exception("Must override this method.")
 
 
 class CalculationStrategyMPMath(CalculationStrategy):
