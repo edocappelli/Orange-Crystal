@@ -181,13 +181,13 @@ class DiffractionResultTest(unittest.TestCase):
 
         # Test for energy 10001
         self.assertAlmostEqual(diffraction_result.pIntensity(10001)[0],
-                               99960004)
+                               99980001.0)
         self.assertAlmostEqual(diffraction_result.pIntensity(10001)[24],
-                               99999183.675265953)
+                               100019184.59363331)
         self.assertAlmostEqual(diffraction_result.pIntensity(10001)[25],
-                               100000816.32806599)
+                               100020817.40969864)
         self.assertAlmostEqual(diffraction_result.pIntensity(10001)[49],
-                               100040004.0)
+                               100060009.0)
 
     def testAsPlotData1D(self):
         diffraction_setup = DiffractionSetup(BraggDiffraction(),

@@ -94,6 +94,7 @@ class DiffractionResult():
         :param energy: Energy to return intensity for.
         :return: Intensity of the S polarization.
         """
+        energy_index = self._energyIndexByEnergy(energy)
         return self._intensities[energy_index, :, self.INDEX_POLARIZATION_S]
 
     def sPhase(self, energy):
@@ -102,7 +103,8 @@ class DiffractionResult():
         :param energy: Energy to return phase for.
         :return: Phase of the S polarization.
         """
-        return self._phases[0, :, self.INDEX_POLARIZATION_S]
+        energy_index = self._energyIndexByEnergy(energy)
+        return self._phases[energy_index, :, self.INDEX_POLARIZATION_S]
 
     def pIntensity(self, energy):
         """
@@ -110,7 +112,8 @@ class DiffractionResult():
         :param energy: Energy to return intensity for.
         :return: Intensity of the P polarization.
         """
-        return self._intensities[0, :, self.INDEX_POLARIZATION_P]
+        energy_index = self._energyIndexByEnergy(energy)
+        return self._intensities[energy_index, :, self.INDEX_POLARIZATION_P]
 
     def pPhase(self, energy):
         """
@@ -118,7 +121,8 @@ class DiffractionResult():
         :param energy: Energy to return phase for.
         :return: Phase of the P polarization.
         """
-        return self._phases[0, :, self.INDEX_POLARIZATION_P]
+        energy_index = self._energyIndexByEnergy(energy)
+        return self._phases[energy_index, :, self.INDEX_POLARIZATION_P]
 
     def differenceIntensity(self, energy):
         """
@@ -126,7 +130,8 @@ class DiffractionResult():
         :param energy: Energy to return intensity for.
         :return: Intensity of the  difference between the S and P polarization.
         """
-        return self._intensities[0, :, self.INDEX_DIFFERENCE_SP]
+        energy_index = self._energyIndexByEnergy(energy)
+        return self._intensities[energy_index, :, self.INDEX_DIFFERENCE_SP]
 
     def differencePhase(self, energy):
         """
@@ -134,7 +139,8 @@ class DiffractionResult():
         :param energy: Energy to return phase for.
         :return: Phase of the difference between S and P polarization.
         """
-        return self._phases[0, :, self.INDEX_DIFFERENCE_SP]
+        energy_index = self._energyIndexByEnergy(energy)
+        return self._phases[energy_index, :, self.INDEX_DIFFERENCE_SP]
 
     def add(self, energy, deviation, s_complex_amplitude, p_complex_amplitude, difference_complex_amplitude):
         """
