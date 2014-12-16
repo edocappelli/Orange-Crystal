@@ -21,16 +21,16 @@ class DiffractionTest(unittest.TestCase):
         self.assertAlmostEqual(np.linalg.norm(np.array(list1)-np.array(list2)),0,1)
 
     def assertDiffractionResult(self,energy, s_intensity_fraction, s_phase,p_intensity_fraction, p_phase, diffraction_results):
-        self.assertAlmostEqualLists(diffraction_results.sIntensity(energy),
+        self.assertAlmostEqualLists(diffraction_results.sIntensityByEnergy(energy),
                                     s_intensity_fraction)
 
-        self.assertAlmostEqualLists(diffraction_results.sPhase(energy),
+        self.assertAlmostEqualLists(diffraction_results.sPhaseByEnergy(energy),
                                     s_phase)
 
-        self.assertAlmostEqualLists(diffraction_results.pIntensity(energy),
+        self.assertAlmostEqualLists(diffraction_results.pIntensityByEnergy(energy),
                                     p_intensity_fraction)
 
-        self.assertAlmostEqualLists(diffraction_results.pPhase(energy),
+        self.assertAlmostEqualLists(diffraction_results.pPhaseByEnergy(energy),
                                     p_phase)
 
     def testConstructor(self):
@@ -315,9 +315,9 @@ class DiffractionTest(unittest.TestCase):
                 res = diffraction.calculateDiffraction(diffraction_setup)
 
                 x = [i * 1e+6 for i in res.angleDeviations()]
-                plot(x, res.sIntensity(), label="S polarization")
+                plot(x, res.sIntensityByEnergy(), label="S polarization")
                 x = [i * 1e+6 for i in xrt_res.angleDeviations()]
-                plot(x, xrt_res.sIntensity(), label="XRT S polarization")
+                plot(x, xrt_res.sIntensityByEnergy(), label="XRT S polarization")
                 legend()
                 title(geo.description())
                 ylabel('Reflectivity')
@@ -328,9 +328,9 @@ class DiffractionTest(unittest.TestCase):
                 figure()
 
                 x = [i * 1e+6 for i in res.angleDeviations()]
-                plot(x, res.pIntensity(), label="P polarization")
+                plot(x, res.pIntensityByEnergy(), label="P polarization")
                 x = [i * 1e+6 for i in xrt_res.angleDeviations()]
-                plot(x, xrt_res.pIntensity(), label="XRT P polarization")
+                plot(x, xrt_res.pIntensityByEnergy(), label="XRT P polarization")
                 legend()
                 title(geo.description())
                 ylabel('Reflectivity')
@@ -341,9 +341,9 @@ class DiffractionTest(unittest.TestCase):
                 figure()
 
                 x = [i * 1e+6 for i in res.angleDeviations()]
-                plot(x, res.sPhase(), label="S polarization")
+                plot(x, res.sPhaseByEnergy(), label="S polarization")
                 x = [i * 1e+6 for i in xrt_res.angleDeviations()]
-                plot(x, xrt_res.sPhase(), label="XRT S polarization")
+                plot(x, xrt_res.sPhaseByEnergy(), label="XRT S polarization")
                 legend()
                 title(geo.description())
                 ylabel('Phase shift')
@@ -354,9 +354,9 @@ class DiffractionTest(unittest.TestCase):
                 figure()
 
                 x = [i * 1e+6 for i in res.angleDeviations()]
-                plot(x, res.pPhase(), label="P polarization")
+                plot(x, res.pPhaseByEnergy(), label="P polarization")
                 x = [i * 1e+6 for i in xrt_res.angleDeviations()]
-                plot(x, xrt_res.pPhase(), label="XRT P polarization")
+                plot(x, xrt_res.pPhaseByEnergy(), label="XRT P polarization")
                 legend()
                 title(geo.description())
                 ylabel('Phase shift')

@@ -171,7 +171,10 @@ class PlotViewer1D(widget.OWWidget):
         self.combobox.setModel(self.model_plots)
         
     def onDiffractionResult(self, diffraction_results):
-        plots = diffraction_results.asPlotData1D()
+        #plots = diffraction_results.asPlotData1D()
+        plot_generator = diffraction_results.plotGenerator()
+        plots = plot_generator.plots()
+
         self.setPlots(plots)
         self.table.setVisible(False)
         self.table.resizeColumnsToContents()

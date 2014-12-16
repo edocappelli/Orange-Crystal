@@ -114,29 +114,53 @@ class DiffractionResultTest(unittest.TestCase):
         self.assertAlmostEqual(diffraction_result.angles()[25], 0.3+2.040816e-06)
         self.assertAlmostEqual(diffraction_result.angles()[49], 0.3+100e-6)
 
-    def testSIntensity(self):
+    def testSIntensityByEnergy(self):
         diffraction_result = diffractionResult()
-        self.assertTrue((diffraction_result.sIntensity(10000)==numpy.zeros(50)).all())
+        self.assertTrue((diffraction_result.sIntensityByEnergy(10000)==numpy.zeros(50)).all())
 
-    def testSPhase(self):
+    def testSPhaseByEnergy(self):
         diffraction_result = diffractionResult()
-        self.assertTrue((diffraction_result.sPhase(10000)==numpy.zeros(50)).all())
+        self.assertTrue((diffraction_result.sPhaseByEnergy(10000)==numpy.zeros(50)).all())
 
-    def testPIntensity(self):
+    def testPIntensityByEnergy(self):
         diffraction_result = diffractionResult()
-        self.assertTrue((diffraction_result.pIntensity(10000)==numpy.zeros(50)).all())
+        self.assertTrue((diffraction_result.pIntensityByEnergy(10000)==numpy.zeros(50)).all())
 
-    def testPPhase(self):
+    def testPPhaseByEnergy(self):
         diffraction_result = diffractionResult()
-        self.assertTrue((diffraction_result.pPhase(10000)==numpy.zeros(50)).all())
+        self.assertTrue((diffraction_result.pPhaseByEnergy(10000)==numpy.zeros(50)).all())
 
-    def testDifferenceIntensity(self):
+    def testDifferenceIntensityByEnergy(self):
         diffraction_result = diffractionResult()
-        self.assertTrue((diffraction_result.differenceIntensity(10000)==numpy.zeros(50)).all())
+        self.assertTrue((diffraction_result.differenceIntensityByEnergy(10000)==numpy.zeros(50)).all())
 
-    def testDifferencePhase(self):
+    def testDifferencePhaseByEnergy(self):
         diffraction_result = diffractionResult()
-        self.assertTrue((diffraction_result.differencePhase(10000)==numpy.zeros(50)).all())
+        self.assertTrue((diffraction_result.differencePhaseByEnergy(10000)==numpy.zeros(50)).all())
+
+    def testSIntensityByDeviation(self):
+        diffraction_result = diffractionResult()
+        self.assertTrue((diffraction_result.sIntensityByDeviation(100e6)==numpy.zeros(1)).all())
+
+    def testSPhaseByDeviation(self):
+        diffraction_result = diffractionResult()
+        self.assertTrue((diffraction_result.sPhaseByDeviation(100e6)==numpy.zeros(1)).all())
+
+    def testPIntensityByDeviation(self):
+        diffraction_result = diffractionResult()
+        self.assertTrue((diffraction_result.pIntensityByDeviation(100e6)==numpy.zeros(1)).all())
+
+    def testPPhaseByDeviation(self):
+        diffraction_result = diffractionResult()
+        self.assertTrue((diffraction_result.pPhaseByDeviation(100e6)==numpy.zeros(1)).all())
+
+    def testDifferenceIntensityByDeviation(self):
+        diffraction_result = diffractionResult()
+        self.assertTrue((diffraction_result.differenceIntensityByDeviation(100e6)==numpy.zeros(1)).all())
+
+    def testDifferencePhaseByDeviation(self):
+        diffraction_result = diffractionResult()
+        self.assertTrue((diffraction_result.differencePhaseByDeviation(100e6)==numpy.zeros(1)).all())
 
     def testAdd(self):
         diffraction_setup = diffractionSetupMultipleEnergy()
@@ -159,45 +183,45 @@ class DiffractionResultTest(unittest.TestCase):
 
         # Test for energy 10000
         # s polarization
-        self.assertAlmostEqual(diffraction_result.pIntensity(10000)[0],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10000)[0],
                                99960004.0)
-        self.assertAlmostEqual(diffraction_result.pIntensity(10000)[24],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10000)[24],
                                99999183.675265953)
-        self.assertAlmostEqual(diffraction_result.pIntensity(10000)[25],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10000)[25],
                                100000816.32806599)
-        self.assertAlmostEqual(diffraction_result.pIntensity(10000)[49],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10000)[49],
                                100040004.0)
 
         # p polarization
-        self.assertAlmostEqual(diffraction_result.sIntensity(10000)[0],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10000)[0],
                                99980001.0)
-        self.assertAlmostEqual(diffraction_result.sIntensity(10000)[24],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10000)[24],
                                99999591.837216482)
-        self.assertAlmostEqual(diffraction_result.sIntensity(10000)[25],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10000)[25],
                                100000408.16361651)
-        self.assertAlmostEqual(diffraction_result.sIntensity(10000)[49],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10000)[49],
                                100020001.0)
 
 
         # Test for energy 10001
         # s polarization
-        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[0],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10001)[0],
                                100000000.0)
-        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[24],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10001)[24],
                                100019592.79640016)
-        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[25],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10001)[25],
                                100020409.20443282)
-        self.assertAlmostEqual(diffraction_result.sIntensity(10001)[49],
+        self.assertAlmostEqual(diffraction_result.sIntensityByEnergy(10001)[49],
                                100040004.0)
 
         # p polarization
-        self.assertAlmostEqual(diffraction_result.pIntensity(10001)[0],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10001)[0],
                                99980001.0)
-        self.assertAlmostEqual(diffraction_result.pIntensity(10001)[24],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10001)[24],
                                100019184.59363331)
-        self.assertAlmostEqual(diffraction_result.pIntensity(10001)[25],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10001)[25],
                                100020817.40969864)
-        self.assertAlmostEqual(diffraction_result.pIntensity(10001)[49],
+        self.assertAlmostEqual(diffraction_result.pIntensityByEnergy(10001)[49],
                                100060009.0)
 
     def testAsPlotData1D(self):
