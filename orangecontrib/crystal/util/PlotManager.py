@@ -18,8 +18,8 @@ class PlotManager(object):
     def settings(self):
         return self._plotGenerator().settings()
 
-    def setSettings(self, setting_name, value):
-        self._plotGenerator().setSettings(setting_name,
+    def setSetting(self, setting_name, value):
+        self._plotGenerator().setSetting(setting_name,
                                           value)
 
     def plots(self):

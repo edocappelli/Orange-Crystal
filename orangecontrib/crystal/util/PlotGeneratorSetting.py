@@ -4,7 +4,7 @@ Represents a plot generator setting. (e.g. EnergySweep, AngleSweep, Polarization
 import copy
 
 class PlotGeneratorSetting(object):
-    def __init__(self, name, description, setting_type, default_value=None):
+    def __init__(self, name, description, setting_type, default_value):
         self.__name = name
         self.__description = description
         self.__type = setting_type

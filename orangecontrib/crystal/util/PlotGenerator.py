@@ -4,14 +4,17 @@ Generates plots depending on set settings.
 
 
 class PlotGenerator(object):
-    def __init__(self, list_settings):
+    def __init__(self):
+        list_settings = self._defaultSettings()
         self._settings = self._cloneSettings(list_settings)
         self._setProxiedPlots(None)
         self._setSettingsAreDirty(True)
 
     def _cloneSettings(self, list_settings):
+        cloned_settings = []
         for setting in list_settings:
-            self._settings.append(setting.clone())
+            cloned_settings.append(setting.clone())
+        return cloned_settings
 
     def _setSettingsAreDirty(self, value):
         self._settings_are_dirty = value
@@ -24,6 +27,9 @@ class PlotGenerator(object):
 
     def _proxiedPlots(self):
         return self._proxied_plots
+
+    def _defaultSettings(self):
+        raise Exception("Must override this method.")
 
     def _plots(self):
         raise Exception("Must override this method.")

@@ -17,6 +17,8 @@ from Orange.widgets import widget, settings, gui
 import Orange.data
 
 from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
+from orangecontrib.crystal.util.PlotManager import PlotManager
+
 from orangecontrib.crystal.util.PlotData1D import PlotData1D
 
 class PlotInfoModel(QAbstractTableModel):
@@ -101,11 +103,16 @@ class PlotSetModel(QAbstractTableModel):
         return item    
     
     def plotByIndex(self, index):
-        return self._plotsList()[index]
+        plot_list = self._plotsList()
+
+        if index >= len(plot_list) or index < 0:
+            return None
+
+        return plot_list[index]
 
 class PlotViewer1D(widget.OWWidget):
-    name = "Plot Viewer 2D"
-    description = "Can plot 2D data"
+    name = "Plot Viewer 1D"
+    description = "Can plot 1D data"
     icon = "icons/screen.svg"
 
     want_main_area=False
@@ -114,13 +121,6 @@ class PlotViewer1D(widget.OWWidget):
     inputs = [("Crystal diffraction", DiffractionResult, "onDiffractionResult")]
     def __init__(self, parent=None, signalManager=None):
         widget.OWWidget.__init__(self, parent, signalManager)
-
-        # GUI
-#        box = gui.widgetBox(self.controlArea, "Plots")
-#        self.infoa = gui.widgetLabel(box, '')
-#        self.resize(100,50)
-
-
 
         self.combobox = QComboBox()
         self.connect(self.combobox, 
@@ -165,43 +165,92 @@ class PlotViewer1D(widget.OWWidget):
         self.hbox_plots_graph.addLayout(self.vbox_graph)
         
         self.layout().addLayout(self.hbox_plots_graph)
-        
+
+        self._settings_widgets = []
+        self._setPlotManager(PlotManager())
+
+    def _setPlotManager(self, plot_manager):
+        self._plot_manager = plot_manager
+
+    def _plotManager(self):
+        return self._plot_manager
+
     def setPlots(self, plots):
         self.model_plots = PlotSetModel(plots)
         self.combobox.setModel(self.model_plots)
-        
-    def onDiffractionResult(self, diffraction_results):
-        #plots = diffraction_results.asPlotData1D()
-        plot_generator = diffraction_results.plotGenerator()
-        plots = plot_generator.plots()
 
+    def _updatePlots(self):
+        plots = self._plotManager().plots()
         self.setPlots(plots)
         self.table.setVisible(False)
         self.table.resizeColumnsToContents()
         self.table.setVisible(True)
-        
-    def plots_combobox_index_changed(self, index):
-        plot = self.combobox.model().plotByIndex(index)
-        plot_info = plot.plotInfo()
 
-        self.model_plot_info = PlotInfoModel(plot_info)
-        self.table.setModel(self.model_plot_info)
-        
+    def _checkBoxStateChanged(self, name, value):
+        bool_value = bool(value)
+        self._plotManager().setSetting(name, bool_value)
+        self._updatePlots()
+
+    def _widgetFromPlotManagerSetting(self, setting):
+        if setting.type() is bool:
+            widget = QCheckBox(setting.description(), self)
+            widget.setChecked(setting.value())
+            handler = lambda x: self._checkBoxStateChanged(setting.name(), x)
+            widget.stateChanged.connect(handler)
+        else:
+            raise NotImplemented("PlotMangerSetting type %s not implemented" % str(setting.type()))
+
+        return widget
+
+    def _updateSettingsWidgets(self):
+
+        for widget in self._settings_widgets:
+            self.vbox_plots.removeWidget(widget)
+            widget.deleteLater()
+
+        self._settings_widgets = []
+
+        for setting in self._plotManager().settings():
+            widget = self._widgetFromPlotManagerSetting(setting)
+            self.vbox_plots.addWidget(widget)
+            self._settings_widgets.append(widget)
+
+    def onDiffractionResult(self, diffraction_results):
+        self._plotManager().setPlotGenerator(diffraction_results.plotGenerator())
+        self._updateSettingsWidgets()
+        self._updatePlots()
+
+    def plots_combobox_index_changed(self, index):
+
+        plot = self.combobox.model().plotByIndex(index)
+
         # create an axis
         ax = self.figure.add_subplot(111)
 
         # discards the old graph
         ax.hold(False)
 
-        # plot data
-        ax.plot(plot.x(), plot.y(), '*-')
-        ax.set_title(plot.title())
-        ax.set_xlabel(plot.titleXAxis())
-        ax.set_ylabel(plot.titleYAxis())
+        if plot is None:
+            ax.plot([],[], '*-')
+            ax.set_title("")
+            ax.set_xlabel("")
+            ax.set_ylabel("")
+        else:
+
+            plot_info = plot.plotInfo()
+
+            self.model_plot_info = PlotInfoModel(plot_info)
+            self.table.setModel(self.model_plot_info)
+
+            # plot data
+            ax.plot(plot.x(), plot.y(), '*-')
+            ax.set_title(plot.title())
+            ax.set_xlabel(plot.titleXAxis())
+            ax.set_ylabel(plot.titleYAxis())
 
         # refresh canvas
-        self.canvas.draw()          
-             
+        self.canvas.draw()
+
     def btn_screenshot_clicked(self):
         for i in range(self.combobox.count()):
             self.combobox.setCurrentIndex(i)
