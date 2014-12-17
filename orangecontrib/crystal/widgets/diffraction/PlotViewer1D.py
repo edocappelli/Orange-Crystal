@@ -135,7 +135,8 @@ class PlotViewer1D(widget.OWWidget):
 
         self.hbox_plots_graph = QHBoxLayout()
         self.vbox_plots = QVBoxLayout()        
-        self.vbox_graph = QVBoxLayout()        
+        self.vbox_plot_settings = QVBoxLayout()
+        self.vbox_graph = QVBoxLayout()
         
         self.table = QTableView()
 
@@ -155,6 +156,7 @@ class PlotViewer1D(widget.OWWidget):
         self.toolbar = NavigationToolbar(self.canvas, self)
 
         self.vbox_plots.addWidget(self.combobox)
+        self.vbox_plots.addLayout(self.vbox_plot_settings)
         self.vbox_plots.addWidget(self.table)
         self.vbox_plots.addWidget(self.btn_screenshot)
 
@@ -205,14 +207,14 @@ class PlotViewer1D(widget.OWWidget):
     def _updateSettingsWidgets(self):
 
         for widget in self._settings_widgets:
-            self.vbox_plots.removeWidget(widget)
+            self.vbox_plot_settings.removeWidget(widget)
             widget.deleteLater()
 
         self._settings_widgets = []
 
         for setting in self._plotManager().settings():
             widget = self._widgetFromPlotManagerSetting(setting)
-            self.vbox_plots.addWidget(widget)
+            self.vbox_plot_settings.addWidget(widget)
             self._settings_widgets.append(widget)
 
     def onDiffractionResult(self, diffraction_results):
@@ -280,16 +282,6 @@ class PlotViewer1D(widget.OWWidget):
             
             p.save(filename, 'png')
             
-                 
-    def set_data(self, dataset):
-        if dataset is not None:
- #           self.infoa.setText('%d instances in input data set' % len(dataset))
-            ind = 1
-            #self.send("Sampled Data", sample)
-        else:
- #           self.infoa.setText('No data on input yet, waiting to get something.')
-            self.send("Sampled Data", None)
-
 if __name__=="__main__":
     appl = QApplication(sys.argv)
     ow = PlotViewer1D()
