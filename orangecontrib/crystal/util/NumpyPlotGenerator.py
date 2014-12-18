@@ -12,8 +12,11 @@ class NumpyPlotGenerator(PlotGenerator):
         super(NumpyPlotGenerator, self).__init__()
 
         if len(numpy_array.shape) != 2:
-            raise Exception("Only matrices are supported (2D numpy array)")
-            
+            raise Exception("Only matrices are supported (2D numpy array).")
+
+        if numpy_array.shape[1] != len(column_names):
+            raise Exception("Number of columns unequals the number of given column names.")
+
         self._array = numpy_array
         self._column_names = column_names
 
