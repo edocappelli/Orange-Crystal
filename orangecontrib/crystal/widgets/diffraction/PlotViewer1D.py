@@ -13,13 +13,11 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as Naviga
 import matplotlib.pyplot as plt
 
 import Orange
-from Orange.widgets import widget, settings, gui
-import Orange.data
+from Orange.widgets import widget, gui
 
-from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
+from orangecontrib.crystal.util.PlotGenerator import PlotGenerator
 from orangecontrib.crystal.util.PlotManager import PlotManager
 
-from orangecontrib.crystal.util.PlotData1D import PlotData1D
 
 class PlotInfoModel(QAbstractTableModel):
     def __init__(self, data_dict):
@@ -118,7 +116,7 @@ class PlotViewer1D(widget.OWWidget):
     want_main_area=False
     want_control_area=False
 
-    inputs = [("Crystal diffraction", DiffractionResult, "onDiffractionResult")]
+    inputs = [("Plots", PlotGenerator, "onPlotGenerator")]
     def __init__(self, parent=None, signalManager=None):
         widget.OWWidget.__init__(self, parent, signalManager)
 
@@ -193,14 +191,24 @@ class PlotViewer1D(widget.OWWidget):
         self._plotManager().setSetting(name, bool_value)
         self._updatePlots()
 
+    def _comboBoxStateChanged(self, name, value):
+        str_value = str(value)
+        self._plotManager().setSetting(name, str_value)
+        self._updatePlots()
+
     def _widgetFromPlotManagerSetting(self, setting):
         if setting.type() is bool:
             widget = QCheckBox(setting.description(), self)
             widget.setChecked(setting.value())
             handler = lambda x: self._checkBoxStateChanged(setting.name(), x)
             widget.stateChanged.connect(handler)
+        elif type(setting.type()) is list:
+            widget = QComboBox(self)
+            widget.addItems(setting.type())
+            handler = lambda x: self._comboBoxStateChanged(setting.name(), x)
+            widget.currentIndexChanged[str].connect(handler)
         else:
-            raise NotImplemented("PlotMangerSetting type %s not implemented" % str(setting.type()))
+            raise NotImplemented("PlotManagerSetting type %s not implemented" % str(type(setting.type())))
 
         return widget
 
@@ -217,8 +225,8 @@ class PlotViewer1D(widget.OWWidget):
             self.vbox_plot_settings.addWidget(widget)
             self._settings_widgets.append(widget)
 
-    def onDiffractionResult(self, diffraction_results):
-        self._plotManager().setPlotGenerator(diffraction_results.plotGenerator())
+    def onPlotGenerator(self, plot_generator):
+        self._plotManager().setPlotGenerator(plot_generator)
         self._updateSettingsWidgets()
         self._updatePlots()
 

@@ -16,8 +16,8 @@ import Orange.data
 from orangecontrib.crystal.util.DiffractionExceptions import DiffractionException
 from orangecontrib.crystal.util.GeometryType import GeometryType
 from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
-from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
 from orangecontrib.crystal.util.Diffraction import Diffraction
+from orangecontrib.crystal.util.PlotGenerator import PlotGenerator
 
 class CrystalDiffractionWidget(widget.OWWidget):
     name = "Crystal diffraction"
@@ -26,7 +26,7 @@ class CrystalDiffractionWidget(widget.OWWidget):
 
     want_control_area = False
     want_main_area = False
-    outputs = [("Crystal diffraction", DiffractionResult)]
+    outputs = [("Plots", PlotGenerator)]
       
     value_cbb_geometry_type = settings.Setting(0)
     value_cbb_crystal_name = settings.Setting(0)
@@ -191,7 +191,7 @@ class CrystalDiffractionWidget(widget.OWWidget):
             self.showException(de)
             return
 
-        self.send("Crystal diffraction", res)
+        self.send("Plots", res.plotGenerator())
         #from PlotViewer2D import PlotViewer2D
         #pv = PlotViewer2D()
         #pv.setPlots(res.asPlotData2D())

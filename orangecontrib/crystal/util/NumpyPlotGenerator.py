@@ -9,7 +9,9 @@ from orangecontrib.crystal.util.PlotData1D import PlotData1D
 
 class NumpyPlotGenerator(PlotGenerator):
     def __init__(self, numpy_array, column_names):
-        super(NumpyPlotGenerator, self).__init__()
+        #super(NumpyPlotGenerator, self).__init__()
+        self._column_names = column_names
+        PlotGenerator.__init__(self)
 
         if len(numpy_array.shape) != 2:
             raise Exception("Only matrices are supported (2D numpy array).")
@@ -18,7 +20,6 @@ class NumpyPlotGenerator(PlotGenerator):
             raise Exception("Number of columns unequals the number of given column names.")
 
         self._array = numpy_array
-        self._column_names = column_names
 
     def _defaultSettings(self):
         default_settings = list()
