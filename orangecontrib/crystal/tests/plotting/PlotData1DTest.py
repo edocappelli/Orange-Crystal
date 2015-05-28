@@ -2,10 +2,10 @@
 Unittest for PlotData1D class.
 """
 import unittest
-
 from collections import OrderedDict
 
-from orangecontrib.crystal.util.PlotData1D import PlotData1D, Autoscale
+from orangecontrib.crystal.plotting.PlotData1D import Autoscale, PlotData1D
+
 
 def plotData1D():
     plot_data_1d = PlotData1D("Title",

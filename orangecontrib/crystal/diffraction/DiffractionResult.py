@@ -3,10 +3,10 @@ Represents diffraction results.
 """
 import numpy
 from pylab import plot, show
-import matplotlib.pyplot as plt
 
-from orangecontrib.crystal.util.PlotData1D import PlotData1D
-from orangecontrib.crystal.util.DiffractionResultPlotGenerator import DiffractionResultPlotGenerator
+from orangecontrib.crystal.diffraction.DiffractionResultPlotGenerator import DiffractionResultPlotGenerator
+
+from orangecontrib.crystal.plotting.PlotData1D import PlotData1D
 
 
 class DiffractionResult():

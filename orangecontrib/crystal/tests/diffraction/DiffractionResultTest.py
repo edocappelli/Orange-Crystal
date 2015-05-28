@@ -3,13 +3,14 @@ Unittest for DiffractionResult class.
 """
 
 import unittest
+
 import numpy
 
-from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
-from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
-from orangecontrib.crystal.util.Diffraction import Diffraction
-from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction
+from orangecontrib.crystal.diffraction.ComplexAmplitude import ComplexAmplitude
+from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.Diffraction import Diffraction
+from orangecontrib.crystal.diffraction.DiffractionResult import DiffractionResult
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
 
 
 def diffractionSetupSingleEnergy():

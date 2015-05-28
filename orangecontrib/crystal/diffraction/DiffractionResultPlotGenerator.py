@@ -2,9 +2,9 @@
 Plot Generator for Diffraction results.
 """
 
-from orangecontrib.crystal.util.PlotGeneratorSetting import PlotGeneratorSetting
-from orangecontrib.crystal.util.PlotGenerator import PlotGenerator
-from orangecontrib.crystal.util.PlotData1D import PlotData1D
+from orangecontrib.crystal.plotting.PlotGenerator import PlotGenerator
+from orangecontrib.crystal.plotting.PlotData1D import PlotData1D
+from orangecontrib.crystal.plotting.PlotGeneratorSetting import PlotGeneratorSetting
 from orangecontrib.crystal.util.Enum import Enum
 
 class PlotType(Enum):

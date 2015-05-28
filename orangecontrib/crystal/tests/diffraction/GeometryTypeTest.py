@@ -3,8 +3,9 @@ Unittest for GeometryType class.
 """
 import unittest
 
-from orangecontrib.crystal.util.GeometryType import GeometryType, BraggDiffraction, LaueDiffraction, \
-                                                    BraggTransmission, LaueTransmission
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, \
+                                                           BraggTransmission, LaueTransmission
+from orangecontrib.crystal.diffraction.GeometryType import GeometryType
 
 
 class GeometryTypeTest(unittest.TestCase):

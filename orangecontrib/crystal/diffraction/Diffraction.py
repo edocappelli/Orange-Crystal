@@ -3,19 +3,20 @@ Calculates a crystal diffraction.
 Except for energy all units are in SI. Energy is in eV.
 """
 
+from math import isnan
+
 import xraylib
 from numpy import sin,cos,pi
-from math import isnan
 import scipy.constants.codata
 
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, BraggTransmission, LaueDiffraction, LaueTransmission
-from orangecontrib.crystal.util.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
-                                                             StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
-                                                             StructureFactorFHbarIsZeroException
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, BraggTransmission, LaueDiffraction, LaueTransmission
+from orangecontrib.crystal.diffraction.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
+                                                                    StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
+                                                                    StructureFactorFHbarIsZeroException
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.util.DiffractionResult import DiffractionResult
-from orangecontrib.crystal.util.PerfectCrystalDiffraction import PerfectCrystalDiffraction
+from orangecontrib.crystal.diffraction.DiffractionResult import DiffractionResult
+from orangecontrib.crystal.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
 
 
 class Diffraction():

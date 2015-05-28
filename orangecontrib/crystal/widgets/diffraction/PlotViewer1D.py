@@ -5,18 +5,15 @@
 <priority>2</priority>
 """
 import sys
-from PyQt4 import *
-from PyQt4.Qt import *
 
+from PyQt4.Qt import *
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 import matplotlib.pyplot as plt
+from Orange.widgets import widget
 
-import Orange
-from Orange.widgets import widget, gui
-
-from orangecontrib.crystal.util.PlotGenerator import PlotGenerator
-from orangecontrib.crystal.util.PlotManager import PlotManager
+from orangecontrib.crystal.plotting.PlotGenerator import PlotGenerator
+from orangecontrib.crystal.plotting.PlotManager import PlotManager
 
 
 class PlotInfoModel(QAbstractTableModel):

@@ -1,11 +1,11 @@
 import unittest
 import sys
+
 from PyQt4.Qt import *
 
-from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
-from orangecontrib.crystal.util.Diffraction import Diffraction
-
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction
+from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.Diffraction import Diffraction
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
 from orangecontrib.crystal.widgets.diffraction.PlotViewer1D import PlotViewer1D
 
 

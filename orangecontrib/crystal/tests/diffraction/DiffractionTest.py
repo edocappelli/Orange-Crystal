@@ -3,17 +3,20 @@ Unittest for Diffraction class.
 """
 
 import unittest
+
 import numpy as np
 import xraylib
 
-from orangecontrib.crystal.util.Diffraction import Diffraction
-from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.Diffraction import Diffraction
+from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.GeometryType import GeometryType
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.util.GeometryType import GeometryType, BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
-from orangecontrib.crystal.util.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
-                                                             StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
-                                                             StructureFactorFHbarIsZeroException
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+from orangecontrib.crystal.diffraction.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
+                                                                    StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
+                                                                    StructureFactorFHbarIsZeroException
+
 
 class DiffractionTest(unittest.TestCase):
 
@@ -285,7 +288,7 @@ class DiffractionTest(unittest.TestCase):
     @unittest.skip("Do not test against XRT")
     def testXRTDriver(self):
         import orangecontrib.crystal.util.XRTDriver as XRTDriver
-        from pylab import plot, show, legend, ylabel, xlabel, title, savefig, figure
+        from pylab import plot, legend, ylabel, xlabel, title, savefig, figure
 
         energy = 8100.0
         for geo in allGeometryTypes():

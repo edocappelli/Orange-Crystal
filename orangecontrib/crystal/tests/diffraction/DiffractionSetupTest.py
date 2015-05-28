@@ -3,12 +3,11 @@ Unittest for DiffractionSetup class.
 """
 
 import unittest
-from quantities import *
 
 import numpy
 
-from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction
+from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
 
 
 def diffractionSetup():

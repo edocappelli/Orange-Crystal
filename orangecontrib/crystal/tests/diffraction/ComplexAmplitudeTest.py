@@ -3,9 +3,11 @@ Unittest for ComplexAmplitude class.
 """
 
 import unittest
+
 import numpy as np
 
-from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
+from orangecontrib.crystal.diffraction.ComplexAmplitude import ComplexAmplitude
+
 
 class ComplexAmplitudeTest(unittest.TestCase):
     def testConstructor(self):

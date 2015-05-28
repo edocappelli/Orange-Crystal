@@ -3,15 +3,14 @@ The module compares reflectivity, transmittivity, refraction index,
 absorption coefficient etc. with those calculated by XOP.
 """
 
-import os
-import sys
 import math
+
 import numpy as np
 from pylab import plot, show
-
 import xrt.backends.raycing.materials as rm
 
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+
 
 class XRTResult(object):
     def __init__(self):

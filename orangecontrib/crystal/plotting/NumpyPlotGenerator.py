@@ -2,9 +2,7 @@
 Class to plot arbitrary matrix given as numpy array.
 """
 
-from orangecontrib.crystal.util.PlotGeneratorSetting import PlotGeneratorSetting
-from orangecontrib.crystal.util.PlotGenerator import PlotGenerator
-from orangecontrib.crystal.util.PlotData1D import PlotData1D
+from orangecontrib.crystal.plotting import PlotGenerator, PlotData1D, PlotGeneratorSetting
 
 
 class NumpyPlotGenerator(PlotGenerator):

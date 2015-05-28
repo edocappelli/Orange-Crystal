@@ -3,12 +3,14 @@ Unittest for PerfectCrystalDiffraction class.
 """
 
 import unittest
+
 from numpy import pi
 
-from orangecontrib.crystal.util.PerfectCrystalDiffraction import PerfectCrystalDiffraction
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+from orangecontrib.crystal.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
+
 
 def generatePerfectCrystalDiffraction():
 

@@ -6,18 +6,16 @@
 """
 import sys
 
-from PyQt4 import *
 from PyQt4.Qt import *
-
-import Orange
 from Orange.widgets import widget, settings, gui
-import Orange.data
 
-from orangecontrib.crystal.util.DiffractionExceptions import DiffractionException
-from orangecontrib.crystal.util.GeometryType import GeometryType
-from orangecontrib.crystal.util.DiffractionSetup import DiffractionSetup
-from orangecontrib.crystal.util.Diffraction import Diffraction
-from orangecontrib.crystal.util.PlotGenerator import PlotGenerator
+from orangecontrib.crystal.diffraction.GeometryType import GeometryType
+
+from orangecontrib.crystal.plotting.PlotGenerator import PlotGenerator
+from orangecontrib.crystal.diffraction.DiffractionExceptions import DiffractionException
+from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.Diffraction import Diffraction
+
 
 class CrystalDiffractionWidget(widget.OWWidget):
     name = "Crystal diffraction"

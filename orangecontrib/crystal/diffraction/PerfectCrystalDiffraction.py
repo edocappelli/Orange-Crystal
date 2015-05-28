@@ -4,7 +4,11 @@ for perfect crystals.
 Except for energy all units are in SI. Energy is in eV.
 """
 
-from numpy import pi, cos, sqrt, real
+from numpy import pi, cos, sqrt
+
+from orangecontrib.crystal.diffraction.ComplexAmplitude import ComplexAmplitude
+from orangecontrib.crystal.util.Photon import Photon
+from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
 
 # Use mpmath if possible. Otherwise use native cmath.
 try:
@@ -13,11 +17,6 @@ try:
 except:
     import cmath
     use_mpmath = False
-
-from orangecontrib.crystal.util.Photon import Photon
-from orangecontrib.crystal.util.ComplexAmplitude import ComplexAmplitude
-from orangecontrib.crystal.util.GeometryType import BraggDiffraction, LaueDiffraction, BraggTransmission, LaueTransmission
-
 
 class CalculationStrategy(object):
     """
