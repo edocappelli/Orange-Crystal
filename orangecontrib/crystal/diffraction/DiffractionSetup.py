@@ -4,7 +4,10 @@ Except for energy all units are in SI. Energy is in eV.
 """
 from collections import OrderedDict
 from copy import deepcopy
-import numpy
+import numpy as np
+import xraylib
+
+from orangecontrib.crystal.util.Vector import Vector
 
 class DiffractionSetup(object):
 
@@ -47,6 +50,13 @@ class DiffractionSetup(object):
         self._angle_deviation_min = angle_deviation_min
         self._angle_deviation_max = angle_deviation_max
         self._angle_deviation_points = angle_deviation_points
+
+        # Set Debye Waller factor.
+        self._debyeWaller = 1.0
+
+        # Load crystal from xraylib.
+        self._crystal = xraylib.Crystal_GetCrystal(self.crystalName())
+
         
     def geometryType(self):
         """
@@ -123,9 +133,9 @@ class DiffractionSetup(object):
         Returns the energies of this setup.
         :return: The angle deviations grid.
         """
-        return numpy.linspace(self.energyMin(),
-                              self.energyMax(),
-                              self.energyPoints())
+        return np.linspace(self.energyMin(),
+                           self.energyMax(),
+                           self.energyPoints())
 
     def angleDeviationMin(self):
         """
@@ -153,10 +163,122 @@ class DiffractionSetup(object):
         Returns the grid of angle deviations according to this setup.
         :return: The angle deviations grid.
         """
-        return numpy.linspace(self.angleDeviationMin(),
-                              self.angleDeviationMax(),
-                              self.angleDeviationPoints())
-        
+        return np.linspace(self.angleDeviationMin(),
+                           self.angleDeviationMax(),
+                           self.angleDeviationPoints())
+
+    def angleBragg(self, energy):
+        """
+        Returns the Bragg angle for a given energy.
+
+        :param energy: Energy to calculate the Bragg angle for.
+        :return: Bragg angle.
+        """
+        energy_in_kev = energy / 1000.0
+
+        # Retrieve bragg angle from xraylib.
+        angle_bragg = xraylib.Bragg_angle(self._crystal,
+                                          energy_in_kev,
+                                          self.millerH(),
+                                          self.millerK(),
+                                          self.millerL())
+        return angle_bragg
+
+    def F0(self, energy):
+        energy_in_kev = energy / 1000.0
+        F_0 = xraylib.Crystal_F_H_StructureFactor(self._crystal,
+                                                  energy_in_kev,
+                                                  0, 0, 0,
+                                                  self._debyeWaller, 1.0)
+        return F_0
+
+    def FH(self, energy):
+        energy_in_kev = energy / 1000.0
+
+        F_H = xraylib.Crystal_F_H_StructureFactor(self._crystal,
+                                                  energy_in_kev,
+                                                  self.millerH(),
+                                                  self.millerK(),
+                                                  self.millerL(),
+                                                  self._debyeWaller, 1.0)
+        return F_H
+
+    def FH_bar(self, energy):
+        energy_in_kev = energy / 1000.0
+
+        F_H_bar = xraylib.Crystal_F_H_StructureFactor(self._crystal,
+                                                      energy_in_kev,
+                                                      -self.millerH(),
+                                                      -self.millerK(),
+                                                      -self.millerL(),
+                                                      self._debyeWaller, 1.0)
+
+        return F_H_bar
+
+    def dSpacing(self):
+        """
+        Returns the lattice spacing d.
+        :return: Lattice spacing.
+        """
+
+        # Retrieve lattice spacing d from xraylib.
+        d_spacing = xraylib.Crystal_dSpacing(self._crystal,
+                                             self.millerH(),
+                                             self.millerK(),
+                                             self.millerL())
+
+        return d_spacing
+
+    def normalBragg(self):
+        """
+        Calculates the normal on the reflection lattice plane B_H.
+        :return: Bragg normal B_H.
+        """
+        normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / (self.dSpacing() * 1e-10))
+
+        return normal_bragg
+
+    def normalSurface(self):
+        """
+        Calculates surface normal n.
+        :param asymmetry_angle: Asymmetry angle of the surface cut.
+        :return: Surface normal n.
+        """
+
+        assymmetry_angle = self.asymmetryAngle()
+
+        normal_surface = Vector(np.sin(assymmetry_angle / 180.0 * np.pi),
+                                0.0,
+                                np.cos(assymmetry_angle / 180.0 * np.pi))
+
+        return normal_surface
+
+    def incomingPhotonDirection(self, energy, deviation):
+        """
+        Calculates the direction of the incoming photon. Parallel to k_0.
+        :param angle_bragg: Bragg angle.
+        :param deviation: Deviation from the Bragg angle.
+        :return: Direction of the incoming photon.
+        """
+        angle = np.pi / 2.0 - (self.angleBragg(energy) + deviation)
+
+        photon_direction = Vector(-np.sin(angle),
+                                  0,
+                                  -np.cos(angle))
+
+        return photon_direction
+
+    def unitcellVolume(self):
+        """
+        Returns the unitcell volume.
+
+        :return: Unitcell volume
+        """
+        # Retrieve unitcell volume from xraylib.
+        unitcell_volume = self._crystal['volume']
+
+        return unitcell_volume
+
     def asInfoDictionary(self):
         """
         Returns this setup in InfoDictionary form.

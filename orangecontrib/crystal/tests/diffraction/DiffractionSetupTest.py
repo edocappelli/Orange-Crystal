@@ -8,6 +8,7 @@ import numpy
 
 from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
+from orangecontrib.crystal.util.Vector import Vector
 
 
 def diffractionSetup():
@@ -126,9 +127,67 @@ class DiffractionSetupTest(unittest.TestCase):
 
     def testAngleDeviationGrid(self):
         diffraction_setup = diffractionSetup()
-
-        self.assertAlmostEqual(numpy.linalg.norm(diffraction_setup.angleDeviationGrid()-numpy.linspace(-100.0e-6, 100.0e-6,175)),
+        self.assertAlmostEqual(numpy.linalg.norm(diffraction_setup.angleDeviationGrid()-numpy.linspace(-100.0e-6, 100.0e-6, 175)),
                                0.0)
+
+    def testAngleBragg(self):
+        diffraction = diffractionSetup()
+        angle_bragg = diffraction.angleBragg(energy=8000)
+        self.assertAlmostEqual(angle_bragg, 0.249732328921)
+
+
+
+    def testF0(self):
+        diffraction = diffractionSetup()
+
+        f_0 = diffraction.F0(energy=8000)
+        self.assertAlmostEqual(f_0, 114.08416+2.7188j)
+
+
+    def testFH(self):
+        diffraction = diffractionSetup()
+
+        f_h = diffraction.FH(energy=8000)
+        self.assertAlmostEqual(f_h, 44.54356349760925-41.82476349760927j)
+
+    def testFH_bar(self):
+        diffraction = diffractionSetup()
+
+        f_h_bar = diffraction.FH_bar(energy=8000)
+        self.assertAlmostEqual(f_h_bar, 41.82476349760923+44.54356349760926j)
+
+    def testDSpacing(self):
+        diffraction = diffractionSetup()
+
+        d_spacing = diffraction.dSpacing()
+        self.assertAlmostEqual(d_spacing, 3.135416288633)
+
+    def testNormalBragg(self):
+        diffraction = diffractionSetup()
+
+        bragg_normal = diffraction.normalBragg()
+        self.assertLess( (bragg_normal.subtractVector(Vector(0.0, 0.0, 20039397415.8))).norm(),
+                         0.1)
+
+    def testNormalSurface(self):
+        diffraction = diffractionSetup()
+
+        surface_normal = diffraction.normalSurface()
+        self.assertEqual(surface_normal,
+                         Vector(0.190808995377, 0.0, 0.981627183448))
+
+    def testIncomingPhotonDirection(self):
+        diffraction = diffractionSetup()
+
+        photon_direction = diffraction.incomingPhotonDirection(8000, 0.01)
+        self.assertEqual(photon_direction,
+                         Vector(-0.966458756542, 0.0, -0.256821868038))
+
+    def testUnitcellVolume(self):
+        diffraction = diffractionSetup()
+
+        unitcell_volume = diffraction.unitcellVolume()
+        self.assertAlmostEqual(unitcell_volume, 160.1649322509)
 
     def testAsInfoDictionary(self):
         diffraction_setup = diffractionSetup()
@@ -161,7 +220,7 @@ class DiffractionSetupTest(unittest.TestCase):
     def testOperatorEqual(self):
         diffraction_setup_one = diffractionSetup()
         diffraction_setup_two = DiffractionSetup(BraggDiffraction(),
-                                                 "C",
+                                                 "Diamond",
                                                  thickness=0.001,
                                                  miller_h=1,
                                                  miller_k=1,
@@ -181,7 +240,7 @@ class DiffractionSetupTest(unittest.TestCase):
     def testOperatorNotEqual(self):
         diffraction_setup_one = diffractionSetup()
         diffraction_setup_two = DiffractionSetup(BraggDiffraction(),
-                                                 "C",
+                                                 "Diamond",
                                                  thickness=0.001,
                                                  miller_h=1,
                                                  miller_k=1,

@@ -192,27 +192,6 @@ class DiffractionTest(unittest.TestCase):
         self.assertAlmostEqual(psi.real,-1.527826e-5)
         self.assertAlmostEqual(psi.imag,-2.372566e-7)
 
-    def testCalculateBraggNormal(self):
-        diffraction = Diffraction()
-
-        bragg_normal = diffraction._calculateBraggNormal(3.135416 * 1e-10)
-        self.assertEqual(bragg_normal,
-                         Vector(0.0,0.0,20039399260.51148))
-
-    def testCalculateSurfaceNormal(self):
-        diffraction = Diffraction()
-
-        surface_normal = diffraction._calculateSurfaceNormal(10.0)
-        self.assertEqual(surface_normal,
-                         Vector(0.173648177667,0.0,0.984807753012))
-
-    def testCalculateIncomingPhotonDirection(self):
-        diffraction = Diffraction()
-
-        photon_direction = diffraction._calculateIncomingPhotonDirection(0.6, 0.01)
-        self.assertEqual(photon_direction,
-                         Vector(-0.819648017845,0.0,-0.5728674601))
-
     def testCheckSetup(self):
         diffraction = Diffraction()
 

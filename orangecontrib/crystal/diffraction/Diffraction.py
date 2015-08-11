@@ -5,7 +5,6 @@ Except for energy all units are in SI. Energy is in eV.
 
 from math import isnan
 
-import xraylib
 from numpy import sin,cos,pi
 import scipy.constants.codata
 
@@ -44,43 +43,6 @@ class Diffraction():
         psi = (-classical_electron_radius * photon_in.wavelength() ** 2 / (pi * unitcell_volume)) * structure_factor
 
         return psi
-
-    def _calculateBraggNormal(self, d_spacing):
-        """
-        Calculates the normal on the reflection lattice plane B_H.
-        :param d_spacing: Distance between parallel planes.
-        :return: Bragg normal B_H.
-        """
-        normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * pi / d_spacing)
-
-        return normal_bragg
-
-    def _calculateSurfaceNormal(self, asymmetry_angle):
-        """
-        Calculates surface normal n.
-        :param asymmetry_angle: Asymmetry angle of the surface cut.
-        :return: Surface normal n.
-        """
-        normal_surface = Vector(sin(asymmetry_angle / 180.0 * pi),
-                                0,
-                                cos(asymmetry_angle / 180.0 * pi))
-
-        return normal_surface
-
-    def _calculateIncomingPhotonDirection(self, angle_bragg, deviation):
-        """
-        Calculates the direction of the incoming photon. Parallel to k_0.
-        :param angle_bragg: Bragg angle.
-        :param deviation: Deviation from the Bragg angle.
-        :return: Direction of the incoming photon.
-        """
-        angle = pi / 2.0 - (angle_bragg + deviation)
-
-        photon_direction = Vector(-sin(angle),
-                                  0,
-                                  -cos(angle))
-
-        return photon_direction
 
     def log(self, str):
         """
@@ -188,67 +150,37 @@ class Diffraction():
             raise StructureFactorFHbarIsZeroException()
 
     def _perfectCrystalForEnergy(self, diffraction_setup, energy):
-        # Retrieve Miller indices from setup(for readability) .
-        miller_h = diffraction_setup.millerH()
-        miller_k = diffraction_setup.millerK()
-        miller_l = diffraction_setup.millerL()
 
-        # Load crystal from xraylib.
-        crystal = xraylib.Crystal_GetCrystal(diffraction_setup.crystalName())
-
-        # Calculate energy in keV.
-        energy_in_kev = energy / 1000.0
-
-
-        # Retrieve bragg angle from xraylib.
-        angle_bragg = xraylib.Bragg_angle(crystal,
-                                          energy_in_kev,
-                                          miller_h,
-                                          miller_k,
-                                          miller_l)
+        # Retrieve bragg angle.
+        angle_bragg = diffraction_setup.angleBragg(energy)
 
         # Get structure factors for all relevant lattice vectors 0,H,H_bar.
-        debyeWaller = 1.0
-        F_0 = xraylib.Crystal_F_H_StructureFactor(crystal,
-                                                  energy_in_kev,
-                                                  0, 0, 0,
-                                                  debyeWaller, 1.0)
-
-        F_H = xraylib.Crystal_F_H_StructureFactor(crystal,
-                                                  energy_in_kev,
-                                                  miller_h, miller_k, miller_l,
-                                                  debyeWaller, 1.0)
-
-        F_H_bar = xraylib.Crystal_F_H_StructureFactor(crystal,
-                                                      energy_in_kev,
-                                                      - miller_h, -miller_k, -miller_l,
-                                                      debyeWaller, 1.0)
+        F_0 = diffraction_setup.F0(energy)
+        F_H = diffraction_setup.FH(energy)
+        F_H_bar = diffraction_setup.FH_bar(energy)
 
         # Check if given Bragg/Laue geometry and given miller indices are possible.
         self._checkSetup(diffraction_setup, angle_bragg, F_0, F_H, F_H_bar)
 
         # Log the structure factors.
-        self.logStructureFactors(F_0,F_H,F_H_bar)
+        self.logStructureFactors(F_0, F_H, F_H_bar)
 
-        # Retrieve lattice spacing d from xraylib.
-        d_spacing = xraylib.Crystal_dSpacing(crystal,
-                                             miller_h,
-                                             miller_k,
-                                             miller_l) * 1e-10
+        # Retrieve lattice spacing d.
+        d_spacing = diffraction_setup.dSpacing() * 1e-10
 
         # Calculate the Bragg normal B_H.
-        normal_bragg = self._calculateBraggNormal(d_spacing)
+        normal_bragg = diffraction_setup.normalBragg()
 
         # Calculate the surface normal n.
-        normal_surface = self._calculateSurfaceNormal(diffraction_setup.asymmetryAngle())
+        normal_surface = diffraction_setup.normalSurface()
 
         # Calculate the incoming photon direction (parallel to k_0).
-        photon_direction = self._calculateIncomingPhotonDirection(angle_bragg,0.0)
+        photon_direction = diffraction_setup.incomingPhotonDirection(energy, 0.0)
         # Create photon k_0.
         photon_in = Photon(energy, photon_direction)
 
         # Retrieve unitcell volume from xraylib.
-        unitcell_volume = crystal['volume'] * 10 ** -30
+        unitcell_volume = diffraction_setup.unitcellVolume() * 10 ** -30
 
         # Calculate psis as defined in Zachariasen [3-95]
         psi_0     = self._calculatePsiFromStructureFactor(unitcell_volume, photon_in, F_0)
@@ -287,8 +219,8 @@ class Diffraction():
             self._onProgressEveryTenPercent(index, diffraction_setup.angleDeviationPoints())
 
             # Calculate deviated incoming photon.
-            photon_direction = self._calculateIncomingPhotonDirection(perfect_crystal.braggAngle(),
-                                                                      deviation)
+            photon_direction =  diffraction_setup.incomingPhotonDirection(energy,
+                                                                          deviation)
             photon_in = Photon(energy, photon_direction)
 
             # Calculate diffraction for current incoming photon.

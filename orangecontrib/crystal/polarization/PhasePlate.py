@@ -28,3 +28,5 @@ class PhasePlate(MuellerMatrix):
         element_array[2,3] = scalar * np.sin(delta_phase)
         element_array[3,2] = -1.0 * element_array[2,3]
         element_array[3,3] = element_array[2,2]
+
+        return element_array
