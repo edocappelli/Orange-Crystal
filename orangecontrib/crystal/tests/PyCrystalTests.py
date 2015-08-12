@@ -7,7 +7,7 @@ from orangecontrib.crystal.tests.util.VectorTest import VectorTest
 from orangecontrib.crystal.tests.util.PhotonTest import PhotonTest
 from orangecontrib.crystal.tests.diffraction.ComplexAmplitudeTest import ComplexAmplitudeTest
 from orangecontrib.crystal.tests.diffraction.PerfectCrystalDiffractionTest import PerfectCrystalDiffractionTest
-from orangecontrib.crystal.tests.diffraction.DiffractionSetupTest import DiffractionSetupTest
+from orangecontrib.crystal.tests.diffraction.DiffractionSetupSweepsTest import DiffractionSetupSweepsTest
 from orangecontrib.crystal.tests.diffraction.DiffractionTest import DiffractionTest
 from orangecontrib.crystal.tests.diffraction.DiffractionResultTest import DiffractionResultTest
 from orangecontrib.crystal.tests.widgets.PlotViewer1DTest import PlotViewer1DTest
@@ -22,7 +22,7 @@ def suite():
         unittest.makeSuite(GeometryTypeTest, 'test'),
 
         unittest.makeSuite(PerfectCrystalDiffractionTest, 'test'),
-        unittest.makeSuite(DiffractionSetupTest, 'test'),
+        unittest.makeSuite(DiffractionSetupSweepsTest, 'test'),
         unittest.makeSuite(DiffractionTest, 'test'),
         unittest.makeSuite(DiffractionResultTest, 'test'),
 

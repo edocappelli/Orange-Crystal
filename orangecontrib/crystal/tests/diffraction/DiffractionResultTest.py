@@ -7,14 +7,14 @@ import unittest
 import numpy
 
 from orangecontrib.crystal.diffraction.ComplexAmplitude import ComplexAmplitude
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from orangecontrib.crystal.diffraction.Diffraction import Diffraction
 from orangecontrib.crystal.diffraction.DiffractionResult import DiffractionResult
 from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
 
 
 def diffractionSetupSingleEnergy():
-    diffraction_setup = DiffractionSetup(BraggDiffraction(),
+    diffraction_setup = DiffractionSetupSweeps(BraggDiffraction(),
                                          "Si",
                                          thickness=0.0100 * 1e-2,
                                          miller_h=1,
@@ -31,7 +31,7 @@ def diffractionSetupSingleEnergy():
 
 
 def diffractionSetupMultipleEnergy():
-    diffraction_setup = DiffractionSetup(BraggDiffraction(),
+    diffraction_setup = DiffractionSetupSweeps(BraggDiffraction(),
                                          "Si",
                                          thickness=0.0100 * 1e-2,
                                          miller_h=1,
@@ -226,7 +226,7 @@ class DiffractionResultTest(unittest.TestCase):
                                100060009.0)
 
     def testAsPlotData1D(self):
-        diffraction_setup = DiffractionSetup(BraggDiffraction(),
+        diffraction_setup = DiffractionSetupSweeps(BraggDiffraction(),
                                              "Si",
                                              thickness=0.0100 * 1e-2,
                                              miller_h=1,

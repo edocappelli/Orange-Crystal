@@ -3,7 +3,7 @@ import sys
 
 from PyQt4.Qt import *
 
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from orangecontrib.crystal.diffraction.Diffraction import Diffraction
 from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
 from orangecontrib.crystal.widgets.diffraction.PlotViewer1D import PlotViewer1D
@@ -15,7 +15,7 @@ class CrystalDiffractionWidgetTest(unittest.TestCase):
         appl = QApplication(sys.argv)
         ow = PlotViewer1D()
         ow.show()
-        diffraction_setup = DiffractionSetup(BraggDiffraction(),
+        diffraction_setup = DiffractionSetupSweeps(BraggDiffraction(),
                                              "Si",
                                              thickness=0.0100 * 1e-2,
                                              miller_h=1,

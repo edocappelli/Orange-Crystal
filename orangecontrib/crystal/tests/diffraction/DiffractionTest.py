@@ -8,7 +8,7 @@ import numpy as np
 import xraylib
 
 from orangecontrib.crystal.diffraction.Diffraction import Diffraction
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from orangecontrib.crystal.diffraction.GeometryType import GeometryType
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
@@ -47,7 +47,7 @@ class DiffractionTest(unittest.TestCase):
             if geometry_type == LaueDiffraction() or geometry_type == LaueTransmission():
                 effective_asymmetry = 90.0
 
-            diffraction_setup = DiffractionSetup(geometry_type,
+            diffraction_setup = DiffractionSetupSweeps(geometry_type,
                                                  "Si",
                                                  thickness=128 * 1e-6,
                                                  miller_h=1,
@@ -64,7 +64,7 @@ class DiffractionTest(unittest.TestCase):
             res[geometry_type] = diffraction.calculateDiffraction(diffraction_setup)
 
     def testCalculateBraggDiffraction(self):
-        diffraction_setup = DiffractionSetup(BraggDiffraction(),
+        diffraction_setup = DiffractionSetupSweeps(BraggDiffraction(),
                                              "Si",
                                              thickness=0.0100 * 1e-2,
                                              miller_h=1,
@@ -94,7 +94,7 @@ class DiffractionTest(unittest.TestCase):
                                      res)
 
     def testCalculateBraggTransmission(self):
-        diffraction_setup = DiffractionSetup(BraggTransmission(),
+        diffraction_setup = DiffractionSetupSweeps(BraggTransmission(),
                                              "Si",
                                              thickness=7 * 1e-6,
                                              miller_h=1,
@@ -124,7 +124,7 @@ class DiffractionTest(unittest.TestCase):
                                      res)
 
     def testCalculateLaueDiffraction(self):
-        diffraction_setup = DiffractionSetup(LaueDiffraction(),
+        diffraction_setup = DiffractionSetupSweeps(LaueDiffraction(),
                                              "Si",
                                              thickness=100 * 1e-6,
                                              miller_h=1,
@@ -153,7 +153,7 @@ class DiffractionTest(unittest.TestCase):
                                      res)
 
     def testCalculateLaueTransmission(self):
-        diffraction_setup = DiffractionSetup(LaueTransmission(),
+        diffraction_setup = DiffractionSetupSweeps(LaueTransmission(),
                                              "Si",
                                              thickness=100 * 1e-6,
                                              miller_h=1,
@@ -195,7 +195,7 @@ class DiffractionTest(unittest.TestCase):
     def testCheckSetup(self):
         diffraction = Diffraction()
 
-        diffraction_setup = DiffractionSetup(BraggDiffraction(),
+        diffraction_setup = DiffractionSetupSweeps(BraggDiffraction(),
                                              "Si",
                                              thickness=128 * 1e-6,
                                              miller_h=1,
@@ -282,7 +282,7 @@ class DiffractionTest(unittest.TestCase):
                 if geo == LaueDiffraction() or geo == LaueTransmission():
                     effective_asymmetry = 90.0-asymmetry
 
-                diffraction_setup = DiffractionSetup(geo,
+                diffraction_setup = DiffractionSetupSweeps(geo,
                                                      "Si",
                                                      thickness=100 * 1e-6,
                                                      miller_h=1,
@@ -364,7 +364,7 @@ class DiffractionTest(unittest.TestCase):
                         if geo == LaueDiffraction() or geo == LaueTransmission():
                             effective_asymmetry = 90.0-asymmetry
                         
-                        diffraction_setup = DiffractionSetup(geo,
+                        diffraction_setup = DiffractionSetupSweeps(geo,
                                                      crystal_name,
                                                      thickness=thickness,
                                                      miller_h=1,

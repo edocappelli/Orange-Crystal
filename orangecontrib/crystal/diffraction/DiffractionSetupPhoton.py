@@ -2,11 +2,11 @@
 Represents a diffraction setup for a single photon.
 Except for energy all units are in SI. Energy is in eV.
 """
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from orangecontrib.crystal.util.Photon import Photon
 
 
-class DiffractionSetupPhoton(DiffractionSetup):
+class DiffractionSetupSweepsPhoton(DiffractionSetupSweeps):
 
     def __init__(self, geometry_type, crystal_name, thickness,
                  miller_h, miller_k, miller_l,
@@ -28,7 +28,7 @@ class DiffractionSetupPhoton(DiffractionSetup):
         energy = photon_in.energy()
         angle_deviation=0.0
 
-        DiffractionSetup.__init__(self, geometry_type, crystal_name, thickness,
+        DiffractionSetupSweeps.__init__(self, geometry_type, crystal_name, thickness,
                                   miller_h, miller_k, miller_l,
                                   asymmetry_angle,
                                   energy_min=energy,

@@ -6,14 +6,14 @@ import unittest
 
 import numpy
 
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
 from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
 
 
 def diffractionSetup():
-    diffraction_setup = DiffractionSetup(BraggDiffraction(),
+    diffraction_setup = DiffractionSetupSweeps(BraggDiffraction(),
                                          "Si",
                                          thickness=0.0001,
                                          miller_h=1,
@@ -29,10 +29,10 @@ def diffractionSetup():
     return diffraction_setup
 
 
-class DiffractionSetupTest(unittest.TestCase):
+class DiffractionSetupSweepsTest(unittest.TestCase):
     def testConstructor(self):
         diffraction_setup = diffractionSetup()
-        self.assertIsInstance(diffraction_setup, DiffractionSetup)
+        self.assertIsInstance(diffraction_setup, DiffractionSetupSweeps)
 
         self.assertEqual(diffraction_setup._geometry_type,
                          BraggDiffraction())
@@ -227,7 +227,7 @@ class DiffractionSetupTest(unittest.TestCase):
 
     def testOperatorEqual(self):
         diffraction_setup_one = diffractionSetup()
-        diffraction_setup_two = DiffractionSetup(BraggDiffraction(),
+        diffraction_setup_two = DiffractionSetupSweeps(BraggDiffraction(),
                                                  "Diamond",
                                                  thickness=0.001,
                                                  miller_h=1,
@@ -247,7 +247,7 @@ class DiffractionSetupTest(unittest.TestCase):
 
     def testOperatorNotEqual(self):
         diffraction_setup_one = diffractionSetup()
-        diffraction_setup_two = DiffractionSetup(BraggDiffraction(),
+        diffraction_setup_two = DiffractionSetupSweeps(BraggDiffraction(),
                                                  "Diamond",
                                                  thickness=0.001,
                                                  miller_h=1,

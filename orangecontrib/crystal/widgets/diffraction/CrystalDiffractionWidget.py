@@ -13,7 +13,7 @@ from orangecontrib.crystal.diffraction.GeometryType import GeometryType
 
 from orangecontrib.crystal.plotting.PlotGenerator import PlotGenerator
 from orangecontrib.crystal.diffraction.DiffractionExceptions import DiffractionException
-from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
+from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from orangecontrib.crystal.diffraction.Diffraction import Diffraction
 
 
@@ -166,7 +166,7 @@ class CrystalDiffractionWidget(widget.OWWidget):
         geometry_type = self.geometries_mapping[self.value_cbb_geometry_type]
         crystal_name = self.crystal_names_mapping[self.value_cbb_crystal_name]
         
-        diffraction_setup = DiffractionSetup(geometry_type,
+        diffraction_setup = DiffractionSetupSweeps(geometry_type,
                                              crystal_name,
                                              float(self.value_le_thickness) * 1e-2,
                                              int(self.value_sp_miller_h),
