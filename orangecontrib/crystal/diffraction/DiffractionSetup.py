@@ -268,6 +268,22 @@ class DiffractionSetup(object):
 
         return photon_direction
 
+    def deviationOfIncomingPhoton(self, photon_in):
+        """
+        Given an incoming photon its deviation from the Bragg angle is returned.
+        :param photon_in: Incoming photon.
+        :return: Deviation from Bragg angle.
+        """
+
+        total_angle = photon_in.unitDirectionVector().angle(self.normalBragg())
+
+        energy = photon_in.energy()
+        angle_bragg = self.angleBragg(energy)
+
+        deviation = total_angle - angle_bragg - np.pi / 2.0
+        return deviation
+
+
     def unitcellVolume(self):
         """
         Returns the unitcell volume.

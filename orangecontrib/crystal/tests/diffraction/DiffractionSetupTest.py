@@ -9,6 +9,7 @@ import numpy
 from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
 from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction
 from orangecontrib.crystal.util.Vector import Vector
+from orangecontrib.crystal.util.Photon import Photon
 
 
 def diffractionSetup():
@@ -135,14 +136,11 @@ class DiffractionSetupTest(unittest.TestCase):
         angle_bragg = diffraction.angleBragg(energy=8000)
         self.assertAlmostEqual(angle_bragg, 0.249732328921)
 
-
-
     def testF0(self):
         diffraction = diffractionSetup()
 
         f_0 = diffraction.F0(energy=8000)
         self.assertAlmostEqual(f_0, 114.08416+2.7188j)
-
 
     def testFH(self):
         diffraction = diffractionSetup()
@@ -182,6 +180,16 @@ class DiffractionSetupTest(unittest.TestCase):
         photon_direction = diffraction.incomingPhotonDirection(8000, 0.01)
         self.assertEqual(photon_direction,
                          Vector(-0.966458756542, 0.0, -0.256821868038))
+
+    def testDeviationOfIncomingPhoton(self):
+        diffraction = diffractionSetup()
+
+        for energy in [2500, 6000, 8000, 15000, 22000, 30000]:
+            for test_deviation in [0.01, 0.03, 0.5, -0.1, -0.9, 0.00001, -0.0007]:
+                photon_direction = diffraction.incomingPhotonDirection(energy, test_deviation)
+                photon = Photon(energy, photon_direction)
+                deviation = diffraction.deviationOfIncomingPhoton(photon)
+                self.assertAlmostEqual(test_deviation, deviation)
 
     def testUnitcellVolume(self):
         diffraction = diffractionSetup()
