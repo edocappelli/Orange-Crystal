@@ -7,7 +7,12 @@
 import sys
 
 from PyQt4.Qt import *
-from Orange.widgets import widget, settings, gui
+
+#from Orange.widgets import widget, settings, gui
+from orangewidget import gui
+from oasys.widgets import widget
+from orangewidget.settings import Setting
+
 
 from orangecontrib.crystal.diffraction.GeometryType import GeometryType
 
@@ -26,23 +31,23 @@ class CrystalDiffractionWidget(widget.OWWidget):
     want_main_area = False
     outputs = [("Plots", PlotGenerator)]
       
-    value_cbb_geometry_type = settings.Setting(0)
-    value_cbb_crystal_name = settings.Setting(0)
-    value_le_thickness = settings.Setting(0.01)
+    value_cbb_geometry_type = Setting(0)
+    value_cbb_crystal_name = Setting(0)
+    value_le_thickness = Setting(0.01)
 
-    value_sp_miller_h = settings.Setting(1)
-    value_sp_miller_k = settings.Setting(1)
-    value_sp_miller_l = settings.Setting(1)
+    value_sp_miller_h = Setting(1)
+    value_sp_miller_k = Setting(1)
+    value_sp_miller_l = Setting(1)
     
-    value_sp_asymmetry_angle = settings.Setting(0)
+    value_sp_asymmetry_angle = Setting(0)
 
-    value_le_energy_min = settings.Setting(8.0)
-    value_le_energy_max = settings.Setting(8.0)
-    value_le_energy_points = settings.Setting(1)
+    value_le_energy_min = Setting(8.0)
+    value_le_energy_max = Setting(8.0)
+    value_le_energy_points = Setting(1)
 
-    value_le_angle_min = settings.Setting(-100)
-    value_le_angle_max = settings.Setting(100)
-    value_le_angle_points = settings.Setting(200)
+    value_le_angle_min = Setting(-100)
+    value_le_angle_max = Setting(100)
+    value_le_angle_points = Setting(200)
     
     crystal_names_mapping = {0 : "Si",
                              1 : "Diamond"}    

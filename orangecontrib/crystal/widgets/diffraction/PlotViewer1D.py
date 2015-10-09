@@ -10,7 +10,10 @@ from PyQt4.Qt import *
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 import matplotlib.pyplot as plt
-from Orange.widgets import widget
+
+
+#from Orange.widgets import widget
+from oasys.widgets import widget
 
 from orangecontrib.crystal.plotting.PlotGenerator import PlotGenerator
 from orangecontrib.crystal.plotting.PlotManager import PlotManager
