@@ -9,11 +9,13 @@ import xraylib
 
 from orangecontrib.crystal.util.Vector import Vector
 
+
 class DiffractionSetup(object):
 
     def __init__(self, geometry_type, crystal_name, thickness,
                  miller_h, miller_k, miller_l,
                  asymmetry_angle,
+                 azimuthal_angle,
                  incoming_photons):
         """
         Constructor.
@@ -23,7 +25,9 @@ class DiffractionSetup(object):
         :param miller_h: Miller index H.
         :param miller_k: Miller index K.
         :param miller_l: Miller index L.
-        :param asymmetry_angle: The asymmetry angle between surface normal and Bragg normal.
+        :param asymmetry_angle: The asymmetry angle between surface normal and Bragg normal (radians).
+        :param azimuthal_angle: The angle between the projection of the Bragg normal
+                                on the crystal surface plane and the x axis (radians).
         :param incoming_photons: The incoming photons.
         """
         self._geometry_type = geometry_type
@@ -32,8 +36,11 @@ class DiffractionSetup(object):
         self._miller_h = miller_h
         self._miller_k = miller_k
         self._miller_l = miller_l
-        self._asymmetry_angle = asymmetry_angle
+        self._asymmetry_angle = asymmetry_angle  # degrees
         self._incoming_photons = incoming_photons
+
+        # Edoardo: I add an azimuthal angle.
+        self._azimuthal_angle = azimuthal_angle  # degrees
 
         # Set deviations and energies caches to None.
         self._deviations = None
@@ -93,6 +100,13 @@ class DiffractionSetup(object):
         :return: Asymmetry angle.
         """
         return self._asymmetry_angle
+
+    def azimuthalAngle(self):
+        """
+        Returns the angle between the Bragg normal projection on the crystal surface plane and the x axis.
+        :return: Azimuthal angle.
+        """
+        return self._azimuthal_angle
 
     def energyMin(self):
         """
@@ -160,7 +174,6 @@ class DiffractionSetup(object):
     def angleBragg(self, energy):
         """
         Returns the Bragg angle for a given energy.
-
         :param energy: Energy to calculate the Bragg angle for.
         :return: Bragg angle.
         """
@@ -175,6 +188,11 @@ class DiffractionSetup(object):
         return angle_bragg
 
     def F0(self, energy):
+        """
+        Calculate F0 from Zachariasen.
+        :param energy: photon energy in eV.
+        :return: F0
+        """
         energy_in_kev = energy / 1000.0
         F_0 = xraylib.Crystal_F_H_StructureFactor(self._crystal,
                                                   energy_in_kev,
@@ -183,6 +201,11 @@ class DiffractionSetup(object):
         return F_0
 
     def FH(self, energy):
+        """
+        Calculate FH from Zachariasen.
+        :param energy: photon energy in eV.
+        :return: FH
+        """
         energy_in_kev = energy / 1000.0
 
         F_H = xraylib.Crystal_F_H_StructureFactor(self._crystal,
@@ -194,6 +217,11 @@ class DiffractionSetup(object):
         return F_H
 
     def FH_bar(self, energy):
+        """
+        Calculate FH_bar from Zachariasen.
+        :param energy: photon energy in eV.
+        :return: FH_bar
+        """
         energy_in_kev = energy / 1000.0
 
         F_H_bar = xraylib.Crystal_F_H_StructureFactor(self._crystal,
@@ -211,7 +239,7 @@ class DiffractionSetup(object):
         :return: Lattice spacing.
         """
 
-        # Retrieve lattice spacing d from xraylib.
+        # Retrieve lattice spacing d from xraylib in Angstrom.
         d_spacing = xraylib.Crystal_dSpacing(self._crystal,
                                              self.millerH(),
                                              self.millerK(),
@@ -224,37 +252,69 @@ class DiffractionSetup(object):
         Calculates the normal on the reflection lattice plane B_H.
         :return: Bragg normal B_H.
         """
-        normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / (self.dSpacing() * 1e-10))
+        # Edoardo: I use the geometrical convention from
+        # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
+
+        # Let's start from a vector parallel to the surface normal (z axis).
+        temp_normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / (self.dSpacing() * 1e-10))
+
+        # Let's now rotate this vector of an angle alphaX around the y axis (according to the right-hand-rule).
+        alpha_x = self.asymmetryAngle()
+        temp_normal_bragg = temp_normal_bragg.rotateAroundAxis(Vector(0, 1, 0), alpha_x)
+
+        # Let's now rotate this vector of an angle phi around the z axis (following the ISO standard 80000-2:2009).
+        phi = self.azimuthalAngle()
+        normal_bragg = temp_normal_bragg.rotateAroundAxis(Vector(0, 0, 1), phi)
+
+        # Mark's version:
+        # normal_bragg = Vector(0, 0, 1).scalarMultiplication(2.0 * np.pi / (self.dSpacing() * 1e-10))
 
         return normal_bragg
 
     def normalSurface(self):
         """
         Calculates surface normal n.
-        :param asymmetry_angle: Asymmetry angle of the surface cut.
+        asymmetry_angle: Asymmetry angle of the surface cut.
         :return: Surface normal n.
         """
+        # Edoardo: I use the geometrical convention from
+        # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
+        normal_surface = Vector(0, 0, 1)
 
-        assymmetry_angle = self.asymmetryAngle()
+        # Mark's version:
+        # asymmetry_angle = self.asymmetryAngle()
 
-        normal_surface = Vector(np.sin(assymmetry_angle / 180.0 * np.pi),
-                                0.0,
-                                np.cos(assymmetry_angle / 180.0 * np.pi))
+        # normal_surface = Vector(np.sin(asymmetry_angle),
+                                # 0.0,
+                                # np.cos(asymmetry_angle))
 
         return normal_surface
 
     def incomingPhotonDirection(self, energy, deviation):
         """
         Calculates the direction of the incoming photon. Parallel to k_0.
-        :param angle_bragg: Bragg angle.
+        :param energy: Energy to calculate the Bragg angle for.
         :param deviation: Deviation from the Bragg angle.
         :return: Direction of the incoming photon.
         """
-        angle = np.pi / 2.0 - (self.angleBragg(energy) + deviation)
+        # Edoardo: I use the geometrical convention from
+        # M.Sanchez del Rio et al., J.Appl.Cryst.(2015). 48, 477-491.
 
-        photon_direction = Vector(-np.sin(angle),
-                                  0,
+        # angle between the incoming photon direction and the surface normal (z axis).
+        # a positive deviation means the photon direction lies closer to the surface normal.
+        angle = np.pi / 2.0 - (self.angleBragg(energy) + self.asymmetryAngle() + deviation)
+
+        # the photon comes from left to right in the yz plane.
+        photon_direction = Vector(0,
+                                  np.sin(angle),
                                   -np.cos(angle))
+
+        # Mark's version:
+        # angle = np.pi / 2.0 - (self.angleBragg(energy) + deviation)
+
+        # photon_direction = Vector(-np.sin(angle),
+                                  # 0,
+                                  # -np.cos(angle))
 
         return photon_direction
 
@@ -264,26 +324,25 @@ class DiffractionSetup(object):
         :param photon_in: Incoming photon.
         :return: Deviation from Bragg angle.
         """
-
+        # this holds for every incoming photon-surface normal plane.
         total_angle = photon_in.unitDirectionVector().angle(self.normalBragg())
 
         energy = photon_in.energy()
         angle_bragg = self.angleBragg(energy)
 
-        deviation = total_angle - angle_bragg - np.pi / 2.0
+        deviation = total_angle - angle_bragg - np.pi / 2
         return deviation
-
 
     def unitcellVolume(self):
         """
-        Returns the unitcell volume.
+        Returns the unit cell volume.
 
-        :return: Unitcell volume
+        :return: Unit cell volume
         """
-        # Retrieve unitcell volume from xraylib.
-        unitcell_volume = self._crystal['volume']
+        # Retrieve unit cell volume from xraylib.
+        unit_cell_volume = self._crystal['volume']
 
-        return unitcell_volume
+        return unit_cell_volume
 
     def asInfoDictionary(self):
         """
@@ -298,6 +357,7 @@ class DiffractionSetup(object):
                                                               self.millerK(),
                                                               self.millerL())
         info_dict["Asymmetry Angle"] = str(self.asymmetryAngle())
+        info_dict["Azimuthal Angle"] = str(self.azimuthalAngle())
         info_dict["Minimum energy"] = str(self.energyMin())
         info_dict["Maximum energy"] = str(self.energyMax())
         info_dict["Number of energy points"] = str(self.energyPoints())
@@ -313,25 +373,28 @@ class DiffractionSetup(object):
         :param candidate: Instance to compare to.
         :return: True if the two instances are equal. False otherwise.
         """
-        if self._geometry_type != candidate._geometry_type:
+        if self._geometry_type != candidate.geometryType():
             return False
 
-        if self._crystal_name != candidate._crystal_name:
+        if self._crystal_name != candidate.crystalName():
             return False
 
-        if self._thickness != candidate._thickness:
+        if self._thickness != candidate.thickness():
             return False
 
-        if self._miller_h != candidate._miller_h:
+        if self._miller_h != candidate.millerH():
             return False
 
-        if self._miller_k != candidate._miller_k:
+        if self._miller_k != candidate.millerK():
             return False
 
-        if self._miller_l != candidate._miller_l:
+        if self._miller_l != candidate.millerL():
             return False
 
-        if self._asymmetry_angle != candidate._asymmetry_angle:
+        if self._asymmetry_angle != candidate.asymmetryAngle():
+            return False
+
+        if self._azimuthal_angle != candidate.azimuthalAngle():
             return False
 
         if self.energyMin() != candidate.energyMin():
@@ -342,7 +405,6 @@ class DiffractionSetup(object):
 
         if self.energyPoints() != candidate.energyPoints():
             return False
-
 
         if self.angleDeviationMin() != candidate.angleDeviationMin():
             return False

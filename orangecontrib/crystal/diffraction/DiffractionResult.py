@@ -2,14 +2,9 @@
 Represents diffraction results.
 """
 import numpy
-from pylab import plot, show
-
-from orangecontrib.crystal.diffraction.DiffractionResultPlotGenerator import DiffractionResultPlotGenerator
-
-from orangecontrib.crystal.plotting.PlotData1D import PlotData1D
 
 
-class DiffractionResult():
+class DiffractionResult(object):
 
     INDEX_POLARIZATION_S = 0
     INDEX_POLARIZATION_P = 1
@@ -87,7 +82,7 @@ class DiffractionResult():
         Returns the angles used for calculation of these results.
         :return: The angles used for the calculation of these results.
         """
-        return [self.braggAngle() + dev for dev in  self.angleDeviations()]
+        return [self.braggAngle() + dev for dev in self.angleDeviations()]
 
     def sIntensityByEnergy(self, energy):
         """
@@ -212,76 +207,26 @@ class DiffractionResult():
         self._phases[energy_index, deviation_index, self.INDEX_POLARIZATION_P] = p_complex_amplitude.phase()
         self._phases[energy_index, deviation_index, self.INDEX_DIFFERENCE_SP] = difference_complex_amplitude.phase()
 
-    def plotGenerator(self):
-        plot_generator = DiffractionResultPlotGenerator(self)
-        return plot_generator
+    # def _debugPlot(self):
+        # """
+        # Debug plot intensities.
+        # """
+        # x = [i * 1e+6 for i in self.angleDeviations()]
+        # plot(x, self.sIntensityByEnergy(), label="S polarization")
+        # plot(x, self.pIntensityByEnergy(), label="P polarization")
+        # plot(x, self.sPhase(), label="S polarization")
+        # plot(x, self.pPhase(), label="P polarization")
+        # show()
+        # return
 
-    def asPlotData1D(self):
-        """
-        Returns this result instance in PlotData1D representation.
-        """
-        # Retrieve setup information.
-        info_dict = self.diffractionSetup().asInfoDictionary()
-        info_dict["Bragg angle"] = str(self.braggAngle())
-
-        # Retrieve angles of the results.
-        angles_in_um = [i * 1e+6 for i in self.angleDeviations()]
-
-        # Define inner function to duplicate info for every plot.
-        def addPlotInfo(info_dict, energy, angles_in_um, data):
-            plot_data = PlotData1D(data[0], data[1], data[2])
-            plot_data.setX(angles_in_um)
-            plot_data.setY(data[3])
-            for key, value in info_dict.items():
-                plot_data.addPlotInfo(key, value)
-            plot_data.addPlotInfo("Energy", str(energy))
-            return plot_data
-
-        plots = []
-        for energy in self.energies():
-            # Intensity S polarization.
-            categories = []
-
-            s_intensity = ("Intensity - Polarization S", "Angle deviation in urad", "Intensity", self.sIntensityByEnergy(energy))
-            plots.append(addPlotInfo(info_dict, energy, angles_in_um, s_intensity))
-
-            p_intensity = ("Intensity - Polarization P", "Angle deviation in urad", "Intensity", self.pIntensityByEnergy(energy))
-            plots.append(addPlotInfo(info_dict, energy, angles_in_um, p_intensity))
-
-            intensity_difference = ("Intensity difference", "Angle deviation in urad", "Intensity", self.differenceIntensityByEnergy(energy))
-            plots.append(addPlotInfo(info_dict, energy, angles_in_um, intensity_difference))
-
-            s_phase = ("Phase - Polarization S", "Angle deviation in urad", "Phase in rad", self.sPhaseByEnergy(energy))
-            plots.append(addPlotInfo(info_dict, energy, angles_in_um, s_phase))
-
-            p_phase = ("Phase - Polarization P", "Angle deviation in urad", "Phase in rad", self.pPhaseByEnergy(energy))
-            plots.append(addPlotInfo(info_dict, energy, angles_in_um, p_phase))
-
-            phase_difference = ("Phase difference", "Angle deviation in urad", "Phase in rad", self.differencePhaseByEnergy(energy))
-            plots.append(addPlotInfo(info_dict, energy, angles_in_um, phase_difference))
-
-        return plots
-
-    def _debugPlot(self):
-        """
-        Debug plot intensities.
-        """
-        x = [i * 1e+6 for i in self.angleDeviations()]
-        plot(x, self.sIntensityByEnergy(), label="S polarization")
-        plot(x, self.pIntensityByEnergy(), label="P polarization")
-       # plot(x, self.sPhase(), label="S polarization")
-       # plot(x, self.pPhase(), label="P polarization")
-        show()
-        return
-
-    def _debugPrint(self):
-        """
-        Debug print of S and P intensities and phases.
-        """
+    # def _debugPrint(self):
+        # """
+        # Debug print of S and P intensities and phases.
+        # """
         # S polarization.
-        print("s_intensity="+str(self.sIntensityByEnergy()).replace("array(","").replace(") * dimensionless",""))
-        print("s_phase="+str(self.sPhaseByEnergy()))
+        # print("s_intensity="+str(self.sIntensityByEnergy()).replace("array(","").replace(") * dimensionless",""))
+        # print("s_phase="+str(self.sPhaseByEnergy()))
 
         # P polarization.
-        print("p_intensity="+str(self.pIntensityByEnergy()).replace("array(","").replace(") * dimensionless",""))
-        print("p_phase="+str(self.pPhaseByEnergy()))
+        # print("p_intensity="+str(self.pIntensityByEnergy()).replace("array(","").replace(") * dimensionless",""))
+        # print("p_phase="+str(self.pPhaseByEnergy()))

@@ -14,9 +14,11 @@ from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, Lau
 try:
     import mpmath
     use_mpmath = True
-except:
+
+except ImportError:
     import cmath
     use_mpmath = False
+
 
 class CalculationStrategy(object):
     """
@@ -145,7 +147,6 @@ class PerfectCrystalDiffraction(object):
         else:
             self._calculation_strategy = CalculationStrategyMath()
 
-
     def braggNormal(self):
         """
         Returns the Bragg normal, i.e. normal on the reflection planes.
@@ -209,19 +210,19 @@ class PerfectCrystalDiffraction(object):
         """
         return self._geometryType
 
-    def log(self, str):
+    def log(self, string):
         """
         Logs a string.
-        :param str: String to log.
+        :param string: String to log.
         """
-        print(str)
+        print(string)
 
-    def logDebug(self, str):
+    def logDebug(self, string):
         """
         Logs a debug string.
-        :param str: String to log.
+        :param string: String to log.
         """
-        self.log("<DEBUG>: "+str)
+        self.log("<DEBUG>: " + string)
 
     def _calculateGamma(self, photon):
         """
@@ -252,12 +253,14 @@ class PerfectCrystalDiffraction(object):
 
         if self.isDebug:
             self.logDebug("surface normal"+str(self.surface_normal().components()))
-            self.logDebug("Angle bragg normal photon_in"+str((photon_in.unitDirectionVector().angles(self.braggNormal()),
-                                                              pi * 0.5 - photon_in.unitDirectionVector().angles(self.braggNormal()))))
-            self.logDebug("Angle bragg normal photon_out"+str((photon_out.unitDirectionVector().angles(self.braggNormal()),
-                                                               pi * 0.5 - photon_out.unitDirectionVector().angles(self.braggNormal()))))
-            self.logDebug("photon_in direction"+str(photon_in.unitDirectionVector().components()))
-            self.logDebug("photon_out direction"+str(photon_out.unitDirectionVector().components()))
+            self.logDebug("Angle bragg normal photon_in"
+                          + str((photon_in.unitDirectionVector().angles(self.braggNormal()),
+                                pi * 0.5 - photon_in.unitDirectionVector().angles(self.braggNormal()))))
+            self.logDebug("Angle bragg normal photon_out"
+                          + str((photon_out.unitDirectionVector().angles(self.braggNormal()),
+                                pi * 0.5 - photon_out.unitDirectionVector().angles(self.braggNormal()))))
+            self.logDebug("photon_in direction" + str(photon_in.unitDirectionVector().components()))
+            self.logDebug("photon_out direction" + str(photon_out.unitDirectionVector().components()))
 
         # Return outgoing photon.
         return photon_out
@@ -270,13 +273,12 @@ class PerfectCrystalDiffraction(object):
         """
         # Calculate scalar product k_0 and B_H.
         k_0_times_B_h = photon_in.wavevector().scalarProduct(self.braggNormal())
+
         # Get norm k_0.
         wavenumber = photon_in.wavenumber()
 
         # Calculate alpha.
-        zac_alpha = (wavenumber ** -2) * (self.braggNormal().norm() ** 2
-                                          +
-                                          2 * k_0_times_B_h)
+        zac_alpha = (wavenumber ** -2) * (self.braggNormal().norm() ** 2 + 2 * k_0_times_B_h)
 
         # Return alpha.
         return zac_alpha
@@ -360,9 +362,9 @@ class PerfectCrystalDiffraction(object):
         zac_c1 = -1j * self.thickness() * zac_phi1
         zac_c2 = -1j * self.thickness() * zac_phi2
 
-        if (self.isDebug):
-            self.logDebug("__zac_c1"+str( zac_c1))
-            self.logDebug("__zac_c2"+str( zac_c2))
+        if self.isDebug:
+            self.logDebug("__zac_c1" + str(zac_c1))
+            self.logDebug("__zac_c2" + str(zac_c2))
 
         cv_zac_c1 = self._exponentiate(zac_c1)
         cv_zac_c2 = self._exponentiate(zac_c2)
@@ -371,29 +373,35 @@ class PerfectCrystalDiffraction(object):
         cv_zac_x2 = self._createVariable(zac_x2)
 
         # Calculate complex amplitude according to given geometry.
-        if (self.geometryType() == BraggDiffraction()):
-            complex_amplitude = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
-        elif (self.geometryType() == LaueDiffraction()):
-            complex_amplitude = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
-        elif (self.geometryType() == BraggTransmission()):
-            complex_amplitude = cv_zac_c1 * cv_zac_c2 * (cv_zac_x2 - cv_zac_x1) / (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
-        elif (self.geometryType() == LaueTransmission()):
-            complex_amplitude = (cv_zac_x2 * cv_zac_c1 - cv_zac_x1 * cv_zac_c2) / (cv_zac_x2 - cv_zac_x1)
+        if self.geometryType() == BraggDiffraction():
+            complex_amplitude = cv_zac_x1 * cv_zac_x2 * (cv_zac_c2 - cv_zac_c1) / \
+                                (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
+        elif self.geometryType() == LaueDiffraction():
+            complex_amplitude = cv_zac_x1 * cv_zac_x2 * (cv_zac_c1 - cv_zac_c2) / \
+                                (cv_zac_x2 - cv_zac_x1)
+        elif self.geometryType() == BraggTransmission():
+            complex_amplitude = cv_zac_c1 * cv_zac_c2 * (cv_zac_x2 - cv_zac_x1) / \
+                                (cv_zac_c2 * cv_zac_x2 - cv_zac_c1 * cv_zac_x1)
+        elif self.geometryType() == LaueTransmission():
+            complex_amplitude = (cv_zac_x2 * cv_zac_c1 - cv_zac_x1 * cv_zac_c2) / \
+                                (cv_zac_x2 - cv_zac_x1)
+        else:
+            raise Exception
 
-        if (self.isDebug):
-            self.logDebug("ctemp: "+str(tmp_root))
-            self.logDebug("zac_z"+str( zac_z))
-            self.logDebug("zac_q"+str( zac_q))
-            self.logDebug("zac delta 1"+str( zac_delta1))
-            self.logDebug("zac delta 2"+str( zac_delta2))
-            self.logDebug("gamma_0"+str( gamma_0))
-            self.logDebug("wavelength"+str( photon_in.wavelength()))
-            self.logDebug("zac phi 1"+str( zac_phi1))
-            self.logDebug("zac phi 2"+str(zac_phi2))
-            self.logDebug("zac_c1: "+str( cv_zac_c1))
-            self.logDebug("zac_c2: "+str( cv_zac_c2))
-            self.logDebug("zac_x1: "+str( cv_zac_x1))
-            self.logDebug("zac_x2: "+str( cv_zac_x2))
+        if self.isDebug:
+            self.logDebug("ctemp: " + str(tmp_root))
+            self.logDebug("zac_z" + str(zac_z))
+            self.logDebug("zac_q" + str(zac_q))
+            self.logDebug("zac delta 1" + str(zac_delta1))
+            self.logDebug("zac delta 2" + str(zac_delta2))
+            self.logDebug("gamma_0" + str(gamma_0))
+            self.logDebug("wavelength" + str(photon_in.wavelength()))
+            self.logDebug("zac phi 1" + str(zac_phi1))
+            self.logDebug("zac phi 2" + str(zac_phi2))
+            self.logDebug("zac_c1: " + str(cv_zac_c1))
+            self.logDebug("zac_c2: " + str(cv_zac_c2))
+            self.logDebug("zac_x1: " + str(cv_zac_x1))
+            self.logDebug("zac_x2: " + str(cv_zac_x2))
 
         return ComplexAmplitude(complex(complex_amplitude))
 
@@ -405,11 +413,10 @@ class PerfectCrystalDiffraction(object):
         :param gamma_0: Projection cosine as defined in Zachariasen [3-115].
         :return: Complex amplitude of S polarization.
         """
-        zac_q = self._calculateZacQ(zac_b,
-                                   self.PsiH(), self.PsiHBar())
+        zac_q = self._calculateZacQ(zac_b, self.PsiH(), self.PsiHBar())
 
         return self._calculateComplexAmplitude(photon_in, zac_q, zac_z, gamma_0,
-                                           self.PsiHBar())
+                                               self.PsiHBar())
 
     def _calculatePolarizationP(self, photon_in, zac_b, zac_z, gamma_0):
         """
@@ -426,7 +433,7 @@ class PerfectCrystalDiffraction(object):
         zac_q = self._calculateZacQ(zac_b, effective_psi_h, effective_psi_h_bar)
 
         return self._calculateComplexAmplitude(photon_in, zac_q, zac_z, gamma_0,
-                                           effective_psi_h_bar)
+                                               effective_psi_h_bar)
 
     def calculateDiffraction(self, photon_in):
         """
@@ -462,9 +469,8 @@ class PerfectCrystalDiffraction(object):
         #
         # This factor only applies to diffracted beam, not to transmitted beams
         # (see private communication M. Rio (ESRF) and J. Sutter (DLS))
-        if (self.geometryType() == BraggDiffraction() \
-            or \
-            self.geometryType() == LaueDiffraction()):
+        if (self.geometryType() == BraggDiffraction() or
+                self.geometryType() == LaueDiffraction()):
             result["S"].rescale(1.0 / sqrt(abs(zac_b)))
             result["P"].rescale(1.0 / sqrt(abs(zac_b)))
 
@@ -488,9 +494,9 @@ class PerfectCrystalDiffraction(object):
         self.logDebug("psiH: (%.14f , %.14f)" % (self.PsiH().real, self.PsiH().imag))
         self.logDebug("psiHbar: (%.14f , %.14f)" % (self.PsiHBar().real, self.PsiHBar().imag))
         self.logDebug("d_spacing: %f " % self.dSpacing())
-        self.logDebug('BraggNormal: '+str(self.braggNormal().components()))
-        self.logDebug('b(exact): '+str(zac_b))
-        self.logDebug('alpha: '+str(zac_alpha))
-        self.logDebug('k_0 wavelength: '+str(photon_in.wavelength()))
-        self.logDebug('comp ampl S: '+str(result["S"].intensity())+str(result["S"].phase()))
-        self.logDebug('comp ampl P: '+str(result["P"].intensity())+str(result["P"].phase()))
+        self.logDebug('BraggNormal: ' + str(self.braggNormal().components()))
+        self.logDebug('b(exact): ' + str(zac_b))
+        self.logDebug('alpha: ' + str(zac_alpha))
+        self.logDebug('k_0 wavelength: ' + str(photon_in.wavelength()))
+        self.logDebug('comp ampl S: ' + str(result["S"].intensity()) + str(result["S"].phase()))
+        self.logDebug('comp ampl P: ' + str(result["P"].intensity()) + str(result["P"].phase()))

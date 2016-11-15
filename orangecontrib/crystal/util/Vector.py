@@ -4,7 +4,7 @@ Represents a 3d vector.
 import numpy as np
 
 
-class Vector():
+class Vector(object):
     def __init__(self, x, y, z):
         """
         Constructor.
@@ -32,7 +32,7 @@ class Vector():
         :param y: y component.
         :param z: z component.
         """
-        self._components = np.array([x, y, z])
+        self._components = np.asarray([x, y, z])
 
     def components(self):
         """
@@ -171,7 +171,7 @@ class Vector():
         vector_y = Vector(0, 1, 0)
         vector_z = Vector(0, 0, 1)
 
-        if(self.getNormalizedVector() == vector_z):
+        if self.getNormalizedVector() == vector_z:
             return vector_y
 
         vector_perpendicular = vector_z.perpendicularTo(self)
@@ -191,13 +191,15 @@ class Vector():
         # Determine angle between the two vectors.
         cos_angle = n1.scalarProduct(n2)
         angle = np.arccos(cos_angle)
+        # Edoardo: numpy.arccos() always returns an angle in radians in [0, pi].
 
+        # Mark's version:
         # By convention always return the smaller angle.
-        while angle > 2.0 * np.pi:
-            angle = angle - 2.0 * np.pi
+        # while angle > 2.0 * np.pi:
+            # angle -= 2.0 * np.pi
 
-        if angle > np.pi:
-            angle = 2.0 * np.pi - angle
+        # if angle > np.pi:
+            # angle = 2.0 * np.pi - angle
 
         return angle
 

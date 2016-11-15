@@ -1,20 +1,21 @@
 """
 Represents a diffraction setup.
-Except for energy all units are in SI. Energy is in eV.
+Except for energy all units are in SI. Energy is in eV. Angles in radians.
 """
 import numpy as np
 
 from orangecontrib.crystal.diffraction.DiffractionSetup import DiffractionSetup
 
-
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.util.Vector import Vector
+
 
 class DiffractionSetupSweeps(DiffractionSetup):
 
     def __init__(self, geometry_type, crystal_name, thickness,
                  miller_h, miller_k, miller_l,
                  asymmetry_angle,
+                 azimuthal_angle,
                  energy_min,
                  energy_max,
                  energy_points,
@@ -30,13 +31,14 @@ class DiffractionSetupSweeps(DiffractionSetup):
         :param miller_k: Miller index K.
         :param miller_l: Miller index L.
         :param asymmetry_angle: The asymmetry angle between surface normal and Bragg normal.
+        :param azimuthal_angle: The angle between the projection of the Bragg normal
+                                on the crystal surface plane and the x axis.
         :param energy_min: The minimum energy.
         :param energy_max: The maximum energy.
         :param energy_points: Number of energy points.
         :param angle_deviation_min: Minimal angle deviation.
         :param angle_deviation_max: Maximal angle deviation.
         :param angle_deviation_points: Number of deviations points.
-        :return:
         """
         energies = np.linspace(energy_min,
                                energy_max,
@@ -54,7 +56,8 @@ class DiffractionSetupSweeps(DiffractionSetup):
                                       miller_k=miller_k,
                                       miller_l=miller_l,
                                       asymmetry_angle=asymmetry_angle,
-                                      incoming_photons=[Photon(energy_min, Vector(0,0,-1))])
+                                      azimuthal_angle=azimuthal_angle,
+                                      incoming_photons=[Photon(energy_min, Vector(0, 0, -1))])
 
         # Create photons according to sweeps.
         photons = list()
@@ -73,4 +76,5 @@ class DiffractionSetupSweeps(DiffractionSetup):
                                   miller_k=miller_k,
                                   miller_l=miller_l,
                                   asymmetry_angle=asymmetry_angle,
+                                  azimuthal_angle=azimuthal_angle,
                                   incoming_photons=photons)

@@ -4,7 +4,8 @@ Except for energy all units are in SI. Energy is in eV.
 """
 import scipy.constants.codata
 
-class Photon():
+
+class Photon(object):
 
     def __init__(self, energy_in_ev, direction_vector):
         """
@@ -28,7 +29,7 @@ class Photon():
         codata = scipy.constants.codata.physical_constants
         speed_of_light = codata["speed of light in vacuum"][0]
         planck_constant = codata["Planck constant"][0]
-        elementary_charge=codata["elementary charge"][0]
+        elementary_charge = codata["elementary charge"][0]
         E_in_Joule = self.energy() * elementary_charge
 
         # Wavelength in meter
@@ -60,11 +61,11 @@ class Photon():
         :param candidate: Photon to compare with.
         :return: True if equal otherwise False.
         """
-        is_equal = self.energy() == candidate.energy() \
-                   and \
-                   self.unitDirectionVector() == candidate.unitDirectionVector()
+        if (self.energy() == candidate.energy() and
+                self.unitDirectionVector() == candidate.unitDirectionVector()):
+            return True
 
-        return is_equal
+        return False
 
     def __ne__(self, candidate):
         """
@@ -72,4 +73,4 @@ class Photon():
         :param candidate: Photon to compare with.
         :return: True if not equal otherwise False.
         """
-        return not (self==candidate)
+        return not (self == candidate)

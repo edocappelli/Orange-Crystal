@@ -5,20 +5,19 @@ Except for energy all units are in SI. Energy is in eV.
 
 from math import isnan
 
-from numpy import sin,cos,pi
+from numpy import pi
 import scipy.constants.codata
 
 from orangecontrib.crystal.diffraction.GeometryType import BraggDiffraction, BraggTransmission, LaueDiffraction, LaueTransmission
 from orangecontrib.crystal.diffraction.DiffractionExceptions import ReflectionImpossibleException, TransmissionImpossibleException, \
                                                                     StructureFactorF0isZeroException, StructureFactorFHisZeroException, \
                                                                     StructureFactorFHbarIsZeroException
-from orangecontrib.crystal.util.Vector import Vector
 from orangecontrib.crystal.util.Photon import Photon
 from orangecontrib.crystal.diffraction.DiffractionResult import DiffractionResult
 from orangecontrib.crystal.diffraction.PerfectCrystalDiffraction import PerfectCrystalDiffraction
 
 
-class Diffraction():
+class Diffraction(object):
     
     def __init__(self):
         """
@@ -29,38 +28,39 @@ class Diffraction():
         self.setOnProgress(None)
         self.setOnCalculationEnd(None)
 
-    def _calculatePsiFromStructureFactor(self, unitcell_volume, photon_in, structure_factor):
+    def _calculatePsiFromStructureFactor(self, unit_cell_volume, photon_in, structure_factor):
         """
         Calculates the Psi as defined in Zachariasen [3-95].
-        :param unitcell_volume: Volume of the unitcell.
+        :param unit_cell_volume: Volume of the unit cell.
         :param photon_in: Incoming photon.
         :param structure_factor: Structure factor.
         :return: Psi as defined in Zachariasen [3-95].
         """
-        codata   = scipy.constants.codata.physical_constants
+        codata = scipy.constants.codata.physical_constants
         classical_electron_radius = codata["classical electron radius"][0]
 
-        psi = (-classical_electron_radius * photon_in.wavelength() ** 2 / (pi * unitcell_volume)) * structure_factor
+        psi = (-classical_electron_radius * photon_in.wavelength() ** 2 / (pi * unit_cell_volume)) * structure_factor
 
         return psi
 
-    def log(self, str):
+    @staticmethod
+    def log(string):
         """
         Logging function.
-        :param str: Message to log.
+        :param string: Message to log.
         """
-        print(str)
+        print(string)
 
-    def logStructureFactors(self, F_0,F_H,F_H_bar):
+    def logStructureFactors(self, F_0, F_H, F_H_bar):
         """
         Logs the structure factors.
         :param F_0: Structure factor F_0.
         :param F_H: Structure factor F_H.
         :param F_H_bar: Structure factor F_H_bar.
         """
-        self.log( "f0: (%f , %f)" % (F_0.real, F_0.imag))
-        self.log( "fH: (%f , %f)" % (F_H.real, F_H.imag))
-        self.log( "fHbar: (%f , %f)" % (F_H_bar.real, F_H_bar.imag))
+        self.log("f0: (%f , %f)" % (F_0.real, F_0.imag))
+        self.log("fH: (%f , %f)" % (F_H.real, F_H.imag))
+        self.log("fHbar: (%f , %f)" % (F_H_bar.real, F_H_bar.imag))
 
     def setOnCalculationStart(self, on_calculation_start):
         """
@@ -97,10 +97,11 @@ class Diffraction():
         :param angle_deviation_points: Number of total points to calculate.
         """
         ten_percent = angle_deviation_points / 10
-        if((index + 1) % ten_percent) == 0 \
-           or \
-           index == angle_deviation_points:
-            self._onProgress(index+1, angle_deviation_points)
+
+        if((index + 1) % ten_percent == 0 or
+                index == angle_deviation_points):
+
+            self._onProgress(index + 1, angle_deviation_points)
 
     def setOnCalculationEnd(self, on_calculation_end):
         """
@@ -126,15 +127,12 @@ class Diffraction():
         :param F_H: Structure factor F_H.
         :param F_H_bar: Structure factor F_H_bar.
         """
-        # Calculate bragg angle in degree.
-        bragg_angle_in_degree = bragg_angle * 180 / pi
-
         # Check if the given geometry is a valid Bragg/Laue geometry.
         if diffraction_setup.geometryType() == BraggDiffraction() or diffraction_setup.geometryType() == BraggTransmission():
-            if diffraction_setup.asymmetryAngle() >= bragg_angle_in_degree:
+            if diffraction_setup.asymmetryAngle() >= bragg_angle:
                 raise ReflectionImpossibleException()
         elif diffraction_setup.geometryType() == LaueDiffraction() or diffraction_setup.geometryType() == LaueTransmission():
-            if diffraction_setup.asymmetryAngle() <= bragg_angle_in_degree:
+            if diffraction_setup.asymmetryAngle() <= bragg_angle:
                 raise TransmissionImpossibleException()
 
         # Check structure factor F_0.
@@ -176,6 +174,7 @@ class Diffraction():
 
         # Calculate the incoming photon direction (parallel to k_0).
         photon_direction = diffraction_setup.incomingPhotonDirection(energy, 0.0)
+
         # Create photon k_0.
         photon_in = Photon(energy, photon_direction)
 
@@ -188,15 +187,15 @@ class Diffraction():
         psi_H_bar = self._calculatePsiFromStructureFactor(unitcell_volume, photon_in, F_H_bar)
 
         # Create PerfectCrystalDiffraction instance.
-        perfect_crystal = PerfectCrystalDiffraction(diffraction_setup.geometryType(),
-                                                    normal_bragg,
-                                                    normal_surface,
-                                                    angle_bragg,
-                                                    psi_0,
-                                                    psi_H,
-                                                    psi_H_bar,
-                                                    diffraction_setup.thickness(),
-                                                    d_spacing)
+        perfect_crystal = PerfectCrystalDiffraction(geometry_type=diffraction_setup.geometryType(),
+                                                    bragg_normal=normal_bragg,
+                                                    surface_normal=normal_surface,
+                                                    bragg_angle=angle_bragg,
+                                                    psi_0=psi_0,
+                                                    psi_H=psi_H,
+                                                    psi_H_bar=psi_H_bar,
+                                                    thickness=diffraction_setup.thickness(),
+                                                    d_spacing=d_spacing)
 
         return perfect_crystal
 
@@ -206,7 +205,6 @@ class Diffraction():
         :param diffraction_setup: The diffraction setup.
         :return: DiffractionResult representing this setup.
         """
-
         # Get PerfectCrystal instance for the current energy.
         perfect_crystal = self._perfectCrystalForEnergy(diffraction_setup, energy)
 
@@ -215,12 +213,12 @@ class Diffraction():
 
         # For every deviation from Bragg angle ...
         for index, deviation in enumerate(diffraction_setup.angleDeviationGrid()):
+
             # Raise OnProgress event if progressed by 10 percent.
             self._onProgressEveryTenPercent(index, diffraction_setup.angleDeviationPoints())
 
             # Calculate deviated incoming photon.
-            photon_direction =  diffraction_setup.incomingPhotonDirection(energy,
-                                                                          deviation)
+            photon_direction = diffraction_setup.incomingPhotonDirection(energy, deviation)
             photon_in = Photon(energy, photon_direction)
 
             # Calculate diffraction for current incoming photon.
