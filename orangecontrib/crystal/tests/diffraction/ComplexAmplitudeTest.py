@@ -14,7 +14,7 @@ class ComplexAmplitudeTest(unittest.TestCase):
         number = 1 + 2j
         complex_amplitude = ComplexAmplitude(number)
         
-        self.assertAlmostEqual(complex_amplitude._ComplexAmplitude__complex_amplitude,
+        self.assertAlmostEqual(complex_amplitude._complex_amplitude,
                                number)
         
     def testSetComplexAmplitude(self):
@@ -22,7 +22,7 @@ class ComplexAmplitudeTest(unittest.TestCase):
         number = 1 + 2j
         complex_amplitude.setComplexAmplitude(number)
         
-        self.assertAlmostEqual(complex_amplitude._ComplexAmplitude__complex_amplitude,
+        self.assertAlmostEqual(complex_amplitude._complex_amplitude,
                                number)
 
     def testIntensity(self):
@@ -38,8 +38,8 @@ class ComplexAmplitudeTest(unittest.TestCase):
 
         complex_amplitude.rescale(2.0)
 
-        self.assertAlmostEqual(complex_amplitude._ComplexAmplitude__complex_amplitude,
-                               2+4j)
+        self.assertAlmostEqual(complex_amplitude._complex_amplitude,
+                               2 + 4j)
 
     def testPhase(self):
         complex_amplitude = ComplexAmplitude(1 + 1j)
@@ -47,7 +47,7 @@ class ComplexAmplitudeTest(unittest.TestCase):
         self.assertAlmostEqual(complex_amplitude.phase(),
                                np.pi / 4.0)
 
-    def testDivison(self):
+    def testDivision(self):
         number_one = 1 + 2j
         complex_amplitude_one = ComplexAmplitude(number_one)
 
@@ -56,5 +56,5 @@ class ComplexAmplitudeTest(unittest.TestCase):
 
         result = complex_amplitude_one / complex_amplitude_two
 
-        self.assertAlmostEqual(result.intensity(),2.5)
+        self.assertAlmostEqual(result.intensity(), 2.5)
         self.assertAlmostEqual(result.phase(), 0.32175055)

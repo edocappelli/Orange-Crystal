@@ -10,4 +10,3 @@ BACKGROUND = "#C3F3F3"
 ICON = "icons/crystal.svg"
 
 PRIORITY = 301
-

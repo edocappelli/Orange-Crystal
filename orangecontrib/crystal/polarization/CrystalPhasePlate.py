@@ -24,8 +24,8 @@ class CrystalPhasePlate(MuellerMatrix):
         self.inclination_angle = inclination_angle  # degrees.
         self.incoming_stokes_vector = incoming_stokes_vector  # StokesVector object.
 
-        mueller_matrix = self._create_matrix()
-        super(CrystalPhasePlate, self).__init__(mueller_matrix)
+        phase_plate_matrix = self._create_matrix()
+        super(CrystalPhasePlate, self).__init__(phase_plate_matrix)
 
     def _create_matrix(self):
         """
@@ -35,36 +35,36 @@ class CrystalPhasePlate(MuellerMatrix):
         alpha = self.inclination_angle * np.pi / 180  # degrees -> radians.
 
         # Create the Mueller matrix for a phase plate as a numpy array.
-        mueller_matrix = np.zeros([4, 4])
+        phase_plate_matrix = np.zeros([4, 4])
 
         # First row.
-        mueller_matrix[0, 0] = 0.5 * (self.intensity_sigma + self.intensity_pi)
-        mueller_matrix[0, 1] = 0.5 * (self.intensity_sigma - self.intensity_pi) * np.cos(2 * alpha)
-        mueller_matrix[0, 2] = 0.5 * (self.intensity_sigma - self.intensity_pi) * np.sin(2 * alpha)
-        mueller_matrix[0, 3] = 0.0
+        phase_plate_matrix[0, 0] = 0.5 * (self.intensity_sigma + self.intensity_pi)
+        phase_plate_matrix[0, 1] = 0.5 * (self.intensity_sigma - self.intensity_pi) * np.cos(2 * alpha)
+        phase_plate_matrix[0, 2] = 0.5 * (self.intensity_sigma - self.intensity_pi) * np.sin(2 * alpha)
+        phase_plate_matrix[0, 3] = 0.0
 
         # Second row.
-        mueller_matrix[1, 0] = 0.5 * (self.intensity_sigma - self.intensity_pi)
-        mueller_matrix[1, 1] = 0.5 * (self.intensity_sigma + self.intensity_pi) * np.cos(2 * alpha)
-        mueller_matrix[1, 2] = 0.5 * (self.intensity_sigma + self.intensity_pi) * np.sin(2 * alpha)
-        mueller_matrix[1, 3] = 0.0
+        phase_plate_matrix[1, 0] = 0.5 * (self.intensity_sigma - self.intensity_pi)
+        phase_plate_matrix[1, 1] = 0.5 * (self.intensity_sigma + self.intensity_pi) * np.cos(2 * alpha)
+        phase_plate_matrix[1, 2] = 0.5 * (self.intensity_sigma + self.intensity_pi) * np.sin(2 * alpha)
+        phase_plate_matrix[1, 3] = 0.0
 
         scalar = np.sqrt(self.intensity_sigma) * np.sqrt(self.intensity_pi)
         delta_phase = self.phase_pi - self.phase_sigma
 
         # Third row.
-        mueller_matrix[2, 0] = 0.0
-        mueller_matrix[2, 1] = - scalar * np.cos(delta_phase) * np.sin(2 * alpha)
-        mueller_matrix[2, 2] = scalar * np.cos(delta_phase) * np.cos(2 * alpha)
-        mueller_matrix[2, 3] = - scalar * np.sin(delta_phase)
+        phase_plate_matrix[2, 0] = 0.0
+        phase_plate_matrix[2, 1] = - scalar * np.cos(delta_phase) * np.sin(2 * alpha)
+        phase_plate_matrix[2, 2] = scalar * np.cos(delta_phase) * np.cos(2 * alpha)
+        phase_plate_matrix[2, 3] = - scalar * np.sin(delta_phase)
 
         # Fourth row.
-        mueller_matrix[3, 0] = 0.0
-        mueller_matrix[3, 1] = - scalar * np.sin(delta_phase) * np.sin(2 * alpha)
-        mueller_matrix[3, 2] = scalar * np.sin(delta_phase) * np.cos(2 * alpha)
-        mueller_matrix[3, 3] = scalar * np.cos(delta_phase)
+        phase_plate_matrix[3, 0] = 0.0
+        phase_plate_matrix[3, 1] = - scalar * np.sin(delta_phase) * np.sin(2 * alpha)
+        phase_plate_matrix[3, 2] = scalar * np.sin(delta_phase) * np.cos(2 * alpha)
+        phase_plate_matrix[3, 3] = scalar * np.cos(delta_phase)
 
-        return mueller_matrix
+        return phase_plate_matrix
 
     def calculate_stokes_vector(self):
         """
@@ -72,7 +72,7 @@ class CrystalPhasePlate(MuellerMatrix):
         and gives an outgoing Stokes vector as a result.
         :return: StokesVector object.
         """
-        incoming_stokes_vector = self.incoming_stokes_vector.get_array()  # 1x4 Stokes vector.
+        incoming_stokes_vector = self.incoming_stokes_vector.get_array()  # Stokes vector.
         element_list = self.matrix_by_vector(incoming_stokes_vector, numpy=False)
         outgoing_stokes_vector = StokesVector(element_list)
 

@@ -7,23 +7,21 @@ import numpy as np
 
 class MuellerMatrix(object):
 
-    def __init__(self, mueller_matrix):
+    def __init__(self, matrix):
         """
         Constructor.
-        :param mueller_matrix: Mueller matrix as a numpy.ndarray object.
+        :param matrix: Matrix as a numpy.ndarray object.
         """
-        self.mueller_matrix = mueller_matrix
+        self.matrix = matrix
 
-    @staticmethod
-    def from_matrix_to_elements(matrix, numpy=True):
+    def from_matrix_to_elements(self, numpy=True):
         """
         Returns a numpy.ndarray of the elements of a given matrix.
         If a list is needed one can use the numpy.array.tolist() method.
         :param numpy: if True returns numpy.ndarray, if False returns list.
-        :param matrix: the matrix containing the elements.
         :return: [m00, m01, m02....mN0, mN1, mN2...]
         """
-        matrix = np.asarray(matrix)
+        matrix = np.asarray(self.matrix)
         result = matrix.flatten()
 
         if numpy:
@@ -37,7 +35,7 @@ class MuellerMatrix(object):
         :param scalar: the scalar factor.
         :return: new Mueller matrix.
         """
-        new_mueller_matrix = self.mueller_matrix * scalar
+        new_mueller_matrix = self.matrix * scalar
 
         return MuellerMatrix(new_mueller_matrix)
 
@@ -48,7 +46,7 @@ class MuellerMatrix(object):
         :param vector: the vector factor.
         :return: matrix * vector (not a MuellerMatrix object).
         """
-        matrix = np.asarray(self.mueller_matrix)
+        matrix = np.asarray(self.matrix)
         result = np.dot(matrix, vector)
 
         if numpy:
@@ -63,7 +61,7 @@ class MuellerMatrix(object):
         :param vector: the vector factor.
         :return: matrix * vector (not a MuellerMatrix object).
         """
-        matrix = np.asarray(self.mueller_matrix)
+        matrix = np.asarray(self.matrix)
         result = np.dot(vector, matrix)
 
         if numpy:
@@ -79,7 +77,7 @@ class MuellerMatrix(object):
                  -> mod controls which of the two matrices is the first factor.
         :return: Mueller matrix product.
         """
-        matrix_1 = self.mueller_matrix
+        matrix_1 = self.matrix
 
         if mod:
             product = np.dot(matrix_1, matrix_2)
@@ -98,7 +96,7 @@ class MuellerMatrix(object):
         for i in range(4):
             for j in range(4):
 
-                if self.mueller_matrix[i, j] != candidate[i, j]:
+                if self.matrix[i, j] != candidate.matrix[i, j]:
                     return False
 
         return True

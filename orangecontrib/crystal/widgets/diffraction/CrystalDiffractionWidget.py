@@ -6,23 +6,25 @@
 """
 import sys
 
-from PyQt4.Qt import *
+# from PyQt4.Qt import *
 
-#from Orange.widgets import widget, settings, gui
+# from Orange.widgets import widget, settings, gui
 from orangewidget import gui
 from oasys.widgets import widget
 from orangewidget.settings import Setting
 
 
 from orangecontrib.crystal.diffraction.GeometryType import GeometryType
-
-from orangecontrib.crystal.plotting.PlotGenerator import PlotGenerator
 from orangecontrib.crystal.diffraction.DiffractionExceptions import DiffractionException
 from orangecontrib.crystal.diffraction.DiffractionSetupSweeps import DiffractionSetupSweeps
 from orangecontrib.crystal.diffraction.Diffraction import Diffraction
 
+from orangecontrib.crystal.plotting.PlotGenerator import PlotGenerator
+from orangecontrib.crystal.plotting.DiffractionResultPlotGenerator import DiffractionResultPlotGenerator
+
 
 class CrystalDiffractionWidget(widget.OWWidget):
+
     name = "Crystal diffraction"
     description = "Calculates crystal diffraction"
     icon = "icons/crystal.svg"
@@ -40,6 +42,7 @@ class CrystalDiffractionWidget(widget.OWWidget):
     value_sp_miller_l = Setting(1)
     
     value_sp_asymmetry_angle = Setting(0)
+    value_sp_azimuthal_angle = Setting(0)
 
     value_le_energy_min = Setting(8.0)
     value_le_energy_max = Setting(8.0)
@@ -49,18 +52,17 @@ class CrystalDiffractionWidget(widget.OWWidget):
     value_le_angle_max = Setting(100)
     value_le_angle_points = Setting(200)
     
-    crystal_names_mapping = {0 : "Si",
-                             1 : "Diamond"}    
+    crystal_names_mapping = {0: "Si",
+                             1: "Diamond"}
+
     def __init__(self, parent=None, signalManager=None):
         widget.OWWidget.__init__(self, parent, signalManager)
 
-
         # GUI
         possible_geometries = GeometryType.allGeometryTypes()
-
         geometries = [geo.description() for geo in possible_geometries]
         self.geometries_mapping = {}
-        for index,geo in enumerate(possible_geometries):
+        for index, geo in enumerate(possible_geometries):
             self.geometries_mapping[index] = geo
             
         self.cbb_geometry_type = gui.comboBox(self,
@@ -74,16 +76,14 @@ class CrystalDiffractionWidget(widget.OWWidget):
         crystal_names = ["Si",
                          "Diamond"]
 
-
         self.cbb_crystal_name = gui.comboBox(self,
                                              self,
                                              "value_cbb_crystal_name",
                                              box=None,
-                                             label = "Crystal Name",
-                                             items = crystal_names,
+                                             label="Crystal Name",
+                                             items=crystal_names,
                                              control2attributeDict=self.crystal_names_mapping)
-        
-        
+
         self.le_thickness = gui.lineEdit(self,
                                          self,
                                          "value_le_thickness",
@@ -121,6 +121,14 @@ class CrystalDiffractionWidget(widget.OWWidget):
                                            step=1,
                                            label="Asymmetry angle [deg]")
 
+        self.sp_azimuthal_angle = gui.spin(self,
+                                           self,
+                                           "value_sp_azimuthal_angle",
+                                           0,
+                                           90,
+                                           step=1,
+                                           label="Azimuthal angle [deg]")
+
         self.le_energy_min = gui.lineEdit(self,
                                           self,
                                           "value_le_energy_min",
@@ -131,10 +139,10 @@ class CrystalDiffractionWidget(widget.OWWidget):
                                           "value_le_energy_max",
                                           label="Maximum energy [keV]")
 
-        self.le_energy_min = gui.lineEdit(self,
-                                          self,
-                                          "value_le_energy_points",
-                                          label="Energy points")
+        self.le_energy_points = gui.lineEdit(self,
+                                             self,
+                                             "value_le_energy_points",
+                                             label="Energy points")
 
         self.le_angle_min = gui.lineEdit(self,
                                          self,
@@ -161,40 +169,46 @@ class CrystalDiffractionWidget(widget.OWWidget):
         
         if percent <= 11:
             self.progressBarInit()
+
         self.progressBarSet(percent)
         
-        if percent >=99:
+        if percent >= 99:
             self.progressBarFinished()
         
     def calculate(self):        
         print(self.value_cbb_geometry_type)
         geometry_type = self.geometries_mapping[self.value_cbb_geometry_type]
         crystal_name = self.crystal_names_mapping[self.value_cbb_crystal_name]
-        
-        diffraction_setup = DiffractionSetupSweeps(geometry_type,
-                                             crystal_name,
-                                             float(self.value_le_thickness) * 1e-2,
-                                             int(self.value_sp_miller_h),
-                                             int(self.value_sp_miller_k),
-                                             int(self.value_sp_miller_l),
-                                             float(self.value_sp_asymmetry_angle),
-                                             float(self.value_le_energy_min)*1e3,
-                                             float(self.value_le_energy_max)*1e3,
-                                             int(self.value_le_energy_points),
-                                             float(self.value_le_angle_min) * 10**-6,
-                                             float(self.value_le_angle_max) * 10 **-6,
-                                             int(self.value_le_angle_points))
-        
+
+        # Create a diffraction setup.
+        diffraction_setup = DiffractionSetupSweeps(geometry_type=geometry_type,
+                                                   crystal_name=crystal_name,
+                                                   thickness=float(self.value_le_thickness) * 1e-2,
+                                                   miller_h=int(self.value_sp_miller_h),
+                                                   miller_k=int(self.value_sp_miller_k),
+                                                   miller_l=int(self.value_sp_miller_l),
+                                                   asymmetry_angle=float(self.value_sp_asymmetry_angle),
+                                                   azimuthal_angle=float(self.value_sp_azimuthal_angle),
+                                                   energy_min=float(self.value_le_energy_min) * 1e3,
+                                                   energy_max=float(self.value_le_energy_max) * 1e3,
+                                                   energy_points=int(self.value_le_energy_points),
+                                                   angle_deviation_min=float(self.value_le_angle_min) * 1e-6,
+                                                   angle_deviation_max=float(self.value_le_angle_max) * 1e-6,
+                                                   angle_deviation_points=int(self.value_le_angle_points))
+        # Create a Diffraction object.
         diffraction = Diffraction()
+
         diffraction.setOnProgress(self.calculationProgress)
 
+        # Create a DiffractionResult object holding the results of the diffraction calculations.
         try:
             res = diffraction.calculateDiffraction(diffraction_setup)
+
         except DiffractionException as de:
             self.showException(de)
             return
 
-        self.send("Plots", res.plotGenerator())
+        self.send("Plots", DiffractionResultPlotGenerator(res))
         #from PlotViewer2D import PlotViewer2D
         #pv = PlotViewer2D()
         #pv.setPlots(res.asPlotData2D())
@@ -207,8 +221,8 @@ class CrystalDiffractionWidget(widget.OWWidget):
         message_box.exec_()
 
     
-if __name__=="__main__":
-    appl = QApplication(sys.argv)
-    ow = CrystalDiffractionWidget()
-    ow.show()
-    appl.exec_()
+# if __name__=="__main__":
+    # appl = QApplication(sys.argv)
+    # ow = CrystalDiffractionWidget()
+    # ow.show()
+    # appl.exec_()
